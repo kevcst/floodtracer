@@ -1,5 +1,7 @@
 # POC web — "How long does the water stay?"
 
+> **Histórica.** La entrega principal es la app de `app/` (ver README §1). Esta POC quedó con las cifras del detector viejo (umbral absoluto) y no se regenera con el pipeline nuevo.
+
 Prueba de concepto para que el equipo decida si seguimos con esta idea. Está en inglés, igual que el entregable final.
 El contexto completo y el pipeline de datos están en el [README principal](../README.md).
 
