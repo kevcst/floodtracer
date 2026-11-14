@@ -269,12 +269,12 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
     </div>
     <div class="box"><span class="pill info">1 · NISAR vs NISAR</span><h3>Two orbits a day apart should see the same water</h3>
       <p class="soft" id="val-pairs-txt"></p>
-      <div style="position:relative"><svg class="chart" id="val-pairs" viewBox="0 0 900 230" role="img" aria-label="Agreement between tracks one day apart"></svg></div>
+      <div style="position:relative"><svg class="chart" id="val-pairs" viewBox="0 0 900 260" role="img" aria-label="Agreement between tracks one day apart"></svg></div>
       <div class="keyrow"><span><i class="box" style="background:var(--openland)"></i>Old detector: fixed brightness threshold</span><span><i class="box" style="background:var(--still)"></i>Current detector: drop vs. the pixel's own June–July baseline</span></div>
     </div>
     <div class="grid2">
-      <div class="box"><span class="pill info">2 · Sentinel-1 (C-band)</span><h3>Same-day comparison with another radar</h3><p class="soft" id="val-s1-txt"></p><div class="tbl"><table id="val-s1"></table></div></div>
-      <div class="box"><span class="pill info">3 · River crests</span><h3>Does the radar peak follow the reported crest?</h3><p class="soft">NISAR revisits each track every 12 days, so it can't pin the crest. What it must do is light up on the first pass after it and fade afterwards, east before west.</p><div class="tbl"><table id="val-cron"></table></div></div>
+      <div class="box"><span class="pill info">2 · Sentinel-1 (C-band)</span><h3>Same-day comparison with another radar</h3><p class="soft" id="val-s1-txt"></p><div class="tbl" style="max-height:520px;overflow-y:auto"><table id="val-s1"></table></div></div>
+      <div class="box"><span class="pill info">3 · River crests</span><h3>Does the radar peak follow the reported crest?</h3><p class="soft">NISAR revisits each track every 12 days, so it can't pin the crest. What it must do is light up on the first pass after it and fade afterwards, east before west. Peak = pass with most new open water between 10 Aug and 10 Sep; on the Yí and Río Negro open water is weak (the flood stays under the forest), so their peak is less meaningful.</p><div class="tbl"><table id="val-cron"></table></div></div>
     </div>
   </section>
 
@@ -298,6 +298,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
         <li>Cities are under-counted: buildings bounce the radar back like flooded forest does.</li>
         <li>Data arrives days after each pass: this is post-event assessment and planning, not early warning.</li>
         <li>PROVISIONAL calibration. VALIDATED products (from 21 Oct) jump ~−1.7 dB and are not mixed in.</li>
+        <li>Extents include shallow and partly flooded land: compared with a Sentinel-1 open-water map they are an upper bound (see Validation).</li>
         <li>Press and SINAE figures are preliminary and used only as context.</li>
       </ul></div>
       <div class="box"><h3>What this enables</h3><ul class="clean">
@@ -674,7 +675,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       .sort((a, b) => a.zona.localeCompare(b.zona) || a.fecha_a.localeCompare(b.fecha_a));
     const mean = (k) => pairs.length ? pairs.reduce((a, p) => a + p[k], 0) / pairs.length : NaN;
     $("#val-pairs-txt").textContent = `Pairs of passes from different orbit tracks at most one day apart, during and after the flood (${pairs.length} pairs with water). Jaccard = overlap ÷ union of the two water masks (1 = identical). Mean agreement rose from ${nf(mean("jaccard_umbral"), 2)} with a fixed threshold to ${nf(mean("jaccard_cambio"), 2)} with the per-pixel detector. Disagreement left over comes mostly from water that really changed in a day and from shallow flooding at the edge of detection.`;
-    const svg = $("#val-pairs"), W = 900, H = 230, l = 34, r = 8, t = 10, b = 60, n = pairs.length, bw = (W - l - r) / Math.max(n, 1);
+    const svg = $("#val-pairs"), W = 900, H = 260, l = 34, r = 8, t = 10, b = 92, n = pairs.length, bw = (W - l - r) / Math.max(n, 1);
     const y = (v) => t + (1 - v) * (H - t - b);
     for (const v of [0, 0.5, 1]) { el("line", { class: v ? "grid" : "axis", x1: l, x2: W - r, y1: y(v), y2: y(v) }, svg); el("text", { x: l - 5, y: y(v) + 3, "text-anchor": "end" }, svg).textContent = v; }
     pairs.forEach((p, i) => {
@@ -692,9 +693,10 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     else {
       const best = s1.filter(r => Math.abs(r.dt_dias) <= 1 && r.pct_s1 >= 0.5);
       const m = (k, arr = best) => arr.length ? arr.reduce((a, r) => a + r[k], 0) / arr.length : NaN;
-      $("#val-s1-txt").textContent = `Sentinel-1 is a C-band radar from ESA. On ${best.length} passes within a day of a NISAR pass with visible flooding, NISAR found ${nf(m("recall_cambio") * 100)}% of the water Sentinel-1 found (F1 ${nf(m("f1_cambio"), 2)}). NISAR maps more water than Sentinel-1: ${nf(m("solo_nisar_s1_oscurece_cambio") * 100)}% of the extra pixels also darken in Sentinel-1, just not enough to cross its threshold. That is the shallow and vegetated water C-band struggles with.`;
-      $("#val-s1").innerHTML = `<thead><tr><th>Area</th><th>NISAR / S1</th><th class="n">S1 water</th><th class="n">NISAR water</th><th class="n">Found by NISAR</th><th class="n">F1</th></tr></thead><tbody>` +
-        s1.filter(r => r.pct_s1 >= 0.3).map(r => `<tr><td>${esc(nm(r.zona))} <span class="note">${trk(r.track).short}</span></td><td>${fmtDate(r.fecha_nisar)} / ${fmtDate(r.fecha_s1)}</td><td class="n">${nf(r.pct_s1, 1)}%</td><td class="n">${nf(r.pct_nisar_cambio, 1)}%</td><td class="n">${nf(r.recall_cambio * 100)}%</td><td class="n">${nf(r.f1_cambio, 2)}</td></tr>`).join("") + "</tbody>";
+      const all = s1.filter(r => r.pct_s1 >= 0.5);
+      $("#val-s1-txt").textContent = `Sentinel-1 is ESA's C-band radar. We compared ${all.length} NISAR passes with flooding against a Sentinel-1 pass 0–2 days apart (same-day for track 154D). NISAR found ${nf(m("recall_cambio", all) * 100)}% of the water Sentinel-1 found, but it maps more water overall: against Sentinel-1's strict open-water mask the agreement (F1) is ${nf(m("f1_cambio", all), 2)}; against a looser Sentinel-1 mask that also counts shallow, partly flooded pixels it is ${nf(m("f1_cambio_laxa", all), 2)}. ${nf(m("solo_nisar_s1_oscurece_cambio", all) * 100)}% of the pixels only NISAR flags also darken in Sentinel-1, just not past its threshold: shallow and vegetated water, where L-band sees through and C-band struggles. Weakest case: Durazno, where there is almost no open water and NISAR over-flags noise.`;
+      $("#val-s1").innerHTML = `<thead><tr><th>Area</th><th>NISAR / S1</th><th class="n">S1 water</th><th class="n">NISAR water</th><th class="n">Found by NISAR</th><th class="n">F1 strict</th><th class="n">F1 loose</th></tr></thead><tbody>` +
+        s1.filter(r => r.pct_s1 >= 0.3).map(r => `<tr><td>${esc(nm(r.zona))} <span class="note">${trk(r.track).short}</span></td><td>${fmtDate(r.fecha_nisar)} / ${fmtDate(r.fecha_s1)}</td><td class="n">${nf(r.pct_s1, 1)}%</td><td class="n">${nf(r.pct_nisar_cambio, 1)}%</td><td class="n">${nf(r.recall_cambio * 100)}%</td><td class="n">${nf(r.f1_cambio, 2)}</td><td class="n">${nf(r.f1_cambio_laxa, 2)}</td></tr>`).join("") + "</tbody>";
     }
     $("#val-cron").innerHTML = `<thead><tr><th>Area</th><th>Reported crest</th><th>NISAR peak pass</th><th class="n">New water</th></tr></thead><tbody>` +
       M.validacion.cronologia.map(r => `<tr><td>${esc(nm(r.zona))}</td><td>${esc(r.cresta_txt)}</td><td>${fmtDate(r.pico_nisar)} <span class="note">(${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5) >= 0 ? "+" : ""}${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5)} d)</span></td><td class="n">${nf(r.pico_pct, 1)}%</td></tr>`).join("") + "</tbody>";

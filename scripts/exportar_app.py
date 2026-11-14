@@ -266,7 +266,7 @@ def validacion():
     cron = []
     for zona, (cresta, txt) in CRESTAS.items():
         g = pf[(pf.zona == zona) & (pf.track == ZONAS[zona]["serie"]) & (pf.fase != "base")]
-        g = g[(g.fecha >= "2026-08-10") & (g.fecha <= "2026-09-22")]
+        g = g[(g.fecha >= str(EVENTO[0].date())) & (g.fecha <= str(EVENTO[1].date()))]   # ventana del evento
         if g.empty:
             continue
         pk = g.loc[g.pct_agua_nueva.idxmax()]
@@ -309,10 +309,9 @@ def descargas():
         (IMP / "caminos.geojson", "roads_under_water.geojson", "Flooded road segments (GeoJSON)"),
     ]:
         if src.exists():
-            df_ok = src.suffix != ".csv" or True
             if src.name == "localidades.csv":                      # columna con listas: fuera del CSV público
                 pd.read_csv(src).drop(columns=["serie_500m"], errors="ignore").to_csv(d / nombre, index=False)
-            elif df_ok:
+            else:
                 shutil.copy(src, d / nombre)
             archivos.append(dict(archivo=f"data/descargas/{nombre}", desc=desc, kb=round((d / nombre).stat().st_size / 1024)))
     for zona in ZONAS:

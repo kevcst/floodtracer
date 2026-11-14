@@ -210,7 +210,7 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 - **Caminos:** 66 km de caminería rural bajo agua en Merín (54 km más de una semana), 19 km en TyT.
 - **Cobertura:** en Merín se inundaron 35 mil ha de pradera, 20 mil de cultivo (arroz) y 17 mil de humedal (46 % del humedal).
 - **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes (+0,15 a +0,78 dB), en Río Branco (2 tracks) y en Merín (3 tracks); nulo o negativo en Treinta y Tres, Melo y Durazno.
-- **Validación:** ver `docs/validacion.md`.
+- **Validación** (`docs/validacion.md`): Jaccard entre tracks a ≤ 1 día 0,32 → 0,48; contra Sentinel-1 NISAR encuentra el 66 % del agua S1, F1 0,45 (estricta) / 0,52 (laxa); NISAR mapea más agua somera que la banda C → las extensiones son cota alta. Débil en Durazno.
 
 ---
 
