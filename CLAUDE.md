@@ -23,6 +23,8 @@ Contexto para seguir trabajando con Claude Code. Idioma de trabajo: español. En
 - Idea original (predecir tendencia de inundaciones en Uruguay) descartada como núcleo: NISAR tiene poca historia y el desafío pide visualización.
 - Primera elección: arrozales "agua buena vs. mala" → pasó a secundaria porque la inundación de riego aún no empezó (0,36 % agua nueva al 27/10) y el EDA mostró la crecida de agosto.
 - Bañados del Este (agua bajo vegetación) → se incorpora como métrica dentro de la idea principal.
+- 2026-11-14: detector de agua nueva pasa de umbral absoluto (HH < −17,5…−18,7 dB) a **cambio respecto de la base del mismo píxel** (armonizar_tracks.py duplicó la coincidencia entre tracks). Las cifras subieron (Merín 28.600 → ~75.000 ha confirmadas): el detector viejo se perdía agua somera (HH −14 a −17 dB) que Sentinel-1 también ve oscurecerse.
+- 2026-11-14: decisiones abiertas del plan tomadas por defecto (usuario ausente): mapa base OSM (CARTO pide API key), caminería OSM, Sentinel-1 sí como validación, arrozales queda como trabajo futuro.
 
 ## Resultados EDA (2026-11-14) — `docs/eda_T53D_F105.md`
 - 53D-105 (arrozales): agua 4–5 % → 10 % (08-16) → **14 % (08-28)** → 8 % (09-09) → 5 % (09-21). 85 % del agua nueva se retiró al 21/9.
@@ -38,36 +40,33 @@ Contexto para seguir trabajando con Claude Code. Idioma de trabajo: español. En
 ## Setup (ver README.md §3)
 Earthdata Login + `~/.netrc`; GDAL CLI (`brew install gdal`); `python -m venv .venv && pip install -r requirements.txt`.
 
-## Scripts
-- `scripts/descargar_zonas.py` (**usar este para la idea principal**):
-  ```
-  python scripts/descargar_zonas.py listar                  # inventario por zona (sin login)
-  python scripts/descargar_zonas.py descargar --zona todas --workers 4
-  python scripts/descargar_zonas.py descargar --zona treinta_y_tres
-  python scripts/descargar_zonas.py resumen                 # % agua por zona/track/fecha -> CSV + PNG
-  ```
-  Salida: `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif`. Ventana 2026-06-15 → 10-20, sólo PROVISIONAL por defecto. ~232 recortes. Saltea archivos existentes (se puede re-correr).
-  Para no re-bajar 53D: copiar `data_nisar/T53D_F105/*.tif` (excepto `2026-10-27_*`) a `data_nisar/zonas/merin_arrozales/T53D_F105/`.
-  Si hay varias escenas por fecha prefiere modo principal `2005_..._M_..._N_F_` (corregido 2026-11-14: antes elegía escenas parciales `4005_..._A_..._P_` de 10 m en merin 154D).
-- `scripts/metricas_evento.py`: por zona/track → `metricas/` con agua_base, extension_max, primera_fecha, fecha_retiro, persistencia_dias, delta_hh_db, veg_inundada (GeoTIFF) + `mapas_agua.png`; resumen en `data_nisar/zonas/metricas_resumen.csv` y `metricas_por_fecha.csv` (incluye HH y HH−HV medianos del monte por fecha). Umbral por track = agua perm + 0,3·(tierra − agua), recortado a [−20, −17,5] dB.
-  También guarda `metricas/agua_nueva_por_fecha.tif` (una banda por fecha, 255 = sin dato) para combinar tracks.
-- `scripts/combinar_tracks.py`: junta las máscaras de agua nueva de todos los tracks de una zona (grilla del track con más fechas) → `zonas/{zona}/combinado/` + `combinado_resumen.csv`/`combinado_persistencia.png`. Retiro = 2 observaciones secas seguidas.
-- `scripts/monte_ribereno.py`: clasifica monte ribereño (altura rel. < 4 m) vs de altura (> 12 m) con Copernicus DEM GLO-30 (contexto, AWS público; OSM Overpass no respondía) y compara HH−HV por fecha → `monte_ribereno.csv/.png`.
-- `scripts/exportar_poc.py` (baja contornos world-atlas a `data_nisar/contexto/` si faltan) → `poc/data/` (JPEG HH + PNG agua por fecha, extensión, persistencia, `poc.json`). Página POC: `poc/index.html` (inglés, fuente) → `python scripts/build_poc.py` arma `poc/dist/index.html` autocontenido (datos e imágenes embebidos; publicar ése), publicada como artifact privado https://claude.ai/artifact/VPErQm7A1EwbxTKpgqEj7n (2026-11-14). Contornos: world-atlas@2.0.2 (Natural Earth).
-- `scripts/zonas.py`: AOIs (WKT), tracks por zona, ventana de fechas; `fin_base` opcional por zona (Durazno: 2026-07-20, por la crecida de julio del Yí).
-- `scripts/nisar_eda_uruguay.py`: script original (inventario/descarga/explorar de un track sobre `AOI_RECORTE`); `descargar_zonas.py` importa de acá `OUT`, `POLS`, `gdal_prefijo`.
-- `scripts/eda_extra_T53D.py`: análisis exploratorio extra (percentiles, mapas de agua, dispersores persistentes).
+## Entrega principal: app web (2026-11-14)
+- `app/index.html` (inglés, MapLibre 4.7.1 + teselas OSM) + `app/data/` generado por `scripts/exportar_app.py` (versionado, ~18 MB). Servir: `python3 -m http.server -d app 8000`. **Ninguna cifra escrita a mano en el HTML**: todo sale de `app/data/manifest.json` (excepto la línea de tiempo de prensa).
+- Pipeline completo y método: README §4–5. Plan y estado: `docs/plan_desarrollo.md`. Validación: `docs/validacion.md`.
+- La POC (`poc/`, artifact https://claude.ai/artifact/VPErQm7A1EwbxTKpgqEj7n) quedó histórica con el detector viejo.
+
+## Scripts (orden del pipeline)
+`descargar_zonas.py` → `metricas_evento.py` → `armonizar_tracks.py` → `combinar_tracks.py` → `sensibilidad.py` → `capas_contexto.py` → `monte_ribereno.py` → `agregar_impacto.py` → `validar_s1.py` (opcional, lento la 1ª vez) → `exportar_app.py`. Correr desde `scripts/` o la raíz; los CSV globales sólo se escriben sin `--zona`.
+- `descargar_zonas.py listar|descargar|resumen`: recortes GCOV por zona → `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif`. Prefiere modo principal `2005_..._M_..._N_F_`. Sintaxis GDAL `HDF5:"/vsicurl/URL"://ruta` (GDAL ≥ 3.13).
+- `metricas_evento.py`: **detector por cambio** (desde 2026-11-14): ΔHH vs mediana base del mismo píxel/track < −3 dB, HH < −14 dB, normalización por mediana de escena, MMU 10 px; agua base con umbral absoluto calibrado por track. Persistencia = intervalo (`persistencia_min/max.tif`, punto medio en `persistencia_dias.tif`). `--metodo umbral` = detector viejo.
+- `armonizar_tracks.py`: Jaccard entre tracks a ≤ 1 día. Umbral → cambio: TyT 0,18→0,48, Merín 0,49→0,58, Río Branco 0,39→0,56, Mercedes 0,18→0,27 (poca agua). Hallazgo: con umbral fijo los descendentes (amanecer, calmo) ven 2–3× más agua que los ascendentes (atardecer, viento).
+- `combinar_tracks.py`: máscaras de todos los tracks; `extension_confirmada.tif` (≥ 2 obs. mojadas en 10/8–10/9) = cifra principal; retiro = 2 obs. secas seguidas.
+- `sensibilidad.py`: barrido caída {−2…−4} × techo {−13,−14,−15} → banda min/central/max.
+- `capas_contexto.py`: OSM Geofabrik (driver OSM de GDAL; ojo: un WHERE con OR pierde las relaciones administrativas), HydroBASINS L8, ESA WorldCover → `data_nisar/contexto/capas/{zona}.gpkg`, `T*/contexto/worldcover.tif`.
+- `monte_ribereno.py`: HAND con drenaje OSM; ribereño HAND < 4 m y < 1 km del cauce; exceso = subida ribereño − subida altura; mapa `metricas/veg_inundada_ribereno.tif`.
+- `agregar_impacto.py`: caminos (por way OSM, con "x km NE de <localidad>"), localidades (adentro + anillo 500 m), subcuencas (nombre del curso principal), departamentos, cobertura → `data_nisar/zonas/impacto/`.
+- `validar_s1.py`: Sentinel-1 RTC de Planetary Computer (token SAS anónimo), ±2 días, misma órbita para la base; sólo valida (regla 1). Caché en `data_nisar/validacion/s1/`.
+- `exportar_app.py`: manifest + WebP/PNG con esquinas lon/lat + `sonda.bin` (200 m) + GeoJSON + descargas.
+- `zonas.py`: AOIs, tracks, `serie` (track de la serie principal por zona, regla 2), `fin_base` (Durazno 2026-07-20).
+- Históricos: `nisar_eda_uruguay.py` (otros importan `OUT`, `POLS`, `gdal_prefijo`), `eda_extra_T53D.py`, `exportar_poc.py`/`build_poc.py`.
+
+## Resultados actuales (detector por cambio)
+- Extensión confirmada: Merín 75.154 ha (53D solo 52–94 mil), TyT 9.343, Río Branco 2.510, Mercedes 406, Durazno 341, Melo 58 (≈ 87.800 ha). Merín 53D: 79 % mojado el 28/8, 24 % el 21/9. Persistencia típica ~10 d (Merín, TyT), 18 d Río Branco.
+- Caminos: Merín 66 km (54 km > 1 semana), TyT 19 km. Dentro de las ciudades el radar da ~0 (doble rebote): usar anillo 500 m.
+- Monte ribereño: exceso positivo en Mercedes (3 tracks), Río Branco, Merín; no en TyT, Melo, Durazno.
 
 ## Próximos pasos
-**Plan completo de desarrollo POC → entrega: `docs/plan_desarrollo.md` (fases A–E).**
-1. Correr `listar` → `descargar --zona todas` → `resumen`; revisar si se ve el desfase Olimar → Yí → Negro.
-2. ~~Crear `scripts/metricas_evento.py`~~ hecho. Hallazgo: en Durazno/Mercedes la crecida casi no se ve como agua abierta (ríos angostos a 100 m de suavizado, umbral −16 tomaba potreros) sino como **subida de HH−HV en monte (+1–1,8 dB)** durante el evento. Ojo: la subida aparece en todas las zonas (incluido Melo) → separar monte ribereño vs monte de altura (HAND/distancia al río) antes de afirmar que es agua bajo vegetación y no suelo húmedo. Persistencia mediana = 12 días en casi todo = resolución de revisita → combinar tracks.
-3. ~~Combinar tracks~~ hecho, pero **los tracks no coinciden bien**: pasadas a 1 día de distancia tienen Jaccard 0,17–0,40 en el pico (154D ve 2,5× más agua que 132A en TyT/Merín) → la persistencia combinada se llena de "1 día" artificiales. Pendiente: armonizar umbrales entre tracks usando esos pares casi simultáneos. Mientras tanto usar persistencia por track (12 d) y el combinado sólo para extensión máxima.
-3b. Monte ribereño vs de altura: exceso ribereño claro en Mercedes (+0,5 a +0,9 dB sobre el de altura, 3 tracks), Río Branco y Merín 132A/53D; **no** en Treinta y Tres, Melo ni Durazno. Hay un componente general de humedad (+0,3–1 dB también en monte de altura).
-4. Capas vectoriales de contexto: localidades, caminería (OSM/MTOP), subcuencas (DINAGUA), departamentos; agregaciones → GeoJSON/CSV.
-5. Validación: comparar curvas con niveles Olimar/Yí y desplazados SINAE por fecha.
-6. App web (inglés): slider de fechas, capas de métricas, timeline por localidad/camino, vista país con las 6 zonas.
-7. Revisar `QA_REPORT.pdf` de escenas raras antes de descartarlas.
+**Plan: `docs/plan_desarrollo.md`.** Hecho A1–A6, B1–B2, C, D. Pendiente: capítulo arrozales (E, requiere normalizar VALIDATED), publicar la app (GitHub Pages), video/slides, niveles DINAGUA por API (no conseguidos), revisar `QA_REPORT.pdf`.
 
 ## Referencias clave
 - NISAR Data User Guide: https://nisar-docs.asf.alaska.edu/ (availability, gdal, harmony, asf-search)

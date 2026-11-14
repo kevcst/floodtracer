@@ -3,6 +3,24 @@
 Escrito el 2026-11-14. Cubre sólo desarrollo. La logística de la submission (link público, licencia, video, página del proyecto) queda para después.
 Punto de partida: la POC (`poc/`) y el pipeline (`scripts/`) descritos en el [README](../README.md).
 
+## Estado (2026-11-14, ejecutado de corrido)
+
+| Paso | Estado | Dónde |
+|---|---|---|
+| A1 Armonizar tracks | Hecho. Se reemplazó el umbral por detección por cambio + normalización por escena; Jaccard medio por zona 0,18–0,49 → 0,27–0,58. No se llega a 0,6 en Mercedes (poca agua) ni en el par 27–28/8 de Río Branco (cambio real probable). | `armonizar_tracks.py`, `metricas_evento.py` |
+| A2 Persistencia combinada | Hecho, con intervalo y extensión confirmada (≥ 2 obs.). | `combinar_tracks.py` |
+| A3 Incertidumbre | Hecho (bandas de parámetros). | `sensibilidad.py` |
+| A4 Validación | Sentinel-1: hecho. Crestas: fechas de prensa. Niveles DINAGUA: no disponibles por API. | `validar_s1.py`, `docs/validacion.md` |
+| A5 Agua bajo monte | Hecho con HAND sobre drenaje OSM (sin pysheds). | `monte_ribereno.py` |
+| A6 Higiene | VALIDATED fuera por ventana de fechas. QA_REPORT pendiente. | — |
+| B1 Capas | Hecho (OSM Geofabrik, HydroBASINS L8, WorldCover; MTOP/DINAGUA no). | `capas_contexto.py` |
+| B2 Agregaciones | Hecho. | `agregar_impacto.py` |
+| C App | Hecho: `app/` estática con MapLibre; requiere servidor http. | `exportar_app.py`, `app/index.html` |
+| D Narrativa | Hecho dentro de la app (secciones Why, Method, Limits). | `app/index.html` |
+| E Arrozales nov–dic | No hecho (trabajo futuro). | — |
+
+Decisiones abiertas, tomadas por defecto: mapa base **OpenStreetMap** (CARTO ahora exige API key), caminería **OSM**, **Sentinel-1 sí**, arrozales **future work**.
+
 ## Objetivo
 
 Una app web estática, en inglés, que responda **"How long does the water stay?"** para las 6 zonas con:

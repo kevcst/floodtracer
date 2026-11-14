@@ -2,6 +2,8 @@
 
 Decidida 2026-11-14. Contexto del evento: `contexto_nacional_ago2026.md`. EDA previo: `eda_T53D_F105.md`.
 
+> **Estado (2026-11-14, noche):** la idea está implementada como app web en `app/` (ver README §1). Lo que sigue es el documento de diseño original; donde difiere, manda el README: el detector de agua pasó de umbral absoluto a **cambio respecto de la base del píxel**, la persistencia se reporta como intervalo combinando tracks, y hay validación con Sentinel-1 (`docs/validacion.md`) y agregaciones por camino, localidad, subcuenca y cobertura.
+
 ## 1. Pitch (1 línea)
 Con el radar L-band de NISAR, que ve a través de las nubes cada 12 días, reconstruimos la crecida de agosto 2026 en Uruguay y medimos —para cada parcela, camino y barrio— **cuándo llegó el agua, hasta dónde llegó y cuánto tardó en irse**, y mostramos cómo la misma lluvia encadenó crecidas en distintas cuencas.
 

@@ -4,70 +4,75 @@
 
 Con el radar **NISAR** (banda L, NASA/ISRO), que ve a través de las nubes cada 12 días, reconstruimos la crecida del **15–19 de agosto de 2026** en Uruguay y medimos dónde apareció agua nueva, hasta dónde llegó, cuánto tardó en irse y dónde quedó agua bajo el monte. Comparamos la cuenca de la Laguna Merín (Olimar, Cebollatí, Yaguarón) con la del río Negro (Yí, Mercedes).
 
-- **POC para discutir en el equipo:** `poc/dist/index.html`. Se abre con doble clic, ver [Ver la POC](#1-ver-la-poc-sin-instalar-nada).
-- Detalle de la idea: `docs/idea_principal.md`. Contexto del evento (prensa, SINAE): `docs/contexto_nacional_ago2026.md`. EDA inicial: `docs/eda_T53D_F105.md`.
+- **Entrega principal (app web, inglés):** `app/`. Se sirve con `python3 -m http.server -d app 8000` → http://localhost:8000. Ver [Ver la app](#1-ver-la-app).
+- POC original (histórica, se abre con doble clic): `poc/dist/index.html`.
+- Plan de desarrollo POC → entrega: `docs/plan_desarrollo.md`. Validación: `docs/validacion.md`. Detalle de la idea: `docs/idea_principal.md`. Contexto del evento (prensa, SINAE): `docs/contexto_nacional_ago2026.md`. EDA inicial: `docs/eda_T53D_F105.md`.
 - Desafío oficial: `docs/challenge.md`. Los entregables del hackatón van en **inglés**; el trabajo interno, en español.
 
 ---
 
 ## Índice
-1. [Ver la POC (sin instalar nada)](#1-ver-la-poc-sin-instalar-nada)
+1. [Ver la app](#1-ver-la-app)
 2. [Estructura del repo](#2-estructura-del-repo)
 3. [Setup (una sola vez)](#3-setup-una-sola-vez)
-4. [Pipeline completo: de la descarga a la POC](#4-pipeline-completo-de-la-descarga-a-la-poc)
+4. [Pipeline completo: de la descarga a la app](#4-pipeline-completo-de-la-descarga-a-la-app)
 5. [Qué hace cada paso (método)](#5-qué-hace-cada-paso-método)
 6. [Zonas y tracks](#6-zonas-y-tracks)
 7. [Reglas del equipo](#7-reglas-del-equipo)
-8. [Resultados hasta ahora](#8-resultados-hasta-ahora)
+8. [Resultados](#8-resultados-2026-11-14-detector-por-cambio)
 9. [Limitaciones y pendientes](#9-limitaciones-y-pendientes)
 10. [Problemas frecuentes](#10-problemas-frecuentes)
 11. [Referencias](#11-referencias)
 
 ---
 
-## 1. Ver la POC (sin instalar nada)
+## 1. Ver la app
 
-`poc/dist/index.html` es autocontenido: datos e imágenes van embebidos (~6 MB). Después de clonar:
+`app/` es una página estática: `index.html` + `data/` (≈18 MB, ya versionado). No necesita Python ni los datos NISAR, pero **sí un servidor http** (el navegador bloquea `fetch` y las texturas del mapa sobre `file://`) e internet (MapLibre, mapa base de OpenStreetMap y tipografías).
 
 ```bash
-open poc/dist/index.html        # macOS
-xdg-open poc/dist/index.html    # Linux
-start poc\dist\index.html       # Windows
+python3 -m http.server -d app 8000     # desde la raíz del repo
+# abrir http://localhost:8000
 ```
 
-No hace falta servidor ni Python. Con internet se cargan las tipografías de Google Fonts; sin internet la página funciona igual con fuentes del sistema.
+Secciones: cifras clave · mapa del país con las 6 zonas y línea de tiempo · "pulso" de agua por zona con banda de incertidumbre y cresta reportada · **explorador** (MapLibre: radar y agua por fecha con slider/play, extensión, días bajo agua, fecha de retiro, agua bajo monte, caminos inundados, localidades, y clic en cualquier punto para ver su historia de radar) · impacto (caminos, cobertura del suelo, localidades, subcuencas, resumen de las 6 zonas) · agua bajo el monte · causas físicas · validación (tracks, Sentinel-1, crestas) · método y límites · descargas (CSV + GeoTIFF).
 
-Qué muestra: cifras clave, mapa de contexto con las 6 zonas, línea de tiempo del evento, visor de radar con slider de fechas (Merín y Treinta y Tres), el "pulso" de agua por zona, agua bajo el monte en Mercedes y una sección "¿seguimos con esta idea?" con lo que funciona y lo que todavía no.
+**Ninguna cifra está escrita a mano en el HTML**: todo sale de `app/data/manifest.json`, que genera `scripts/exportar_app.py`. La excepción es la línea de tiempo de prensa (contexto).
 
-Para **editar** la página ver `poc/README.md`.
+La POC vieja sigue en `poc/` (ver `poc/README.md`); quedó con las cifras del detector anterior.
 
 ---
 
 ## 2. Estructura del repo
 
 ```
-CLAUDE.md                 Contexto y decisiones para trabajar con Claude Code (léanlo: es la "memoria" del proyecto)
+CLAUDE.md                 Contexto y decisiones para trabajar con Claude Code (la "memoria" del proyecto)
 README.md                 Este archivo
 requirements.txt          Dependencias Python
-docs/                     Desafío, idea principal, contexto del evento, EDA, inventario NISAR
+docs/                     Desafío, idea, plan de desarrollo, validación, contexto del evento, EDA
 scripts/
-  zonas.py                Definición de zonas (AOI en WKT), tracks por zona, ventana de fechas
-  descargar_zonas.py      Paso 1: inventario y descarga de recortes NISAR por zona
-  metricas_evento.py      Paso 2: máscaras de agua y métricas por zona/track
-  combinar_tracks.py      Paso 3: combina tracks de una zona (máscaras)
-  monte_ribereno.py       Paso 4: monte ribereño vs de altura (agua bajo vegetación)
-  exportar_poc.py         Paso 5: exporta capas y datos livianos para la web
-  build_poc.py            Paso 6: arma poc/dist/index.html autocontenido
-  nisar_eda_uruguay.py    Script original (inventario/descarga/explorar de un track); otros scripts importan de acá
-  eda_extra_T53D.py       Análisis exploratorio extra del track 53D (histórico)
-poc/
-  index.html              Fuente de la página (carga datos desde poc/data/)
-  data/                   Capas PNG/JPEG + poc.json (generado por exportar_poc.py)
-  dist/index.html         Página publicable, todo embebido (generado por build_poc.py)
-data_nisar/               DATOS (no se versiona: ~5 GB). Se genera con los scripts
+  zonas.py                Zonas (AOI en WKT), tracks por zona, track de la serie principal, ventana de fechas
+  descargar_zonas.py      1  Inventario y descarga de recortes NISAR por zona
+  metricas_evento.py      2  Agua base / agua nueva (detector por cambio), extensión, persistencia (intervalo)
+  armonizar_tracks.py     3  Coincidencia entre tracks a ≤1 día (justifica el detector)
+  combinar_tracks.py      4  Combina tracks de una zona: extensión confirmada, persistencia con ~1–6 días
+  sensibilidad.py         5  Banda de incertidumbre (barrido de parámetros del detector)
+  capas_contexto.py       6  OSM (Geofabrik), HydroBASINS, ESA WorldCover por zona
+  monte_ribereno.py       7  HAND con drenaje OSM, monte ribereño vs de altura, mapa de agua bajo monte
+  agregar_impacto.py      8  Caminos, localidades, subcuencas, departamentos, cobertura del suelo
+  validar_s1.py           9  Validación con Sentinel-1 RTC (sólo valida)
+  exportar_app.py         10 app/data/ (manifest.json, imágenes, sonda, GeoJSON, descargas)
+  exportar_poc.py, build_poc.py   POC histórica
+  nisar_eda_uruguay.py    Script original; otros importan de acá
+  eda_extra_T53D.py       EDA histórico del track 53D
+app/
+  index.html              App (inglés)
+  data/                   Generado por exportar_app.py (versionado)
+poc/                      POC histórica
+data_nisar/               DATOS (no se versiona: ~6 GB). Se genera con los scripts
 ```
 
-`data_nisar/` está en `.gitignore`, igual que `*.tif`, `*.h5`, `.venv/` y `.netrc`. Cada uno se baja los datos con el pipeline.
+`data_nisar/` está en `.gitignore`, igual que `*.tif` (salvo los GeoTIFF livianos de `app/data/descargas/`), `*.h5`, `.venv/` y `.netrc`.
 
 ---
 
@@ -105,38 +110,43 @@ pip install -r requirements.txt
 
 ---
 
-## 4. Pipeline completo: de la descarga a la POC
+## 4. Pipeline completo: de la descarga a la app
 
 Todos los comandos se corren **desde la raíz del repo** con el venv activado (`source .venv/bin/activate`).
 
-| Paso | Comando | Qué genera | Tiempo / tamaño |
+| Paso | Comando | Qué genera | Tiempo |
 |---|---|---|---|
-| 0 (opcional) | `python scripts/descargar_zonas.py listar` | `data_nisar/zonas/inventario_zonas.csv`: qué escenas hay por zona y track. No requiere login | < 1 min |
-| 1 | `python scripts/descargar_zonas.py descargar --zona todas --workers 4` | `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH\|HV}.tif` | ~3 GB; de decenas de minutos a más de una hora según la conexión |
-| 2 | `python scripts/metricas_evento.py` | `.../T*/metricas/*.tif` + `mapas_agua.png`; `data_nisar/zonas/metricas_resumen.csv`, `metricas_por_fecha.csv` | ~1 min |
-| 3 | `python scripts/combinar_tracks.py` | `data_nisar/zonas/{zona}/combinado/*.tif`; `combinado_resumen.csv`, `combinado_persistencia.png` | < 1 min |
-| 4 | `python scripts/monte_ribereno.py` | `.../T*/contexto/{dem,altura_rel,clase_monte}.tif`; `monte_ribereno.csv/.png`. Baja el DEM Copernicus de AWS (público, sin login) | ~1 min |
-| 5 | `python scripts/exportar_poc.py` | `poc/data/` (capas + `poc.json`). Baja los contornos de países la primera vez | < 1 min, ~4 MB |
-| 6 | `python scripts/build_poc.py` | `poc/dist/index.html` autocontenido | segundos, ~6 MB |
-| 7 | `open poc/dist/index.html` | Ver la POC | |
+| 0 (opcional) | `python scripts/descargar_zonas.py listar` | `data_nisar/zonas/inventario_zonas.csv` (sin login) | < 1 min |
+| 1 | `python scripts/descargar_zonas.py descargar --zona todas --workers 4` | `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH\|HV}.tif` (~3 GB) | 30–90 min |
+| 2 | `python scripts/metricas_evento.py` | `.../T*/metricas/*.tif`; `metricas_resumen.csv`, `metricas_por_fecha.csv` | ~1,5 min |
+| 3 | `python scripts/armonizar_tracks.py` | `armonizacion_pares.csv/.png` (con `--barrido`: barrido de parámetros, lento) | ~3 min |
+| 4 | `python scripts/combinar_tracks.py` | `{zona}/combinado/*.tif`; `combinado_resumen.csv` | < 1 min |
+| 5 | `python scripts/sensibilidad.py` | `sensibilidad_por_fecha.csv`, `sensibilidad_resumen.csv` | ~5 min |
+| 6 | `python scripts/capas_contexto.py` | `data_nisar/contexto/capas/{zona}.gpkg`, `.../T*/contexto/worldcover.tif` (baja OSM ~57 MB, HydroBASINS ~30 MB) | ~1 min |
+| 7 | `python scripts/monte_ribereno.py` | `.../T*/contexto/{dem,hand,dist_rio,clase_monte}.tif`, `veg_inundada_ribereno.tif`; `monte_ribereno*.csv` (baja DEM Copernicus de AWS) | ~2 min |
+| 8 | `python scripts/agregar_impacto.py` | `data_nisar/zonas/impacto/*.csv/.geojson` | < 1 min |
+| 9 | `python scripts/validar_s1.py` | `validacion_s1.csv/.png` (baja recortes Sentinel-1 de Planetary Computer, anónimo; se cachean) | ~1–2 h la primera vez |
+| 10 | `python scripts/exportar_app.py` | `app/data/` | < 1 min |
+| 11 | `python3 -m http.server -d app 8000` | Ver la app | |
 
-En una línea, una vez descargados los datos:
+Una vez descargados los datos (el paso 9 es opcional: sin él, la sección de Sentinel-1 queda vacía):
 
 ```bash
-python scripts/metricas_evento.py && python scripts/combinar_tracks.py && python scripts/monte_ribereno.py \
-  && python scripts/exportar_poc.py && python scripts/build_poc.py && open poc/dist/index.html
+cd scripts && python metricas_evento.py && python armonizar_tracks.py && python combinar_tracks.py \
+  && python sensibilidad.py && python capas_contexto.py && python monte_ribereno.py && python agregar_impacto.py \
+  && python exportar_app.py && cd .. && python3 -m http.server -d app 8000
 ```
 
 ### Notas sobre la descarga (paso 1)
 - **Se puede volver a correr sin miedo:** saltea los archivos que ya existen y escribe primero a `.part.tif`, así que un corte no deja archivos rotos. Si hubo errores de red, alcanza con volver a correrlo.
 - Se esperan **232 recortes**, de los cuales **226** se pueden bajar. Los 6 restantes dan `ERROR ... HVHV` porque son escenas **SHSH** (sólo HH, sin HV). Es normal.
-- Para probar rápido con una sola zona: `--zona treinta_y_tres` (~0,5 GB) o `--zona durazno` (~0,07 GB). La POC necesita **todas**, porque el gráfico de pulso usa las 6 zonas y el de monte usa Mercedes.
+- Para probar rápido con una sola zona: `--zona treinta_y_tres` (~0,5 GB) o `--zona durazno` (~0,07 GB). La app necesita **todas**.
 - `merin_arrozales` es la zona pesada (~2,6 GB): el AOI es grande.
 - Se baja **sólo el recorte** de cada escena, vía `gdalwarp` sobre `/vsicurl/`. Las escenas completas pesan 1–2 GB cada una.
 - Ventana: 2026-06-15 → 2026-10-20, sólo madurez **PROVISIONAL** (ver reglas). Para incluir VALIDATED: `--madurez PROVISIONAL VALIDATED`, pero no las mezclen sin normalizar.
 
-### Correr una sola zona en los pasos 2–4
-`--zona <nombre>` sirve para iterar rápido. Los CSV globales (`metricas_resumen.csv`, `combinado_resumen.csv`, `monte_ribereno.csv`) sólo se escriben con todas las zonas, porque la POC se arma desde ellos. Antes de exportar la POC, corran los pasos 2–4 sin `--zona`.
+### Correr una sola zona
+`--zona <nombre>` (en `metricas_evento`, `combinar_tracks`, `monte_ribereno`, `validar_s1`) sirve para iterar rápido, pero los CSV globales sólo se escriben con todas las zonas. Antes de `exportar_app.py`, corran todo sin `--zona`.
 
 ### Scripts históricos (opcionales)
 - `python scripts/nisar_eda_uruguay.py inventario | descargar --track 53 --dir D --frame 105 | explorar --track 53 --dir D --frame 105`: primer EDA sobre un solo track. Escribe en `data_nisar/T53D_F105/`.
@@ -146,24 +156,24 @@ python scripts/metricas_evento.py && python scripts/combinar_tracks.py && python
 
 ## 5. Qué hace cada paso (método)
 
-**Producto:** NISAR **L2 GCOV** (gamma0 con corrección radiométrica de terreno, 20 m, HDF5). Usamos `HHHH` (HH) y `HVHV` (HV) de `/science/LSAR/GCOV/grids/frequencyA/`. Cada recorte queda en la proyección nativa del frame (UTM 21S o 22S), con la misma grilla en todas las fechas de un track.
+**Producto:** NISAR **L2 GCOV** (gamma0 RTC, 20 m, HDF5): `HHHH` (HH) y `HVHV` (HV) de `/science/LSAR/GCOV/grids/frequencyA/`. Cada recorte queda en la proyección nativa del frame (UTM 21S/22S), con la misma grilla en todas las fechas de un track.
 
-**Por qué se ve el agua:** el agua calma refleja el radar como un espejo y se ve muy oscura (HH ≈ −22 dB). Cuando el agua está bajo árboles, la señal rebota entre agua y troncos (*doble rebote*) y vuelve **más fuerte**. La banda L penetra el follaje y lo ve; la banda C y los satélites ópticos, en general, no.
+**Por qué se ve el agua:** el agua calma refleja el radar como un espejo y se ve muy oscura (HH ≈ −22 dB). Bajo árboles, la señal rebota entre agua y troncos (*doble rebote*) y vuelve **más fuerte** (HH sube respecto de HV). La banda L penetra el follaje; la banda C y los ópticos, en general, no.
 
-1. **`descargar_zonas.py`** busca escenas GCOV con `asf_search` por zona, filtra los tracks definidos en `zonas.py` y recorta cada escena al AOI. Si en una fecha hay varias escenas, prefiere el modo principal (`2005_..._M_..._N_F_`, 20 MHz, frame completo) y descarta las auxiliares o parciales (`4005_..._A_..._P_`, 10 m, cubren sólo una parte).
+1. **`descargar_zonas.py`:** busca escenas GCOV con `asf_search` y recorta cada una al AOI. Si hay varias escenas por fecha prefiere el modo principal (`2005_..._M_..._N_F_`).
 2. **`metricas_evento.py`**, por zona y track:
-   - Filtro de speckle: media 5×5 en lineal (~100 m), sin "comerse" los bordes.
-   - **Umbral de agua abierta por track:** agua permanente + 30 % de la distancia a tierra, acotado a [−20, −17,5] dB. Si no hay suficiente agua permanente en el recorte, usa −18 dB. Otsu global **no** sirve, porque el histograma no es bimodal (ver EDA).
-   - **Línea de base:** fechas antes del hueco global de datos (27/7). En Durazno, sólo hasta el 20/7, porque la pasada del 24/7 ya tiene la crecida de julio del Yí. Es "agua base" lo que es agua en la mayoría de esas fechas.
-   - **Agua nueva** = agua en una fecha que no es agua base.
-   - **Extensión máxima:** agua nueva en alguna pasada entre el 10/8 y el 10/9.
-   - **Persistencia:** días entre la primera pasada del evento con agua y la primera pasada seca posterior. Resolución de 12 días (un track).
-   - **ΔHH y candidato a agua bajo vegetación:** subida de HH durante el evento en zonas con vegetación.
-   - Salidas: GeoTIFF (`agua_base`, `extension_max`, `primera_fecha`, `fecha_retiro`, `persistencia_dias`, `delta_hh_db`, `veg_inundada`, `agua_nueva_por_fecha`) y un panel `mapas_agua.png` por track, útil para diagnosticar.
-3. **`combinar_tracks.py`:** junta las máscaras de agua nueva de todos los tracks de una zona en una grilla común (revisita ~6 días en vez de 12). Cada track conserva su umbral y su línea de base. Para el retiro exige 2 observaciones secas seguidas.
-4. **`monte_ribereno.py`:** separa **monte ribereño** de **monte de altura** con el DEM Copernicus GLO-30. El DEM se usa sólo para clasificar píxeles; no entra en las series. La altura relativa sobre el fondo del valle es un proxy de HAND. Monte = HH base > −7 dB y HV base > −14 dB. Si sube HH−HV en el ribereño y no en el de altura, es agua bajo los árboles y no sólo suelo húmedo.
-5. **`exportar_poc.py`:** para el visor usa un track por zona (Merín 53D, Treinta y Tres 154D). Genera JPEG de HH y PNG de agua por fecha (reducidos ×4 y ×2), extensión, persistencia, series para los gráficos y contornos de países (Natural Earth vía `world-atlas`).
-6. **`build_poc.py`:** embebe `poc.json` y las imágenes como data URIs en `poc/dist/index.html`.
+   - Speckle: media 5×5 en lineal (~100 m).
+   - **Agua base** (permanente): HH bajo el umbral calibrado por track (agua perm. + 30 % de la distancia a tierra, en [−20, −17,5] dB) en la mayoría de las fechas de la línea de base (antes del 27/7; Durazno antes del 20/7).
+   - **Agua nueva (detector por cambio):** HH del día − mediana HH de la base del mismo píxel < **−3 dB**, HH < **−14 dB**, fuera del agua base, manchas ≥ **10 px** (0,4 ha). Antes, cada pasada se normaliza restando la mediana del cambio en toda la escena (corrige pasadas enteras más oscuras/claras). `--metodo umbral` reproduce el detector viejo.
+   - **Persistencia como intervalo:** mín = última pasada mojada − primera; máx = primera pasada seca − pasada previa a la llegada del agua (nunca antes del 15/8). Se guarda el punto medio y ambas cotas.
+3. **`armonizar_tracks.py`:** mide la coincidencia (Jaccard) entre tracks distintos a ≤ 1 día. Con umbral absoluto daba 0,18–0,49 por zona; con el detector por cambio 0,27–0,58 (Merín 0,58, Río Branco 0,56, TyT 0,48; Mercedes 0,27, con muy poca agua). Hallazgo: con umbral fijo los tracks **descendentes** (~6 h, amanecer, viento calmo) veían 2–3× más agua que los **ascendentes** (~18 h, viento → agua rugosa). Comparar cada píxel contra sí mismo cancela geometría, ángulo, calibración y buena parte del viento.
+4. **`combinar_tracks.py`:** junta las máscaras de todos los tracks (grilla del track con más fechas). **Extensión confirmada** = agua nueva en ≥ 2 observaciones del 10/8 al 10/9 (es la cifra principal). Retiro = 2 observaciones secas seguidas. Persistencia con intervalo.
+5. **`sensibilidad.py`:** barre caída ∈ {−2…−4} dB × techo ∈ {−13, −14, −15} dB. El rango mín–máx es la banda de la app (no es un intervalo estadístico).
+6. **`capas_contexto.py`:** sólo contexto. OSM (localidades, manchas urbanas, caminos, ríos, departamentos) desde el extracto de Geofabrik con el driver OSM de GDAL; HydroBASINS nivel 8; ESA WorldCover 2021 reproyectado por moda a cada track.
+7. **`monte_ribereno.py`:** HAND = suelo (mínimo de 500 m sobre el DSM) − suelo del cauce OSM más cercano. Ribereño = monte con HAND < 4 m y < 1 km del cauce; de altura = HAND > 12 m. Exceso ribereño = subida de HH−HV del ribereño − subida del de altura (resta la humedad general). Mapa `veg_inundada_ribereno.tif`: píxel ribereño que sube > 2 dB más que el monte de altura y con HH > +1 dB.
+8. **`agregar_impacto.py`:** caminos (puntos cada 20 m sobre el eje; km bajo agua y días máximos; con nombre se agrupan, sin nombre cada way de OSM con referencia "x km NE de <localidad>"), localidades (adentro y anillo de 500 m), subcuencas (nombradas por su curso de agua principal), departamentos, cobertura del suelo. Hectárea-día = ha × días bajo agua.
+9. **`validar_s1.py`:** ver `docs/validacion.md`.
+10. **`exportar_app.py`:** `manifest.json` con todas las cifras, radar en WebP con alfa y capas PNG con sus 4 esquinas en lon/lat (image source de MapLibre), sonda de 200 m para el clic, GeoJSON y descargas.
 
 ---
 
@@ -193,22 +203,26 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 
 ---
 
-## 8. Resultados hasta ahora
+## 8. Resultados (2026-11-14, detector por cambio)
 
-- **La crecida de agosto se ve clara en la cuenca de la Laguna Merín y en Treinta y Tres,** con subida, pico y retiro, en tres tracks independientes. Arrozales (53D): 28.600 ha de agua nueva; el 82 % estaba bajo agua el 28/8, el 20 % el 21/9 y el 8 % el 15/10.
-- **Pico de agua nueva por zona:** Merín 154D 12,4 % (23/8) · Río Branco 53D 6 % (28/8) · Treinta y Tres 154D 4,5 % (23/8) · Mercedes < 3 % · Durazno y Melo < 1 %.
-- **Agua bajo el monte (banda L):** en Mercedes, el monte ribereño sube +1,1 a +2,0 dB en HH−HV durante el evento contra +0,2 a +1,1 dB del monte de altura, en los 3 tracks. También hay exceso ribereño en Río Branco y Merín. No aparece en Treinta y Tres, Melo ni Durazno.
-- En Durazno y Mercedes la crecida casi no se ve como agua abierta: los ríos son angostos para 100 m de suavizado y el agua queda bajo el monte.
+- **Extensión confirmada (≥ 2 observaciones):** Merín 75.154 ha (track 53D solo: 52–94 mil según parámetros) · Treinta y Tres 9.343 ha · Río Branco 2.510 ha · Mercedes 406 ha · Durazno 341 ha (un track) · Melo 58 ha. Total ≈ 87.800 ha.
+- **Retiro en Merín (53D):** 79 % de la extensión mojada el 28/8, 24 % el 21/9. Persistencia típica 10 días (intervalo mediano 1–13) en Merín y TyT; 18 días en Río Branco.
+- **Caminos:** 66 km de caminería rural bajo agua en Merín (54 km más de una semana), 19 km en TyT.
+- **Cobertura:** en Merín se inundaron 35 mil ha de pradera, 20 mil de cultivo (arroz) y 17 mil de humedal (46 % del humedal).
+- **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes (+0,15 a +0,78 dB), en Río Branco (2 tracks) y en Merín (3 tracks); nulo o negativo en Treinta y Tres, Melo y Durazno.
+- **Validación:** ver `docs/validacion.md`.
 
 ---
 
 ## 9. Limitaciones y pendientes
 
-- **Persistencia gruesa:** con un track la resolución es de 12 días. Combinar tracks debería dar ~6, pero **los tracks no coinciden bien:** pasadas tomadas con 1 día de diferencia se solapan sólo 17–40 % (Jaccard) en el pico. **Próximo paso:** armonizar los umbrales entre tracks usando esos pares casi simultáneos. Mientras tanto, persistencia por track y el combinado sólo como cota superior de la extensión.
-- La subida de HH−HV en el monte tiene un componente general de humedad (+0,3–1 dB también en lomas).
-- Las ciudades confunden al radar (doble rebote de edificios).
-- Los datos llegan días después de cada pasada: es evaluación post-evento y planificación, no alerta temprana ni predicción.
-- **Pendientes:** capas de localidades, caminería y subcuencas (OSM/MTOP/DINAGUA) para agregar por camino o barrio; validación contra niveles del Olimar/Yí y desplazados SINAE; capítulo secundario de arrozales (agua "mala" en agosto vs riego "bueno" en nov–dic, con las nuevas pasadas VALIDATED).
+- Revisita de 12 días por track: la persistencia tiene precisión de días (intervalos), no horas; el 37–40 % de los píxeles se ve mojado en una sola observación.
+- Mercedes tiene poca agua abierta y la coincidencia entre tracks es baja (0,27): es ruido de borde de detección.
+- Las ciudades confunden al radar (doble rebote de edificios): dentro de las manchas urbanas da ~0; usar el anillo de 500 m.
+- Los caminos van en terraplén: el píxel de 20 m mezcla camino y banquina. Se presenta como "camino en riesgo de corte".
+- Niveles de río DINAGUA: no se consiguieron por API; la validación de crestas usa fechas de prensa.
+- Post-evento y planificación, no alerta temprana.
+- **Pendientes:** capítulo arrozales (riego nov–dic, requiere normalizar VALIDATED), publicar la app (GitHub Pages), video/slides.
 
 ---
 
@@ -221,8 +235,10 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 | `ERROR ... HVHV` en algunas fechas | Escenas SHSH (sólo HH). Es esperable: son 6. |
 | Errores sueltos de red durante la descarga | Volver a correr el paso 1: saltea lo existente. |
 | `CERTIFICATE_VERIFY_FAILED` al bajar contornos | Ya se usa `certifi`. Si persiste, actualizar `pip install -U certifi`. |
-| La POC se ve vacía | Regenerar con los pasos 5–6 y abrir **`poc/dist/index.html`**, no `poc/index.html` (ése necesita servidor). Si hay un error, la página lo muestra arriba del mapa. |
-| La POC no incluye todas las zonas | Correr los pasos 2–4 **sin** `--zona` antes de exportar. |
+| La app muestra "needs to be served over http" | Se abrió con doble clic: servirla con `python3 -m http.server -d app 8000`. |
+| El mapa queda gris | Sin internet no cargan MapLibre ni el mapa base; los gráficos y tablas funcionan igual. |
+| La app no incluye todas las zonas | Correr los pasos 2–8 **sin** `--zona` antes de `exportar_app.py`. |
+| `validar_s1.py` muy lento | La primera vez baja recortes de Sentinel-1 (Merín es la grilla grande); después usa la caché en `data_nisar/validacion/s1/`. |
 | `gdalinfo: command not found` | Instalar GDAL (3.3). El paquete Python `rasterio` no instala la CLI. |
 
 ---
@@ -233,6 +249,8 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 - ASF Vertex (buscar escenas a mano, *GDAL Snippet Exporter*): https://search.asf.alaska.edu/#/?dataset=NISAR
 - Earthdata Search + Harmony: https://search.earthdata.nasa.gov/ · Worldview (capas GCOV): https://worldview.earthdata.nasa.gov/
 - Copernicus DEM GLO-30 en AWS: `s3://copernicus-dem-30m/` (acceso público)
+- Sentinel-1 RTC (validación): Microsoft Planetary Computer, colección `sentinel-1-rtc`
+- OpenStreetMap Uruguay (Geofabrik): https://download.geofabrik.de/south-america/uruguay.html · HydroBASINS: https://www.hydrosheds.org/products/hydrobasins · ESA WorldCover: https://esa-worldcover.org/
 - Banda C vs L en el río Santa Lucía (Boletín Geográfico 2024): https://doaj.org/article/bb87ff3d27a24e2c83dcdac1aedc53ba
 - Guía de evaluación de Space Apps: https://www.spaceappschallenge.org/resources/judging-awards-guide
 - Discusión SAR/NISAR de Space Apps: https://github.com/nasa/spaceapps/discussions/1324
