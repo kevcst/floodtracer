@@ -231,6 +231,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
           <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Pass date"></div>
           <div class="ticks" id="ticks"></div></div>
         <div class="checks">
+          <label><input type="checkbox" id="chk-polygons" checked> Water polygons</label>
           <label><input type="checkbox" id="chk-radar"> Radar image (optional)</label>
           <label><input type="checkbox" id="chk-roads" checked> Flooded roads</label>
           <label><input type="checkbox" id="chk-towns" checked> Towns</label>
@@ -614,6 +615,16 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   range.addEventListener("input", () => { di = +range.value; stop(); render(); });
   $("#play").addEventListener("click", () => timer ? stop() : play());
   $("#chk-radar").addEventListener("change", render);
+  function updatePolygonVisibility() {
+    const visible = $('#chk-polygons').checked;
+    $('#water-opacity').disabled = !visible;
+    if (!mapReady) return;
+    for (const id of ['water-fill', 'water-outline']) {
+      map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+    }
+    map.getCanvas().style.cursor = '';
+  }
+  $('#chk-polygons').addEventListener('change', updatePolygonVisibility);
   $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
   $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
   $('#download-polygons').addEventListener('click',()=>{
@@ -664,6 +675,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
           map.addLayer({id:'hh',type:'raster',source:'hh',paint:{'raster-opacity':.92,'raster-fade-duration':0}},'water-fill');
         }else map.getSource('hh').updateImage({url:img(zid,`hh_${f}.webp`),coordinates:d.capas.serie.esquinas});
       }
+      updatePolygonVisibility();
       if(map.getLayer('hh'))map.setLayoutProperty('hh','visibility',$('#chk-radar').checked?'visible':'none');
       const selected={date:[`agua_${f}.png`,d.capas.serie.esquinas],extent:['extension.png',d.capas.evento.esquinas],persist:['persistencia.png',d.capas.evento.esquinas],retreat:['retiro.png',d.capas.evento.esquinas],forest:['monte.png',d.capas.evento.esquinas]}[layer];
       renderWaterVectors(img(zid,selected[0]),selected[1],layer,zid,f);
