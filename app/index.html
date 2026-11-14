@@ -170,6 +170,18 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 #provenance-content p {margin:0}#provenance-content a {overflow-wrap:anywhere}
 #map > .maplibregl-control-container {position:relative;z-index:4}
 .stamp {z-index:4}
+/* Guided exploration remains separate from scientific processing. */
+.tour-entry {display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#guided-tour[hidden],#tour-retry[hidden] {display:none}
+#guided-tour {scroll-margin-top:60px;border:1px solid var(--line);border-left:4px solid var(--flood);background:var(--surface);border-radius:10px;padding:18px 22px;display:grid;gap:12px}
+.tour-header,.tour-actions {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tour-header h3 {margin:0;font-size:1.25rem}.tour-copy {max-width:92ch;color:var(--fg2);line-height:1.65}
+.tour-copy p {margin:0 0 8px}.tour-actions .buttons {display:flex;gap:8px;flex-wrap:wrap}
+#tour-progress {width:100%;height:6px;accent-color:var(--flood)}
+#tour-next {background:var(--fg);color:var(--bg)}
+#guided-tour button:disabled {opacity:.5;cursor:default}
+#tour-title:focus-visible {outline:2px solid var(--flood);outline-offset:4px}
+@media(max-width:600px){#guided-tour{padding:14px}.tour-actions{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -231,6 +243,14 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
       <h2 id="explore-h">Watch the water arrive and leave</h2>
       <p class="soft">Explore the published water classifications as interactive polygons over OpenStreetMap. Orange marks candidate new water; blue marks baseline water. Switch layers or dates, adjust transparency, and click a polygon for its class and a spot's existing radar history. The optional radar photograph is off by default.</p>
     </div>
+    <div class="tour-entry"><button type="button" class="btn" id="tour-start" disabled>Take a guided tour</button><span class="note">Five stops · advance at your own pace · exit to explore freely</span></div>
+    <section id="guided-tour" aria-label="Guided map tour" hidden>
+      <div class="tour-header"><div><span class="ctrl-label" id="tour-count"></span><h3 id="tour-title" tabindex="-1"></h3></div><button type="button" class="btn" id="tour-exit">Exit tour</button></div>
+      <progress id="tour-progress" max="5" value="1" aria-label="Guided tour progress"></progress>
+      <div class="tour-copy" aria-live="polite" aria-atomic="true"><p id="tour-body"></p><p id="tour-action"></p></div>
+      <p class="note" id="tour-evidence"></p>
+      <div class="tour-actions"><span class="note" id="tour-status" role="status"></span><div class="buttons"><button type="button" class="btn" id="tour-sources">View sources</button><button type="button" class="btn" id="tour-retry" hidden>Retry view</button><button type="button" class="btn" id="tour-prev">← Previous</button><button type="button" class="btn" id="tour-next">Next →</button></div></div>
+    </section>
     <div class="explorer">
       <div id="map" role="region" aria-label="Map" aria-busy="true"><div class="stamp" id="stamp"></div>
         <div id="map-before" hidden aria-hidden="true"></div>
@@ -577,12 +597,13 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     $('#map').setAttribute('aria-busy',String(loading));
     $('#map-loading-title').textContent='Loading map…';$('#map-loading-detail').textContent=detail;$('#map-loading-retry').hidden=true;
     $('#download-polygons').disabled=loading||!visibleWater;
+    updateTourLoading();
   }
   function failMapLoading(error) {
     mapIsLoading=false;stop();
     const overlay=$('#map-loading');overlay.hidden=false;overlay.dataset.error='true';overlay.setAttribute('role','alert');
     $('#map').setAttribute('aria-busy','false');$('#map-loading-title').textContent='The map could not load';
-    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;$('#download-polygons').disabled=true;
+    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;$('#download-polygons').disabled=true;updateTourLoading();
   }
   function finishAfterMapRender(request,onReady) {
     if(cancelMapReadyWait)cancelMapReadyWait();
@@ -782,6 +803,90 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       <p><b>Inspect the published inputs</b><br>${files.map((f,i)=>`<a href="${esc(f)}" target="_blank" rel="noopener">${comparisonEnabled?(i?'Before mask':'After mask'):'Display mask'}</a>`).join(' · ')} · <a href="${table}" download>Result data</a> · <a href="#method">Method and limits</a><br>Results generated ${esc(M.generado)}. Study dates available on this track: ${fmtDate(dates[0])}–${fmtDate(dates[dates.length-1])} 2026.</p>`;
   }
 
+  /* A manual story over the published views; no new detections or metrics. */
+  let tourActive=false, tourStep=0, tourApplying=false, tourMarker=null, tourExpected=null;
+  const tourRoad=Z.merin_arrozales.caminos.find(r=>!r.nombre.startsWith('Unnamed'))||Z.merin_arrozales.caminos[0];
+  const tourSteps=[
+    {zone:'merin_arrozales',view:'date',date:'2026-06-17',title:'Before the storm',
+      body:'Start with an earlier observation of the Laguna Merín study area. Blue marks water classified as already present in the June–July baseline. This is a reference view, not a guarantee that every permanent water body was recognized.',
+      action:'Look for the blue water areas. Pan and zoom to explore this reference pass.',
+      evidence:'Published NISAR pass: 17 Jun 2026 · track 53D. The baseline uses four observations.'},
+    {zone:'merin_arrozales',view:'date',before:'2026-06-17',date:'2026-08-28',title:'New water appears',
+      body:'Compare an earlier pass with an observation after the August storm. Orange marks candidate new water; blue marks baseline water. The two sides use the same orbit track so the viewing geometry is consistent.',
+      action:'Drag the divider across the map. You can also focus it and use the arrow keys.',
+      evidence:'Before: 17 Jun · After: 28 Aug 2026 · track 53D. These are two observed snapshots, not an animation of continuous measurements.'},
+    {zone:'merin_arrozales',view:'date',before:'2026-08-28',date:'2026-09-21',title:'The water recedes',
+      body:()=>{
+        const rows=Z.merin_arrozales.fechas,a=rows.find(r=>r.fecha==='2026-08-28'),b=rows.find(r=>r.fecha==='2026-09-21');
+        return `Less of the event footprint is classified as water in the later pass: ${nf(a.remaining,1)}% on 28 Aug, compared with ${nf(b.remaining,1)}% on 21 Sept. These percentages refer to the union of new-water detections on track 53D during the event window, not to the whole lagoon.`;
+      },
+      action:'Move the divider and find areas that changed. Separate satellite passes cannot tell us the exact day each location dried.',
+      evidence:'Published per-pass masks and remaining-water shares · track 53D. A later wet detection does not prove uninterrupted flooding between passes.'},
+    {zone:'merin_arrozales',view:'extent',date:'2026-08-28',roads:true,title:'What about roads?',
+      body:()=>tourRoad?`The event-wide results flag ${tourRoad.nombre} (${tourRoad.donde}) with ${nf(tourRoad.km_bajo_agua,2)} km intersecting the detected-water footprint. This suggests potential exposure, not a confirmed road closure.`:'Mapped roads can intersect the event-wide detected-water footprint. This suggests potential exposure, not a confirmed road closure.',
+      action:'Explore the roads around the flood footprint. The marker is a reference location for the selected road, not a verified flooded point. Road exposure summarizes the event as a whole.',
+      evidence:'OpenStreetMap roads crossed with the published event footprint, 10 Aug–10 Sept 2026. A radar pixel may mix the road and its flooded verge.'},
+    {zone:'mercedes',view:'forest',date:'2026-08-25',title:'A different radar signal',
+      body:'Now explore Mercedes on the Río Negro. In riverside vegetation, flooding can strengthen the radar return through interactions between water and tree trunks. Green marks a signal compatible with possible flooding beneath trees, rather than independently confirmed water.',
+      action:'Pan and zoom along the river, then open the source panel to inspect the method and limits. Exit the tour whenever you want to keep exploring this view.',
+      evidence:'Published forest-signal mask, combined from available event passes. Radar brightness changes are not measurements of water depth or volume.'}
+  ];
+  function updateTourLoading() {
+    if(!tourActive)return;
+    const failed=$('#map-loading').dataset.error==='true';
+    $('#tour-next').disabled=mapIsLoading||failed;
+    $('#tour-status').textContent=failed?'This view could not load. Retry the view or exit the tour.':mapIsLoading?'Preparing this step’s map…':'Map ready. Explore at your own pace, then continue.';
+    $('#tour-retry').hidden=!failed;
+  }
+  function exitTour(focusStart=false) {
+    tourActive=false;tourExpected=null;
+    if(tourMarker){tourMarker.remove();tourMarker=null;}
+    $('#guided-tour').hidden=true;$('#tour-start').textContent='Take a guided tour';
+    if(focusStart)$('#tour-start').focus({preventScroll:true});
+  }
+  function tourViewMatches() {
+    return tourExpected&&zid===tourExpected.zone&&layer===tourExpected.view&&di===tourExpected.dateIndex&&comparisonEnabled===tourExpected.compare&&(!comparisonEnabled||beforeDi===tourExpected.beforeIndex);
+  }
+  function showTourStep(index) {
+    if(!mapReady)return;
+    tourActive=true;tourStep=index;tourApplying=true;stop();
+    if(tourMarker){tourMarker.remove();tourMarker=null;}
+    const step=tourSteps[index],dates=Z[step.zone].capas.serie.fechas;
+    $('#guided-tour').hidden=false;$('#tour-start').textContent='Restart guided tour';
+    $('#tour-count').textContent=`${index+1} of ${tourSteps.length}`;
+    $('#tour-progress').value=index+1;$('#tour-title').textContent=step.title;
+    $('#tour-body').textContent=typeof step.body==='function'?step.body():step.body;
+    $('#tour-action').textContent=step.action;$('#tour-evidence').textContent=step.evidence;
+    $('#tour-prev').disabled=index===0;
+    $('#tour-next').textContent=index===tourSteps.length-1?'Finish tour':'Next →';
+    // Configure one complete view before requesting its masks.
+    comparisonEnabled=Boolean(step.before);$('#chk-compare').checked=comparisonEnabled;
+    $('#compare-split').value=50;
+    $('#chk-polygons').checked=true;$('#chk-roads').checked=Boolean(step.roads);
+    $('#chk-towns').checked=true;$('#chk-radar').checked=false;
+    setZone(step.zone,false);
+    layer=step.view;di=dates.indexOf(step.date);beforeDi=step.before?dates.indexOf(step.before):0;
+    document.querySelectorAll('#layer-seg button').forEach(button=>button.setAttribute('aria-pressed',button.dataset.layer===layer));
+    tourExpected={zone:zid,view:layer,dateIndex:di,compare:comparisonEnabled,beforeIndex:beforeDi};
+    render();
+    if(step.roads&&tourRoad){
+      const label=document.createElement('div');label.textContent=`Road reference: ${tourRoad.nombre}. Event-wide potential exposure: ${nf(tourRoad.km_bajo_agua,2)} km; closure not verified.`;
+      tourMarker=new maplibregl.Marker({color:'#eb6834'}).setLngLat([tourRoad.lon,tourRoad.lat]).setPopup(new maplibregl.Popup().setDOMContent(label)).addTo(map);
+      map.flyTo({center:[tourRoad.lon,tourRoad.lat],zoom:11,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:600});
+    }
+    tourApplying=false;updateTourLoading();
+    $('#guided-tour').scrollIntoView({block:'start',behavior:'instant'});
+    $('#tour-title').focus({preventScroll:true});
+  }
+  $('#tour-start').addEventListener('click',()=>showTourStep(0));
+  $('#tour-prev').addEventListener('click',()=>showTourStep(tourStep-1));
+  $('#tour-next').addEventListener('click',()=>tourStep===tourSteps.length-1?exitTour(true):showTourStep(tourStep+1));
+  $('#tour-exit').addEventListener('click',()=>exitTour(true));
+  $('#tour-retry').addEventListener('click',()=>render());
+  $('#tour-sources').addEventListener('click',()=>{
+    $('#provenance').open=true;$('#provenance summary').focus({preventScroll:true});$('#provenance').scrollIntoView({block:'center',behavior:'instant'});
+  });
+
   /* ---------- zone ---------- */
   const tabs = $("#zone-tabs"), itabs = $("#impact-tabs");
   for (const z of ZIDS) for (const host of [tabs, itabs]) {
@@ -818,7 +923,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   function play() { if(comparisonEnabled)return; if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
   function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
 
-  function setZone(z) {
+  function setZone(z, renderView=true) {
     ++vectorRenderId;if(cancelMapReadyWait)cancelMapReadyWait();
     setMapLoading(true,`Loading the selected area: ${Z[z].nombre}.`);
     zid = z; stop();
@@ -836,10 +941,11 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       const c = d.capas.serie.esquinas; const lons = c.map(p => p[0]), lats = c.map(p => p[1]);
       map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 20, duration: 600 });
     }
-    render();
+    if(renderView)render();
   }
 
   function render() {
+    if(tourActive&&!tourApplying&&!tourViewMatches())exitTour();
     const d = Z[zid], fe = d.capas.serie.fechas;
     updateComparisonControls();
     const f = fe[di];
@@ -1032,6 +1138,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
 
   await initMap();
   setZone(zid);
+  $("#tour-start").disabled=!mapReady;
 })().catch((e) => showError("Something broke while drawing the page: " + e.message));
 </script>
 </body>
