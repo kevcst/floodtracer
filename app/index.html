@@ -638,7 +638,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   function vectorClasses(view) {
     const make=(color,label,rgb=colorRGB(color))=>({color,label,rgb});
-    if(view==='date')return [make(css('--flood'),'Candidate new water',[235,104,52]),make(css('--still'),'Baseline water',[42,120,214])];
+    if(view==='date')return [make(css('--flood'),'Candidate new water',[235,104,52]),make(css('--still'),'Baseline water',[42,120,214]),make(M.leyendas.previa||'rgb(138,149,161)','Already wet before the storm (10–14 Aug)',[138,149,161])];
     if(view==='extent')return [make(css('--flood'),'Published flood-extent classification',[235,104,52]),make(M.leyendas.previa||'rgb(138,149,161)','Already wet before the storm (10–14 Aug)')];
     if(view==='persist')return [...M.leyendas.persistencia.map(p=>make(p.color,`Observed duration: ${p.rango} days`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
     if(view==='retreat')return [...M.leyendas.retiro.map(p=>make(p.color,`Published retreat interval: ${p.desde} to ${p.hasta}`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
@@ -811,9 +811,9 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     {zone:'merin_arrozales',view:'date',date:'2026-06-17',title:'Before the storm',
       body:'Start with an earlier observation of the Laguna Merín study area. Blue marks water classified as already present in the June–July baseline. This is a reference view, not a guarantee that every permanent water body was recognized.',
       action:'Look for the blue water areas. Pan and zoom to explore this reference pass.',
-      evidence:'Published NISAR pass: 17 Jun 2026 · track 53D. The baseline uses four observations.'},
+      evidence:()=>{const n=Z.merin_arrozales.fechas.filter(r=>r.fase==='base').length;return `Published NISAR pass: 17 Jun 2026 · track 53D. The baseline uses ${n} observation${n===1?'':'s'}.`;}},
     {zone:'merin_arrozales',view:'date',before:'2026-06-17',date:'2026-08-28',title:'New water appears',
-      body:'Compare an earlier pass with an observation after the August storm. Orange marks candidate new water; blue marks baseline water. The two sides use the same orbit track so the viewing geometry is consistent.',
+      body:'Compare an earlier pass with an observation after the August storm. Orange marks candidate new water; blue marks baseline water; grey marks land that was already wet before the rain and is not counted as storm flooding. The two sides use the same orbit track so the viewing geometry is consistent.',
       action:'Drag the divider across the map. You can also focus it and use the arrow keys.',
       evidence:'Before: 17 Jun · After: 28 Aug 2026 · track 53D. These are two observed snapshots, not an animation of continuous measurements.'},
     {zone:'merin_arrozales',view:'date',before:'2026-08-28',date:'2026-09-21',title:'The water recedes',
@@ -826,7 +826,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     {zone:'merin_arrozales',view:'extent',date:'2026-08-28',roads:true,title:'What about roads?',
       body:()=>tourRoad?`The event-wide results flag ${tourRoad.nombre} (${tourRoad.donde}) with ${nf(tourRoad.km_bajo_agua,2)} km intersecting the detected-water footprint. This suggests potential exposure, not a confirmed road closure.`:'Mapped roads can intersect the event-wide detected-water footprint. This suggests potential exposure, not a confirmed road closure.',
       action:'Explore the roads around the flood footprint. The marker is a reference location for the selected road, not a verified flooded point. Road exposure summarizes the event as a whole.',
-      evidence:'OpenStreetMap roads crossed with the published event footprint, 10 Aug–10 Sept 2026. A radar pixel may mix the road and its flooded verge.'},
+      evidence:()=>`OpenStreetMap roads crossed with the published storm footprint, ${fmtDate(M.evento.tormenta[0])}–${fmtDate(M.evento.tormenta[1])} ${M.evento.tormenta[1].slice(0,4)}. A radar pixel may mix the road and its flooded verge.`},
     {zone:'mercedes',view:'forest',date:'2026-08-25',title:'A different radar signal',
       body:'Now explore Mercedes on the Río Negro. In riverside vegetation, flooding can strengthen the radar return through interactions between water and tree trunks. Green marks a signal compatible with possible flooding beneath trees, rather than independently confirmed water.',
       action:'Pan and zoom along the river, then open the source panel to inspect the method and limits. Exit the tour whenever you want to keep exploring this view.',
@@ -857,7 +857,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     $('#tour-count').textContent=`${index+1} of ${tourSteps.length}`;
     $('#tour-progress').value=index+1;$('#tour-title').textContent=step.title;
     $('#tour-body').textContent=typeof step.body==='function'?step.body():step.body;
-    $('#tour-action').textContent=step.action;$('#tour-evidence').textContent=step.evidence;
+    $('#tour-action').textContent=step.action;$('#tour-evidence').textContent=typeof step.evidence==='function'?step.evidence():step.evidence;
     $('#tour-prev').disabled=index===0;
     $('#tour-next').textContent=index===tourSteps.length-1?'Finish tour':'Next →';
     // Configure one complete view before requesting its masks.
@@ -980,7 +980,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const L = $("#legend"), lg = M.leyendas;
     const sw = (c, t) => `<div><span class="sw" style="background:${c}"></span>${t}</div>`;
     let h = "";
-    if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)");
+    if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, "Already wet before the rain (10–14 Aug passes)") : "");
     if (layer === "extent") h = sw(css("--flood"), Z[zid].resumen.fuente === "single track" ? "Flooded by the storm, detected on at least one observation (single track)" : "Flooded by the storm, detected on at least two observations") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, `Already wet before the rain (10–14 Aug passes): ${nf(Z[zid].resumen.ha_previa)} ha, not counted`) : "");
     if (layer === "persist") h = lg.persistencia.map(p => sw(p.color, p.rango + " days")).join("") + sw(lg.sigue, "Still wet on 20 Oct");
     if (layer === "retreat") h = lg.retiro.map(p => sw(p.color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(lg.sigue, "Still wet on 20 Oct");

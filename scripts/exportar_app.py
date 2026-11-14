@@ -117,6 +117,7 @@ def capas_zona(zona, out):
         pila, desc = r.read(), list(r.descriptions)
     base, _ = leer(tdir / "metricas" / "agua_base.tif")
     f = factor(perfil_s)
+    previa_s = previa_en_grilla(zona, perfil_s)[::f, ::f]   # agua ya mojada antes de la lluvia: gris también por fecha
     fechas_info = []
     for i, fe in enumerate(fechas):
         d = str(fe.date())
@@ -130,6 +131,8 @@ def capas_zona(zona, out):
         o = rgba(m.shape)
         o[base[::f, ::f] == 1] = (*AZUL, 255)
         o[m == 1] = (*NARANJA, 255)
+        if fe >= EVENTO[0]:                                  # en la base no aplica
+            o[(m == 1) & previa_s] = (*PREVIA, 255)
         png(out / f"agua_{d}.png", o)
         fechas_info.append(d)
     capas = dict(serie=dict(track=serie, esquinas=esquinas(perfil_s), fechas=fechas_info, factor=f,
