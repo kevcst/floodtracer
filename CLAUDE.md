@@ -59,6 +59,7 @@ Earthdata Login + `~/.netrc`; GDAL CLI (`brew install gdal`); `python -m venv .v
 - `scripts/eda_extra_T53D.py`: análisis exploratorio extra (percentiles, mapas de agua, dispersores persistentes).
 
 ## Próximos pasos
+**Plan completo de desarrollo POC → entrega: `docs/plan_desarrollo.md` (fases A–E).**
 1. Correr `listar` → `descargar --zona todas` → `resumen`; revisar si se ve el desfase Olimar → Yí → Negro.
 2. ~~Crear `scripts/metricas_evento.py`~~ hecho. Hallazgo: en Durazno/Mercedes la crecida casi no se ve como agua abierta (ríos angostos a 100 m de suavizado, umbral −16 tomaba potreros) sino como **subida de HH−HV en monte (+1–1,8 dB)** durante el evento. Ojo: la subida aparece en todas las zonas (incluido Melo) → separar monte ribereño vs monte de altura (HAND/distancia al río) antes de afirmar que es agua bajo vegetación y no suelo húmedo. Persistencia mediana = 12 días en casi todo = resolución de revisita → combinar tracks.
 3. ~~Combinar tracks~~ hecho, pero **los tracks no coinciden bien**: pasadas a 1 día de distancia tienen Jaccard 0,17–0,40 en el pico (154D ve 2,5× más agua que 132A en TyT/Merín) → la persistencia combinada se llena de "1 día" artificiales. Pendiente: armonizar umbrales entre tracks usando esos pares casi simultáneos. Mientras tanto usar persistencia por track (12 d) y el combinado sólo para extensión máxima.
