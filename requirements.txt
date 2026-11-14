@@ -8,3 +8,5 @@ scipy
 pillow
 certifi
 scikit-image
+geopandas
+pyogrio
