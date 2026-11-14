@@ -9,8 +9,9 @@ fecha (km de camino bajo agua, % urbano con agua) se usa el track de la serie pr
 para respetar la regla 2.
 
 Definiciones
-  extensión      = extension_confirmada (agua nueva en ≥ 2 observaciones del 10/8 al 10/9; con un solo track:
-                   extension_max de ese track)
+  extensión      = extension_confirmada (agua nueva en ≥ 2 observaciones del 15/8 al 10/9; con un solo track:
+                   extension_max de ese track). Excluye el agua previa (ya mojada el 10–14/8, antes de la lluvia),
+                   que se reporta aparte como ha_agua_previa.
   ha·día         = Σ píxeles inundados × persistencia (días) × ha/píxel. Rango con persistencia_min / _max.
                    Píxeles que siguen con agua al final de la serie: persistencia = última fecha − primera (cota inf.)
   camino cortado = puntos cada 20 m sobre el eje; un tramo está "bajo agua" si el píxel está en la extensión.
@@ -68,10 +69,11 @@ def productos(zona):
             for k in ("mid", "min", "max")}
     for k in pers:
         pers[k] = np.where(ext, pers[k], 0)
+    previa = leer(d / "agua_previa.tif")[0] == 1 if (d / "agua_previa.tif").exists() else np.zeros(ext.shape, bool)
     wc_path = BASE / zona / ref / "contexto" / "worldcover.tif"
     wc = leer(wc_path)[0] if wc_path.exists() else None
     return dict(ext=ext, pers=pers, sigue=sigue, retiro=np.where(ext & ~sigue, p["fecha_retiro"], 0),
-                perfil=perfil, fuente=fuente, ref=ref, wc=wc)
+                perfil=perfil, fuente=fuente, ref=ref, wc=wc, previa=previa)
 
 
 def serie(zona):
@@ -301,6 +303,7 @@ def main():
         out["uso_suelo"].append(uso_suelo(zona, P))
         km = a.km_bajo_agua.sum() if len(a) else 0
         resumen.append(dict(zona=zona, fuente=P["fuente"], ha_inundada=P["ext"].sum() * ha_px,
+                            ha_agua_previa=P["previa"].sum() * ha_px,
                             ha_dia=float(P["pers"]["mid"].sum() * ha_px), km_caminos_bajo_agua=km,
                             km_caminos_mas_7_dias=a[a.dias_mid > 7].km_bajo_agua.sum() if len(a) else 0))
         print(f"   caminos: {km:.1f} km bajo agua · {len(a)} vías afectadas · localidades: {len(loc)}")

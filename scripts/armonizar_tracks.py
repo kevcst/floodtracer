@@ -9,8 +9,9 @@ distintas, la diferencia es del detector (geometría, ángulo de incidencia, cal
 Medimos la coincidencia con Jaccard = |A∩B| / |A∪B| sobre píxeles válidos en ambos y fuera del agua base de ambos.
 
 Hallazgo (2026-11-14): con umbral absoluto (HH < −17,5 dB) el Jaccard en el pico es 0,2–0,3 y los tracks
-descendentes (pasada ~6 h, amanecer, viento calmo) ven 2–3× más agua que los ascendentes (~18 h, más viento →
-agua rugosa y más brillante). Con detección por CAMBIO respecto de la base del mismo píxel y track
+descendentes (~21:40 UTC = ~18:30 hora local, atardecer) ven 2–3× más agua que los ascendentes (~09:40 UTC =
+~06:30, amanecer). Horarios verificados en los nombres de las escenas. La causa está abierta (ángulo/dirección de
+observación de cada track, rocío matinal sobre la vegetación…); el viento no lo explica. Con detección por CAMBIO respecto de la base del mismo píxel y track
 (ΔHH < −3 dB y HH < −14 dB, mancha ≥ 10 px) sube a 0,5–0,7: es el detector por defecto de metricas_evento.py.
 
 Salida: data_nisar/zonas/armonizacion_pares.csv · armonizacion_pares.png · (con --barrido) armonizacion_barrido.csv

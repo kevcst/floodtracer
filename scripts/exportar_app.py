@@ -30,7 +30,7 @@ from rasterio.warp import Resampling, reproject
 from rasterio.warp import transform as warp_transform
 
 from exportar_poc import COUNTRIES, bajar_countries, contexto
-from metricas_evento import BASE, EVENTO, cargar_track
+from metricas_evento import BASE, EVENTO, INICIO_LLUVIA, cargar_track, previa_en_grilla
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore")
@@ -66,6 +66,7 @@ SIGUE = (9, 38, 77)
 RETIRO_BINS = [("2026-08-10", "2026-08-31", (253, 219, 199)), ("2026-09-01", "2026-09-15", (247, 166, 122)),
                ("2026-09-16", "2026-09-30", (230, 110, 60)), ("2026-10-01", "2026-10-20", (180, 66, 22))]
 MONTE = (27, 175, 122)
+PREVIA = (138, 149, 161)          # ya mojado antes de la lluvia (10–14/8): gris, fuera de la tormenta
 MAX_LADO = 2200
 SONDA_M = 200.0
 
@@ -147,7 +148,9 @@ def capas_zona(zona, out):
     fe_ = factor(perfil_e)
     sl = (slice(None, None, fe_), slice(None, None, fe_))
     ext, pers, ret = ext[sl] == 1, pers[sl], ret[sl]
+    previa = (leer(d_e / "agua_previa.tif")[0][sl] == 1) if (d_e / "agua_previa.tif").exists() else np.zeros(ext.shape, bool)
     o = rgba(ext.shape)
+    o[previa] = (*PREVIA, 255)
     o[ext] = (*NARANJA, 255)
     png(out / "extension.png", o)
     o = rgba(ext.shape)
@@ -203,12 +206,12 @@ def series_zona(zona):
     cp = cp[cp.zona == zona].set_index("fecha")
     with rasterio.open(BASE / zona / t / "metricas" / "agua_nueva_por_fecha.tif") as r:
         pila, desc = r.read(), list(r.descriptions)
-    ext, _ = leer(BASE / zona / t / "metricas" / "extension_max.tif")
-    ext = ext == 1
+    ext, perfil_t = leer(BASE / zona / t / "metricas" / "extension_max.tif")
+    ext = (ext == 1) & ~previa_en_grilla(zona, perfil_t)     # "remaining" = sólo agua de la tormenta
     out = []
     for fecha, r in pf.iterrows():
         m = pila[desc.index(fecha)]
-        rem = round(100 * float(((m == 1) & ext).sum()) / max(int(ext.sum()), 1), 1) if pd.Timestamp(fecha) >= EVENTO[0] else None
+        rem = round(100 * float(((m == 1) & ext).sum()) / max(int(ext.sum()), 1), 1) if pd.Timestamp(fecha) >= INICIO_LLUVIA else None
         out.append(dict(fecha=fecha, fase=r.fase, v=round(r.pct_agua_nueva, 2),
                         lo=round(float(sb.loc[fecha, "min"]), 2) if fecha in sb.index else None,
                         hi=round(float(sb.loc[fecha, "max"]), 2) if fecha in sb.index else None,
@@ -244,9 +247,9 @@ def resumen_zona(zona):
     monte = pd.read_csv(BASE / "monte_ribereno_resumen.csv")
     monte = monte[monte.zona == zona]
     return dict(
-        ha_inundada=round(float(res.ha_inundada)), fuente=res.fuente, ha_dia=round(float(res.ha_dia)),
+        ha_inundada=round(float(res.ha_inundada)), ha_previa=round(float(res.ha_agua_previa)), fuente=res.fuente, ha_dia=round(float(res.ha_dia)),
         km_caminos=round(float(res.km_caminos_bajo_agua), 1), km_caminos_7d=round(float(res.km_caminos_mas_7_dias), 1),
-        serie_track=t, serie_ha_ext=round(float(fila_t.ha_extension_max)), serie_pct_ext=round(float(fila_t.pct_extension_max), 2),
+        serie_track=t, serie_ha_ext=round(float(s["central"])), serie_pct_ext=round(float(fila_t.pct_extension_max), 2),
         serie_ha_lo=round(float(s["min"])), serie_ha_hi=round(float(s["max"])),
         persist_mid=None if comb is None else float(comb.persistencia_mediana_dias),
         persist_min=float(comb.persistencia_min_mediana if comb is not None else fila_t.persistencia_min_mediana),
@@ -352,7 +355,8 @@ def cifras(zonas):
     sep21 = next((s for s in rem if s["fecha"] >= "2026-09-20"), None)
     total_ha = sum(z["resumen"]["ha_inundada"] for z in zonas.values())
     total_km = sum(z["resumen"]["km_caminos"] for z in zonas.values())
-    return dict(ha_total=total_ha, km_total=round(total_km), merin_ha=m["resumen"]["ha_inundada"],
+    total_previa = sum(z["resumen"]["ha_previa"] for z in zonas.values())
+    return dict(ha_total=total_ha, ha_previa=total_previa, km_total=round(total_km), merin_ha=m["resumen"]["ha_inundada"],
                 merin_pico_fecha=pico["fecha"], merin_pico_pct=pico["remaining"],
                 merin_sep_fecha=sep21["fecha"] if sep21 else None, merin_sep_pct=sep21["remaining"] if sep21 else None,
                 merin_ha_lo=m["resumen"]["serie_ha_lo"], merin_ha_hi=m["resumen"]["serie_ha_hi"],
@@ -387,12 +391,13 @@ def main():
                 l["serie_500m"] = json.loads(l["serie_500m"].replace("'", '"'))
     impacto_geo()
     manifest = dict(generado=str(date.today()), evento=dict(lluvia=["2026-08-15", "2026-08-19"], ventana=[str(EVENTO[0].date()), str(EVENTO[1].date())],
+                                                         tormenta=[str(INICIO_LLUVIA.date()), str(EVENTO[1].date())],
                                                          hueco=["2026-07-27", "2026-08-10"]),
                     cifras=cifras(zonas), zonas=zonas, validacion=validacion(), monte_mercedes=monte_mercedes(),
                     contexto=contexto(COUNTRIES), descargas=descargas(),
                     leyendas=dict(persistencia=[dict(rango=f"{a}–{b}" if b < 9999 else f"{a}+", color="rgb(%d,%d,%d)" % c) for a, b, c in PERS_BINS],
                                   retiro=[dict(desde=a, hasta=b, color="rgb(%d,%d,%d)" % c) for a, b, c in RETIRO_BINS],
-                                  sigue="rgb(%d,%d,%d)" % SIGUE))
+                                  sigue="rgb(%d,%d,%d)" % SIGUE, previa="rgb(%d,%d,%d)" % PREVIA))
     (SAL / "manifest.json").write_text(json.dumps(manifest, separators=(",", ":"), allow_nan=False, default=str))
     tam = sum(p.stat().st_size for p in SAL.rglob("*") if p.is_file()) / 1e6
     print(f"-> {SAL}  ({tam:.1f} MB)")

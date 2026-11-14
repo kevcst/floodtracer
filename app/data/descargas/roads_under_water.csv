@@ -1,19 +1,13 @@
 zona,clave,nombre,clase,km,km_bajo_agua,dias_mid,dias_min,dias_max,sigue,lon,lat,donde
-treinta_y_tres,osm:1005522380,Unnamed rural road,rural,3.41,2.5,72,60,84,False,-54.31,-33.33,13 km SE of Villa Sara
-treinta_y_tres,osm:800131112,Unnamed rural road,rural,1.88,1.3,71,71,71,True,-54.2,-33.36,22 km SE of Treinta y Tres
-treinta_y_tres,osm:1005589181,Unnamed rural road,rural,5.38,1.0,54,37,71,False,-54.28,-33.36,17 km SE of Villa Sara
-treinta_y_tres,osm:242991079,Unnamed rural road,rural,4.21,1.4,42,25,59,False,-54.34,-33.31,9 km SE of Villa Sara
-treinta_y_tres,osm:798145003,Unnamed rural road,rural,1.47,1.18,42,25,59,False,-54.2,-33.33,21 km SE of Treinta y Tres
-treinta_y_tres,osm:242991077,Unnamed rural road,rural,14.4,0.52,42,25,59,False,-54.22,-33.36,21 km SE of Treinta y Tres
-treinta_y_tres,osm:1005522381,Unnamed rural road,rural,2.92,0.5,42,25,59,False,-54.33,-33.33,11 km SE of Villa Sara
-treinta_y_tres,osm:241545506,Unnamed rural road,rural,2.63,0.36,42,25,59,False,-54.36,-33.3,7 km SE of Villa Sara
-treinta_y_tres,osm:1005592756,Unnamed rural road,rural,0.9,0.34,42,25,59,False,-54.29,-33.35,15 km SE of Villa Sara
-treinta_y_tres,osm:246397726,Unnamed rural road,rural,3.93,0.04,42,25,59,False,-54.17,-33.37,26 km SE of Treinta y Tres
 treinta_y_tres,osm:719031245,Unnamed rural road,rural,1.02,0.32,34,25,43,False,-54.17,-33.4,27 km SE of Treinta y Tres
-treinta_y_tres,osm:798144997,Unnamed rural road,rural,2.09,1.06,30,13,47,False,-54.23,-33.31,17 km SE of Treinta y Tres
-treinta_y_tres,osm:830061619,Unnamed rural road,rural,2.2,0.2,30,24,47,False,-54.29,-33.39,19 km SE of Villa Sara
+treinta_y_tres,osm:1005522380,Unnamed rural road,rural,3.41,0.7,22,13,31,False,-54.31,-33.33,13 km SE of Villa Sara
+treinta_y_tres,osm:1005589181,Unnamed rural road,rural,5.38,0.3,22,13,31,False,-54.28,-33.36,17 km SE of Villa Sara
+treinta_y_tres,osm:1005592756,Unnamed rural road,rural,0.9,0.3,22,13,31,False,-54.29,-33.35,15 km SE of Villa Sara
 treinta_y_tres,osm:1005840015,Unnamed rural road,rural,2.33,1.84,10,1,19,False,-54.22,-33.3,17 km SE of Treinta y Tres
 treinta_y_tres,osm:798145019,Unnamed rural road,rural,6.19,1.68,10,1,19,False,-54.22,-33.32,18 km SE of Treinta y Tres
+treinta_y_tres,osm:798145003,Unnamed rural road,rural,1.47,1.12,10,1,19,False,-54.2,-33.33,21 km SE of Treinta y Tres
+treinta_y_tres,osm:798144997,Unnamed rural road,rural,2.09,1.0,10,1,19,False,-54.23,-33.31,17 km SE of Treinta y Tres
+treinta_y_tres,osm:242991079,Unnamed rural road,rural,4.21,0.86,10,1,19,False,-54.34,-33.31,9 km SE of Villa Sara
 treinta_y_tres,osm:798435510,Unnamed rural road,rural,3.79,0.78,10,1,19,False,-54.25,-33.32,16 km SE of Treinta y Tres
 treinta_y_tres,osm:798489990,Unnamed rural road,rural,2.85,0.72,10,1,19,False,-54.17,-33.29,21 km SE of Poblado Alonzo
 treinta_y_tres,osm:798145026,Unnamed rural road,rural,2.78,0.58,10,1,19,False,-54.22,-33.33,19 km SE of Treinta y Tres
@@ -25,95 +19,74 @@ treinta_y_tres,Del Mensajero,Del Mensajero,rural,19.0,0.2,10,1,19,False,-54.33,-
 treinta_y_tres,osm:1005250743,Unnamed rural road,rural,1.95,0.18,10,1,19,False,-54.42,-33.37,13 km S of Villa Sara
 treinta_y_tres,osm:1005839464,Unnamed rural road,rural,3.25,0.16,10,1,19,False,-54.25,-33.27,13 km E of Treinta y Tres
 treinta_y_tres,osm:242991073,Unnamed rural road,rural,3.18,0.14,10,1,19,False,-54.25,-33.39,21 km SE of Villa Sara
+treinta_y_tres,osm:242991077,Unnamed rural road,rural,14.4,0.14,10,1,19,False,-54.22,-33.36,21 km SE of Treinta y Tres
 treinta_y_tres,osm:798435506,Unnamed rural road,rural,1.81,0.14,10,1,19,False,-54.23,-33.35,19 km SE of Treinta y Tres
+treinta_y_tres,osm:1005522381,Unnamed rural road,rural,2.92,0.12,10,1,19,False,-54.33,-33.33,11 km SE of Villa Sara
 treinta_y_tres,osm:1005589840,Unnamed rural road,rural,1.44,0.12,10,1,19,False,-54.22,-33.4,24 km SE of Villa Sara
 treinta_y_tres,osm:798435503,Unnamed rural road,rural,2.44,0.12,10,1,19,False,-54.28,-33.31,13 km SE of Treinta y Tres
 treinta_y_tres,osm:808881739,Unnamed rural road,rural,2.17,0.12,10,1,19,False,-54.28,-33.34,15 km SE of Treinta y Tres
 treinta_y_tres,osm:798519776,Unnamed rural road,rural,1.19,0.1,10,1,19,False,-54.16,-33.32,23 km SE of Treinta y Tres
 treinta_y_tres,osm:809547114,Unnamed rural road,rural,0.91,0.1,10,1,19,False,-54.15,-33.39,28 km SE of Treinta y Tres
 treinta_y_tres,osm:797688729,Unnamed rural road,rural,3.62,0.08,10,1,19,False,-54.17,-33.3,22 km E of Treinta y Tres
+treinta_y_tres,osm:830061619,Unnamed rural road,rural,2.2,0.06,10,1,19,False,-54.29,-33.39,19 km SE of Villa Sara
 treinta_y_tres,osm:352197625,Unnamed rural road,rural,2.18,0.04,10,1,19,False,-54.39,-33.25,2 km S of Treinta y Tres
+treinta_y_tres,osm:241545506,Unnamed rural road,rural,2.63,0.02,10,1,19,False,-54.36,-33.3,7 km SE of Villa Sara
 treinta_y_tres,osm:798435507,Unnamed rural road,rural,2.58,0.02,10,1,19,False,-54.27,-33.34,17 km SE of Treinta y Tres
-merin_arrozales,Empalme Camino Ruta 15 y Destacamento,Empalme Camino Ruta 15 y Destacamento,rural,14.22,2.86,72,71,84,True,-53.98,-33.62,27 km W of San Luis al Medio
-merin_arrozales,osm:995177110,Unnamed rural road,rural,4.42,2.48,72,71,84,True,-53.68,-33.72,13 km S of San Luis al Medio
-merin_arrozales,osm:253617645,Unnamed rural road,rural,2.73,1.3,72,71,84,True,-53.68,-33.71,12 km S of San Luis al Medio
-merin_arrozales,osm:996203900,Unnamed rural road,rural,4.6,1.18,72,61,84,False,-53.76,-33.67,8 km SW of San Luis al Medio
-merin_arrozales,osm:275617263,Unnamed rural road,rural,13.91,2.62,71,71,71,True,-54.05,-33.46,23 km SW of Villa Passano
-merin_arrozales,osm:995209506,Unnamed rural road,rural,2.85,2.0,71,71,71,True,-53.73,-33.21,7 km E of La Charqueada
-merin_arrozales,osm:253616892,Unnamed rural road,rural,1.58,0.62,71,71,72,True,-53.67,-33.74,15 km S of San Luis al Medio
-merin_arrozales,osm:996203899,Unnamed rural road,rural,1.75,0.62,70,60,79,False,-53.74,-33.66,6 km S of San Luis al Medio
-merin_arrozales,osm:253619951,Unnamed rural road,rural,1.86,0.34,66,54,78,False,-53.61,-33.68,13 km SE of San Luis al Medio
-merin_arrozales,osm:995146440,Unnamed rural road,rural,11.84,4.08,65,65,65,True,-53.66,-33.26,13 km E of Cebollatí
-merin_arrozales,osm:995257699,Unnamed rural road,rural,6.11,1.0,60,49,72,False,-53.77,-33.68,9 km SW of San Luis al Medio
-merin_arrozales,osm:613054645,Unnamed rural road,rural,7.17,0.98,60,49,72,False,-53.95,-33.5,24 km S of Villa Passano
-merin_arrozales,osm:994873566,Unnamed rural road,rural,1.0,0.34,60,49,72,False,-53.61,-33.6,10 km E of San Luis al Medio
-merin_arrozales,osm:253616009,Unnamed rural road,rural,0.63,0.24,60,49,72,False,-53.69,-33.74,16 km S of San Luis al Medio
-merin_arrozales,osm:995177111,Unnamed rural road,rural,2.13,1.0,58,48,67,False,-53.68,-33.71,13 km S of San Luis al Medio
-merin_arrozales,osm:994924531,Unnamed rural road,rural,3.03,1.28,54,42,66,False,-53.66,-33.36,16 km SE of Cebollatí
-merin_arrozales,osm:994881920,Unnamed rural road,rural,1.02,0.54,54,42,66,False,-53.61,-33.5,16 km NE of San Luis al Medio
-merin_arrozales,osm:734004731,Unnamed rural road,rural,4.52,0.52,54,42,66,False,-53.78,-33.5,12 km NW of San Luis al Medio
-merin_arrozales,osm:254801137,Unnamed rural road,rural,1.72,0.18,54,42,66,False,-53.75,-33.65,6 km SW of San Luis al Medio
-merin_arrozales,osm:996901803,Unnamed rural road,rural,1.64,0.06,48,37,60,False,-54.04,-33.62,30 km W of San Luis al Medio
-merin_arrozales,osm:254854448,Unnamed rural road,rural,0.96,0.24,46,36,55,False,-53.89,-33.68,18 km SW of San Luis al Medio
-merin_arrozales,osm:1006124226,Unnamed rural road,rural,3.67,0.12,44,41,48,False,-54.08,-33.58,34 km W of San Luis al Medio
+treinta_y_tres,osm:800131112,Unnamed rural road,rural,1.88,0.02,10,1,19,False,-54.2,-33.36,22 km SE of Treinta y Tres
+merin_arrozales,osm:995146440,Unnamed rural road,rural,11.84,3.8,65,65,65,True,-53.66,-33.26,13 km E of Cebollatí
+merin_arrozales,osm:995209506,Unnamed rural road,rural,2.85,1.72,65,65,65,True,-53.73,-33.21,7 km E of La Charqueada
 merin_arrozales,osm:994881926,Unnamed rural road,rural,2.44,0.08,44,41,48,False,-53.62,-33.47,17 km NE of San Luis al Medio
-merin_arrozales,osm:995143556,Unnamed rural road,rural,3.29,1.66,42,30,54,False,-53.68,-33.33,13 km SE of Cebollatí
-merin_arrozales,osm:995146439,Unnamed rural road,rural,7.03,1.16,42,30,54,False,-53.71,-33.3,9 km E of Cebollatí
-merin_arrozales,osm:995204644,Unnamed rural road,rural,4.25,0.88,42,30,54,False,-53.71,-33.32,10 km SE of Cebollatí
-merin_arrozales,osm:995181542,Unnamed rural road,rural,2.24,0.72,42,36,54,False,-53.7,-33.54,8 km N of San Luis al Medio
 merin_arrozales,osm:994892314,Unnamed rural road,rural,8.53,0.7,42,37,48,False,-53.64,-33.37,19 km SE of Cebollatí
-merin_arrozales,osm:994912475,Unnamed rural road,rural,1.72,0.44,42,30,54,False,-53.64,-33.64,8 km SE of San Luis al Medio
-merin_arrozales,osm:408381674,Unnamed rural road,rural,3.34,0.2,42,30,54,False,-53.63,-33.5,14 km NE of San Luis al Medio
-merin_arrozales,osm:995257698,Unnamed rural road,rural,3.27,0.52,39,36,42,False,-53.75,-33.7,11 km S of San Luis al Medio
-merin_arrozales,osm:254770474,Unnamed rural road,rural,5.68,0.18,39,36,42,False,-53.67,-33.66,8 km SE of San Luis al Medio
 merin_arrozales,osm:994884609,Unnamed rural road,rural,1.43,0.98,36,31,41,False,-53.61,-33.43,22 km NE of San Luis al Medio
-merin_arrozales,osm:994918465,Unnamed rural road,rural,8.01,0.92,36,25,48,False,-53.7,-33.41,18 km SE of Cebollatí
-merin_arrozales,osm:813142324,Unnamed rural road,rural,2.13,0.46,36,25,48,False,-54.09,-33.41,22 km SW of Villa Passano
-merin_arrozales,osm:1246725224,Unnamed rural road,rural,1.79,0.3,36,25,48,False,-53.62,-33.49,16 km NE of San Luis al Medio
-merin_arrozales,osm:956192228,Unnamed rural road,rural,1.18,0.2,36,25,48,False,-53.68,-33.5,12 km N of San Luis al Medio
-merin_arrozales,osm:994884612,Unnamed rural road,rural,6.38,0.46,30,18,42,False,-53.64,-33.43,21 km N of San Luis al Medio
-merin_arrozales,osm:1006166480,Unnamed rural road,rural,0.86,0.22,30,18,42,False,-54.08,-33.38,20 km SW of Villa Passano
-merin_arrozales,osm:996632672,Unnamed rural road,rural,2.19,0.18,30,18,42,False,-53.91,-33.11,4 km N of Arrocera Los Teros
-merin_arrozales,osm:995203584,Unnamed rural road,rural,7.37,1.24,28,24,31,False,-53.63,-33.4,21 km SE of Cebollatí
-merin_arrozales,osm:241637592,Unnamed rural road,rural,13.05,0.8,27,24,30,False,-53.88,-33.2,6 km SE of Arrocera Los Teros
+merin_arrozales,osm:995257698,Unnamed rural road,rural,3.27,0.46,30,25,36,False,-53.75,-33.7,11 km S of San Luis al Medio
+merin_arrozales,osm:253616009,Unnamed rural road,rural,0.63,0.12,30,25,36,False,-53.69,-33.74,16 km S of San Luis al Medio
+merin_arrozales,osm:995203584,Unnamed rural road,rural,7.37,1.18,28,24,31,False,-53.63,-33.4,21 km SE of Cebollatí
+merin_arrozales,osm:995177110,Unnamed rural road,rural,4.42,0.08,28,24,31,False,-53.68,-33.72,13 km S of San Luis al Medio
+merin_arrozales,osm:994873566,Unnamed rural road,rural,1.0,0.06,28,24,31,False,-53.61,-33.6,10 km E of San Luis al Medio
+merin_arrozales,osm:996203899,Unnamed rural road,rural,1.75,0.06,28,24,31,False,-53.74,-33.66,6 km S of San Luis al Medio
+merin_arrozales,osm:994912475,Unnamed rural road,rural,1.72,0.02,28,24,31,False,-53.64,-33.64,8 km SE of San Luis al Medio
+merin_arrozales,osm:995257699,Unnamed rural road,rural,6.11,0.54,27,24,30,False,-53.77,-33.68,9 km SW of San Luis al Medio
 merin_arrozales,osm:994892311,Unnamed rural road,rural,2.49,0.4,27,24,30,False,-53.61,-33.37,21 km SE of Cebollatí
-merin_arrozales,osm:994892312,Unnamed rural road,rural,5.02,0.24,27,24,30,False,-53.62,-33.35,18 km SE of Cebollatí
+merin_arrozales,osm:994892312,Unnamed rural road,rural,5.02,0.12,27,24,30,False,-53.62,-33.35,18 km SE of Cebollatí
 merin_arrozales,osm:994903052,Unnamed rural road,rural,4.26,0.02,27,24,30,False,-53.64,-33.05,5 km E of Arrozal Treinta y Tres
-merin_arrozales,osm:798746487,Unnamed rural road,rural,11.25,0.52,24,13,36,False,-54.02,-33.37,14 km SW of Villa Passano
-merin_arrozales,osm:996595248,Unnamed rural road,rural,5.14,0.48,24,13,36,False,-53.86,-33.08,10 km NE of Arrocera Los Teros
 merin_arrozales,osm:995218462,Unnamed rural road,rural,1.65,0.3,24,18,30,False,-53.7,-33.15,11 km NE of La Charqueada
 merin_arrozales,osm:994915609,Unnamed rural road,rural,5.58,0.18,24,19,29,False,-53.66,-33.53,9 km NE of San Luis al Medio
-merin_arrozales,Al Ceibo,Al Ceibo,rural,13.29,0.14,24,13,36,False,-53.82,-33.52,13 km NW of San Luis al Medio
 merin_arrozales,osm:1389684870,Unnamed rural road,rural,2.28,0.06,24,23,25,False,-54.0,-33.01,10 km N of Arrocera Las Palmas
 merin_arrozales,osm:798746481,Unnamed rural road,rural,2.53,1.32,22,19,25,False,-54.04,-33.34,15 km SW of Villa Passano
 merin_arrozales,osm:956192245,Unnamed rural road,rural,1.87,0.84,22,19,25,False,-53.87,-33.5,18 km NW of San Luis al Medio
-merin_arrozales,osm:956192240,Unnamed rural road,rural,2.38,0.08,22,12,31,False,-53.85,-33.5,17 km NW of San Luis al Medio
-merin_arrozales,osm:994903048,Unnamed rural road,rural,2.98,0.82,20,17,24,False,-53.63,-33.01,7 km NE of Arrozal Treinta y Tres
-merin_arrozales,osm:249547982,Unnamed rural road,rural,22.7,0.2,20,17,24,False,-53.77,-33.47,15 km N of San Luis al Medio
+merin_arrozales,osm:995181542,Unnamed rural road,rural,2.24,0.18,22,19,25,False,-53.7,-33.54,8 km N of San Luis al Medio
+merin_arrozales,osm:956192228,Unnamed rural road,rural,1.18,0.04,22,19,25,False,-53.68,-33.5,12 km N of San Luis al Medio
+merin_arrozales,osm:253619951,Unnamed rural road,rural,1.86,0.22,20,17,24,False,-53.61,-33.68,13 km SE of San Luis al Medio
 merin_arrozales,osm:995207265,Unnamed rural road,rural,6.88,0.14,20,17,24,False,-53.65,-33.28,14 km E of Cebollatí
 merin_arrozales,osm:798097718,Unnamed rural road,rural,2.6,0.38,18,13,24,False,-54.09,-33.32,18 km W of Villa Passano
-merin_arrozales,osm:996212971,Unnamed rural road,rural,7.98,0.28,18,11,30,False,-53.8,-33.43,18 km S of Cebollatí
-merin_arrozales,osm:734004733,Unnamed rural road,rural,0.38,0.06,18,6,30,False,-53.77,-33.5,12 km NW of San Luis al Medio
-merin_arrozales,osm:996212977,Unnamed rural road,rural,8.37,0.06,18,6,30,False,-53.76,-33.38,13 km S of Cebollatí
-merin_arrozales,osm:241545494,Unnamed rural road,rural,5.69,0.04,18,6,30,False,-53.74,-33.06,4 km SW of Arrozal Treinta y Tres
+merin_arrozales,osm:994881920,Unnamed rural road,rural,1.02,0.04,18,12,23,False,-53.61,-33.5,16 km NE of San Luis al Medio
 merin_arrozales,osm:994892313,Unnamed rural road,rural,1.09,0.04,18,13,24,False,-53.61,-33.35,20 km SE of Cebollatí
+merin_arrozales,osm:275617263,Unnamed rural road,rural,13.91,2.12,16,12,19,False,-54.05,-33.46,23 km SW of Villa Passano
 merin_arrozales,osm:995207264,Unnamed rural road,rural,3.08,0.76,16,12,19,False,-53.7,-33.27,9 km E of Cebollatí
+merin_arrozales,osm:994924531,Unnamed rural road,rural,3.03,0.54,16,12,19,False,-53.66,-33.36,16 km SE of Cebollatí
 merin_arrozales,osm:242959421,Unnamed rural road,rural,3.31,0.5,16,12,19,False,-53.95,-33.06,6 km NE of Arrocera Las Palmas
-merin_arrozales,osm:275617268,Unnamed rural road,rural,4.28,0.4,16,12,19,False,-54.01,-33.48,24 km SW of Villa Passano
+merin_arrozales,Empalme Camino Ruta 15 y Destacamento,Empalme Camino Ruta 15 y Destacamento,rural,14.22,0.48,16,12,19,False,-53.98,-33.62,27 km W of San Luis al Medio
+merin_arrozales,osm:995146439,Unnamed rural road,rural,7.03,0.48,16,12,19,False,-53.71,-33.3,9 km E of Cebollatí
 merin_arrozales,osm:242959417,Unnamed rural road,rural,6.78,0.36,16,12,19,False,-53.96,-33.09,3 km NE of Arrocera Las Palmas
+merin_arrozales,osm:275617268,Unnamed rural road,rural,4.28,0.36,16,12,19,False,-54.01,-33.48,24 km SW of Villa Passano
 merin_arrozales,osm:995209503,Unnamed rural road,rural,4.52,0.36,16,12,19,False,-53.7,-33.25,9 km E of Cebollatí
+merin_arrozales,osm:994884612,Unnamed rural road,rural,6.38,0.34,16,12,19,False,-53.64,-33.43,21 km N of San Luis al Medio
+merin_arrozales,osm:994918465,Unnamed rural road,rural,8.01,0.28,16,12,19,False,-53.7,-33.41,18 km SE of Cebollatí
 merin_arrozales,osm:996281948,Unnamed rural road,rural,5.66,0.18,16,12,19,False,-53.82,-33.09,12 km NE of Arrocera Los Teros
-merin_arrozales,osm:996584565,Unnamed rural road,rural,4.93,0.16,16,12,19,False,-53.86,-33.54,15 km NW of San Luis al Medio
+merin_arrozales,osm:249547982,Unnamed rural road,rural,22.7,0.14,16,12,19,False,-53.77,-33.47,15 km N of San Luis al Medio
 merin_arrozales,osm:807839099,Unnamed rural road,rural,4.71,0.14,16,12,19,False,-53.88,-33.19,6 km SE of Arrocera Los Teros
 merin_arrozales,osm:995191360,Unnamed rural road,rural,2.44,0.14,16,12,19,False,-53.72,-33.41,17 km SE of Cebollatí
+merin_arrozales,osm:996584565,Unnamed rural road,rural,4.93,0.14,16,12,19,False,-53.86,-33.54,15 km NW of San Luis al Medio
 merin_arrozales,osm:1006124225,Unnamed rural road,rural,1.53,0.12,16,12,19,False,-54.06,-33.57,32 km W of San Luis al Medio
 merin_arrozales,osm:806147037,Unnamed rural road,rural,3.28,0.1,16,12,19,False,-53.83,-33.28,4 km SW of Cebollatí
 merin_arrozales,osm:996632671,Unnamed rural road,rural,0.92,0.08,16,12,19,False,-53.9,-33.11,5 km NE of Arrocera Los Teros
-merin_arrozales,Picada de Techera,Picada de Techera,rural,7.66,0.4,15,12,18,False,-53.89,-33.42,15 km S of Villa Passano
-merin_arrozales,osm:810550281,Unnamed rural road,rural,11.71,0.34,15,12,18,False,-54.01,-33.58,27 km W of San Luis al Medio
+merin_arrozales,osm:996632672,Unnamed rural road,rural,2.19,0.06,16,12,19,False,-53.91,-33.11,4 km N of Arrocera Los Teros
+merin_arrozales,osm:1246725224,Unnamed rural road,rural,1.79,0.04,16,12,19,False,-53.62,-33.49,16 km NE of San Luis al Medio
+merin_arrozales,osm:408381674,Unnamed rural road,rural,3.34,0.04,16,12,19,False,-53.63,-33.5,14 km NE of San Luis al Medio
+merin_arrozales,osm:734004731,Unnamed rural road,rural,4.52,0.04,16,12,19,False,-53.78,-33.5,12 km NW of San Luis al Medio
 merin_arrozales,osm:996591014,Unnamed rural road,rural,2.01,0.16,15,12,18,False,-53.82,-33.36,11 km S of Cebollatí
-merin_arrozales,osm:254818743,Unnamed rural road,rural,1.08,0.1,15,12,24,False,-53.65,-33.59,6 km E of San Luis al Medio
-merin_arrozales,osm:254818744,Unnamed rural road,rural,1.24,0.04,15,12,18,False,-53.66,-33.59,6 km NE of San Luis al Medio
+merin_arrozales,osm:995143556,Unnamed rural road,rural,3.29,0.12,15,12,18,False,-53.68,-33.33,13 km SE of Cebollatí
+merin_arrozales,osm:996203900,Unnamed rural road,rural,4.6,0.12,15,12,18,False,-53.76,-33.67,8 km SW of San Luis al Medio
 merin_arrozales,osm:996827853,Unnamed rural road,rural,6.85,0.9,12,6,18,False,-53.94,-33.69,23 km SW of San Luis al Medio
 merin_arrozales,osm:996593428,Unnamed rural road,rural,2.51,0.88,12,6,18,False,-53.86,-33.31,4 km SE of Villa Passano
 merin_arrozales,osm:996901802,Unnamed rural road,rural,13.61,0.76,12,6,18,False,-54.04,-33.64,31 km W of San Luis al Medio
@@ -123,32 +96,37 @@ merin_arrozales,osm:996593429,Unnamed rural road,rural,3.96,0.22,12,6,18,False,-
 merin_arrozales,osm:1006116944,Unnamed rural road,rural,4.42,0.18,12,6,18,False,-54.08,-33.53,32 km SW of Villa Passano
 merin_arrozales,osm:1020599664,Unnamed rural road,rural,0.4,0.18,12,6,18,False,-53.88,-33.74,21 km SW of San Luis al Medio
 merin_arrozales,osm:1011361674,Unnamed rural road,rural,0.65,0.16,12,6,18,False,-53.88,-33.62,15 km W of San Luis al Medio
-merin_arrozales,osm:996562420,Unnamed rural road,rural,1.65,0.16,12,6,19,False,-53.85,-33.75,20 km SW of San Luis al Medio
+merin_arrozales,osm:813142324,Unnamed rural road,rural,2.13,0.16,12,11,13,False,-54.09,-33.41,22 km SW of Villa Passano
+merin_arrozales,osm:996562420,Unnamed rural road,rural,1.65,0.14,12,6,18,False,-53.85,-33.75,20 km SW of San Luis al Medio
 merin_arrozales,osm:1020599667,Unnamed rural road,rural,0.52,0.12,12,6,18,False,-53.89,-33.75,22 km SW of San Luis al Medio
-merin_arrozales,osm:994924532,Unnamed rural road,rural,9.82,0.12,12,6,19,False,-53.65,-33.33,15 km SE of Cebollatí
 merin_arrozales,osm:994881919,Unnamed rural road,rural,0.63,0.1,12,6,18,False,-53.62,-33.53,12 km NE of San Luis al Medio
-merin_arrozales,osm:254798437,Unnamed rural road,rural,1.9,0.08,12,1,24,False,-53.73,-33.62,2 km S of San Luis al Medio
 merin_arrozales,osm:1020599666,Unnamed rural road,rural,0.19,0.06,12,6,18,False,-53.88,-33.75,22 km SW of San Luis al Medio
-merin_arrozales,osm:956192264,Unnamed rural road,rural,3.48,0.06,12,1,24,False,-53.92,-33.36,8 km S of Villa Passano
+merin_arrozales,osm:994924532,Unnamed rural road,rural,9.82,0.04,12,6,18,False,-53.65,-33.33,15 km SE of Cebollatí
 merin_arrozales,osm:997083734,Unnamed rural road,rural,0.95,0.04,12,6,18,False,-54.02,-33.17,7 km SE of Arrocera Santa Fé
-merin_arrozales,Barrancas,Barrancas,rural,28.57,0.6,10,1,19,False,-53.86,-33.67,14 km SW of San Luis al Medio
+merin_arrozales,Picada de Techera,Picada de Techera,rural,7.66,0.38,10,7,13,False,-53.89,-33.42,15 km S of Villa Passano
+merin_arrozales,osm:810550281,Unnamed rural road,rural,11.71,0.3,10,7,13,False,-54.01,-33.58,27 km W of San Luis al Medio
+merin_arrozales,osm:996212971,Unnamed rural road,rural,7.98,0.24,10,7,13,False,-53.8,-33.43,18 km S of Cebollatí
 merin_arrozales,osm:246397733,Unnamed rural road,rural,8.6,0.1,10,7,13,False,-53.85,-33.2,4 km W of La Charqueada
 merin_arrozales,osm:996585657,Unnamed rural road,rural,2.06,0.08,10,7,13,False,-53.79,-33.45,18 km NW of San Luis al Medio
 merin_arrozales,osm:204935244,Unnamed rural road,rural,12.92,0.06,10,7,13,False,-54.01,-33.15,6 km S of Arrocera Las Palmas
-merin_arrozales,osm:994924528,Unnamed rural road,rural,1.92,0.22,8,6,12,False,-53.65,-33.37,17 km SE of Cebollatí
-merin_arrozales,osm:995220842,Unnamed rural road,rural,3.13,0.2,8,5,12,False,-53.69,-33.03,1 km N of Arrozal Treinta y Tres
+merin_arrozales,osm:613054645,Unnamed rural road,rural,7.17,0.06,10,7,13,False,-53.95,-33.5,24 km S of Villa Passano
+merin_arrozales,osm:994903048,Unnamed rural road,rural,2.98,0.02,10,7,13,False,-53.63,-33.01,7 km NE of Arrozal Treinta y Tres
+merin_arrozales,osm:994924528,Unnamed rural road,rural,1.92,0.12,8,6,12,False,-53.65,-33.37,17 km SE of Cebollatí
 merin_arrozales,osm:956192274,Unnamed rural road,rural,4.53,0.06,8,5,12,False,-53.98,-33.44,18 km S of Villa Passano
+merin_arrozales,osm:995204644,Unnamed rural road,rural,4.25,0.06,8,5,12,False,-53.71,-33.32,10 km SE of Cebollatí
 merin_arrozales,osm:242979134,Unnamed rural road,rural,1.32,0.04,8,5,12,False,-53.91,-33.0,13 km NE of Arrocera Las Palmas
 merin_arrozales,osm:995203582,Unnamed rural road,rural,1.91,0.04,8,5,12,False,-53.74,-33.33,9 km SE of Cebollatí
 merin_arrozales,osm:996207818,Unnamed rural road,rural,2.17,0.04,8,5,12,False,-53.75,-33.54,8 km NW of San Luis al Medio
 merin_arrozales,osm:996219140,Unnamed rural road,rural,1.74,0.02,8,5,12,False,-53.77,-33.14,8 km NE of La Charqueada
 merin_arrozales,osm:1006166479,Unnamed rural road,rural,1.18,0.74,7,6,12,False,-54.09,-33.39,21 km SW of Villa Passano
+merin_arrozales,osm:996595248,Unnamed rural road,rural,5.14,0.1,7,6,8,False,-53.86,-33.08,10 km NE of Arrocera Los Teros
 merin_arrozales,osm:996212972,Unnamed rural road,rural,1.69,0.08,7,6,8,False,-53.75,-33.42,18 km S of Cebollatí
 merin_arrozales,Chico Loco,Chico Loco,rural,11.62,0.06,7,6,8,False,-53.65,-33.51,13 km NE of San Luis al Medio
 merin_arrozales,osm:949105752,Unnamed rural road,rural,3.85,0.06,7,6,12,False,-53.88,-33.61,16 km W of San Luis al Medio
 merin_arrozales,osm:956192235,Unnamed rural road,rural,0.47,0.04,7,6,8,False,-53.82,-33.48,17 km NW of San Luis al Medio
 merin_arrozales,osm:949105380,Unnamed rural road,rural,9.58,2.06,6,1,12,False,-53.93,-33.58,20 km W of San Luis al Medio
 merin_arrozales,osm:1006158147,Unnamed rural road,rural,5.62,0.7,6,1,12,False,-54.08,-33.66,34 km W of San Luis al Medio
+merin_arrozales,Barrancas,Barrancas,rural,28.57,0.58,6,1,12,False,-53.86,-33.67,14 km SW of San Luis al Medio
 merin_arrozales,osm:246397735,Unnamed rural road,rural,5.04,0.58,6,1,12,False,-54.09,-33.4,21 km SW of Villa Passano
 merin_arrozales,osm:996624075,Unnamed rural road,rural,2.96,0.52,6,1,12,False,-53.94,-33.72,25 km SW of San Luis al Medio
 merin_arrozales,osm:996564960,Unnamed rural road,rural,3.74,0.48,6,1,12,False,-53.87,-33.68,17 km SW of San Luis al Medio
@@ -158,6 +136,7 @@ merin_arrozales,osm:798097727,Unnamed rural road,rural,6.0,0.4,6,1,12,False,-54.
 merin_arrozales,osm:996624071,Unnamed rural road,rural,2.81,0.4,6,1,12,False,-53.98,-33.69,26 km SW of San Luis al Medio
 merin_arrozales,osm:798097721,Unnamed rural road,rural,4.07,0.36,6,1,12,False,-54.07,-33.32,17 km W of Villa Passano
 merin_arrozales,osm:804567125,Unnamed rural road,rural,5.22,0.36,6,1,12,False,-53.85,-33.3,5 km E of Villa Passano
+merin_arrozales,osm:798746487,Unnamed rural road,rural,11.25,0.3,6,1,12,False,-54.02,-33.37,14 km SW of Villa Passano
 merin_arrozales,osm:808684028,Unnamed rural road,rural,5.06,0.3,6,1,12,False,-54.08,-33.39,20 km SW of Villa Passano
 merin_arrozales,osm:1006166489,Unnamed rural road,rural,2.3,0.26,6,1,12,False,-54.04,-33.39,17 km SW of Villa Passano
 merin_arrozales,osm:798519784,Unnamed rural road,rural,1.68,0.26,6,1,12,False,-54.04,-33.29,13 km W of Villa Passano
@@ -167,11 +146,14 @@ merin_arrozales,osm:1011361673,Unnamed rural road,rural,0.57,0.2,6,1,12,False,-5
 merin_arrozales,osm:1252212371,Unnamed rural road,rural,1.1,0.2,6,1,12,False,-53.91,-33.67,20 km SW of San Luis al Medio
 merin_arrozales,osm:716796272,Unnamed rural road,rural,2.26,0.2,6,1,12,False,-53.93,-33.58,20 km W of San Luis al Medio
 merin_arrozales,osm:1006156306,Unnamed rural road,rural,3.28,0.18,6,1,12,False,-54.07,-33.67,34 km W of San Luis al Medio
+merin_arrozales,osm:253617645,Unnamed rural road,rural,2.73,0.18,6,1,12,False,-53.68,-33.71,12 km S of San Luis al Medio
 merin_arrozales,osm:797681594,Unnamed rural road,rural,7.61,0.18,6,1,12,False,-53.96,-33.29,6 km W of Villa Passano
 merin_arrozales,osm:798746483,Unnamed rural road,rural,7.9,0.18,6,1,12,False,-54.05,-33.36,16 km SW of Villa Passano
+merin_arrozales,osm:995177111,Unnamed rural road,rural,2.13,0.16,6,1,12,False,-53.68,-33.71,13 km S of San Luis al Medio
+merin_arrozales,osm:254770474,Unnamed rural road,rural,5.68,0.14,6,1,12,False,-53.67,-33.66,8 km SE of San Luis al Medio
 merin_arrozales,osm:808684029,Unnamed rural road,rural,1.24,0.14,6,1,12,False,-54.08,-33.4,20 km SW of Villa Passano
+merin_arrozales,osm:1006166480,Unnamed rural road,rural,0.86,0.12,6,1,12,False,-54.08,-33.38,20 km SW of Villa Passano
 merin_arrozales,osm:798746484,Unnamed rural road,rural,1.61,0.12,6,1,12,False,-54.03,-33.35,14 km SW of Villa Passano
-merin_arrozales,osm:254850676,Unnamed rural road,rural,3.37,0.08,6,1,12,False,-53.81,-33.74,17 km SW of San Luis al Medio
 merin_arrozales,osm:796427310,Unnamed rural road,rural,17.34,0.08,6,1,12,False,-53.74,-33.12,9 km SW of Arrozal Treinta y Tres
 merin_arrozales,osm:797688736,Unnamed rural road,rural,3.04,0.08,6,1,12,False,-54.02,-33.28,11 km W of Arrocera Procipa
 merin_arrozales,osm:1006166490,Unnamed rural road,rural,1.14,0.06,6,1,12,False,-54.05,-33.41,20 km SW of Villa Passano
@@ -179,27 +161,35 @@ merin_arrozales,osm:1006166492,Unnamed rural road,rural,1.03,0.06,6,1,12,False,-
 merin_arrozales,osm:186843376,Unnamed rural road,rural,12.7,0.06,6,1,12,False,-53.95,-33.27,5 km SW of Arrocera Procipa
 merin_arrozales,osm:994881925,Unnamed rural road,rural,6.37,0.06,6,1,12,False,-53.65,-33.44,20 km N of San Luis al Medio
 merin_arrozales,osm:254797357,Unnamed rural road,rural,0.37,0.04,6,1,12,False,-53.72,-33.63,3 km S of San Luis al Medio
+merin_arrozales,osm:254850676,Unnamed rural road,rural,3.37,0.04,6,1,12,False,-53.81,-33.74,17 km SW of San Luis al Medio
 merin_arrozales,osm:988735883,Unnamed rural road,rural,3.18,0.04,6,1,12,False,-53.85,-33.44,17 km S of Villa Passano
 merin_arrozales,osm:997083738,Unnamed rural road,rural,0.67,0.04,6,1,12,False,-53.98,-33.16,5 km W of Arrocera Bonomo
+merin_arrozales,Al Ceibo,Al Ceibo,rural,13.29,0.02,6,0,11,False,-53.82,-33.52,13 km NW of San Luis al Medio
 merin_arrozales,Ruta 15,Ruta 15,departmental,65.98,0.02,6,1,12,False,-53.85,-33.38,13 km S of Villa Passano
 merin_arrozales,osm:275617265,Unnamed rural road,rural,1.32,0.02,6,1,12,False,-54.1,-33.59,35 km W of San Luis al Medio
 merin_arrozales,osm:798754933,Unnamed rural road,rural,4.53,0.02,6,1,12,False,-53.98,-33.34,9 km SW of Villa Passano
+merin_arrozales,osm:956192240,Unnamed rural road,rural,2.38,0.02,6,1,12,False,-53.85,-33.5,17 km NW of San Luis al Medio
 merin_arrozales,osm:990884789,Unnamed rural road,rural,8.02,0.02,6,1,12,False,-54.06,-33.54,31 km SW of Villa Passano
 merin_arrozales,osm:995176293,Unnamed rural road,rural,2.27,0.02,6,1,12,False,-53.71,-33.73,14 km S of San Luis al Medio
+merin_arrozales,osm:995220842,Unnamed rural road,rural,3.13,0.18,4,0,7,False,-53.69,-33.03,1 km N of Arrozal Treinta y Tres
 merin_arrozales,osm:808556192,Unnamed rural road,rural,1.86,0.12,4,0,7,False,-53.75,-33.23,6 km NE of Cebollatí
-merin_arrozales,osm:996215949,Unnamed rural road,rural,2.84,0.12,4,0,7,False,-53.78,-33.29,3 km SE of Cebollatí
+merin_arrozales,osm:996215949,Unnamed rural road,rural,2.84,0.1,4,0,7,False,-53.78,-33.29,3 km SE of Cebollatí
 merin_arrozales,osm:808556206,Unnamed rural road,rural,0.68,0.08,4,0,7,False,-53.82,-33.21,1 km W of La Charqueada
 merin_arrozales,osm:956192230,Unnamed rural road,rural,4.44,0.08,4,0,7,False,-53.78,-33.48,15 km NW of San Luis al Medio
 merin_arrozales,osm:996215945,Unnamed rural road,rural,5.67,0.08,4,0,7,False,-53.75,-33.27,4 km E of Cebollatí
+merin_arrozales,osm:241637592,Unnamed rural road,rural,13.05,0.06,4,0,7,False,-53.88,-33.2,6 km SE of Arrocera Los Teros
 merin_arrozales,osm:589992747,Unnamed rural road,rural,2.17,0.06,4,0,7,False,-53.97,-33.07,3 km NE of Arrocera Las Palmas
 merin_arrozales,osm:808556207,Unnamed rural road,rural,1.8,0.06,4,0,7,False,-53.82,-33.2,2 km W of La Charqueada
 merin_arrozales,osm:1389684869,Unnamed rural road,rural,1.55,0.04,4,0,7,False,-53.94,-33.02,10 km NE of Arrocera Las Palmas
 merin_arrozales,osm:806425350,Unnamed rural road,rural,3.7,0.04,4,0,7,False,-53.98,-33.15,4 km W of Arrocera Bonomo
 merin_arrozales,osm:808556222,Unnamed rural road,rural,2.42,0.04,4,0,7,False,-53.86,-33.21,5 km W of La Charqueada
 merin_arrozales,Camino San Luis - Arroyo,Camino San Luis - Arroyo,rural,6.81,0.02,4,0,7,False,-53.68,-33.59,4 km NE of San Luis al Medio
+merin_arrozales,osm:254801137,Unnamed rural road,rural,1.72,0.02,4,0,7,False,-53.75,-33.65,6 km SW of San Luis al Medio
+merin_arrozales,osm:254818743,Unnamed rural road,rural,1.08,0.02,4,0,7,False,-53.65,-33.59,6 km E of San Luis al Medio
+merin_arrozales,osm:734004733,Unnamed rural road,rural,0.38,0.02,4,0,7,False,-53.77,-33.5,12 km NW of San Luis al Medio
+merin_arrozales,osm:996212977,Unnamed rural road,rural,8.37,0.02,4,0,7,False,-53.76,-33.38,13 km S of Cebollatí
 merin_arrozales,osm:134629504,Unnamed rural road,rural,0.41,0.06,3,0,6,False,-53.61,-33.57,10 km NE of San Luis al Medio
-merin_arrozales,osm:956192254,Unnamed rural road,rural,2.64,0.06,3,0,6,False,-53.96,-33.39,12 km SW of Villa Passano
-merin_arrozales,osm:134629503,Unnamed rural road,rural,4.99,0.04,3,0,6,False,-53.61,-33.59,10 km E of San Luis al Medio
+merin_arrozales,osm:956192254,Unnamed rural road,rural,2.64,0.04,3,0,6,False,-53.96,-33.39,12 km SW of Villa Passano
 merin_arrozales,osm:956192256,Unnamed rural road,rural,2.67,0.04,3,0,6,False,-53.97,-33.39,13 km SW of Villa Passano
 melo,Tropas,Tropas,rural,0.87,0.02,18,12,24,False,-54.19,-32.35,2 km NE of Barrio López Benítez
 rio_branco_jaguarao,osm:993678056,Unnamed rural road,rural,1.26,0.96,66,66,66,True,-53.31,-32.65,1 km E of Casarone
@@ -215,5 +205,5 @@ rio_branco_jaguarao,osm:993924797,Unnamed rural road,rural,0.84,0.02,18,12,24,Fa
 durazno,osm:1000438513,Unnamed rural road,rural,3.32,0.1,24,12,36,False,-56.6,-33.42,8 km SW of Durazno
 durazno,osm:1271772257,Unnamed rural road,rural,1.04,0.26,12,0,24,False,-56.51,-33.3,9 km N of Durazno
 durazno,osm:818880448,Unnamed rural road,rural,0.72,0.1,12,0,24,False,-56.5,-33.43,6 km S of Durazno
-mercedes,osm:553861546,Unnamed rural road,rural,1.53,0.3,30,16,43,False,-58.09,-33.3,8 km SW of Mercedes
+mercedes,osm:553861546,Unnamed rural road,rural,1.53,0.08,8,4,12,False,-58.09,-33.3,8 km SW of Mercedes
 mercedes,Rambla Francisco Mario Ubillos,Rambla Francisco Mario Ubillos,rural,1.72,0.08,6,1,12,False,-58.05,-33.25,1 km SW of Los Arrayanes

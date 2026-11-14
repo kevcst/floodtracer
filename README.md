@@ -166,8 +166,8 @@ cd scripts && python metricas_evento.py && python armonizar_tracks.py && python 
    - **Agua base** (permanente): HH bajo el umbral calibrado por track (agua perm. + 30 % de la distancia a tierra, en [−20, −17,5] dB) en la mayoría de las fechas de la línea de base (antes del 27/7; Durazno antes del 20/7).
    - **Agua nueva (detector por cambio):** HH del día − mediana HH de la base del mismo píxel < **−3 dB**, HH < **−14 dB**, fuera del agua base, manchas ≥ **10 px** (0,4 ha). Antes, cada pasada se normaliza restando la mediana del cambio en toda la escena (corrige pasadas enteras más oscuras/claras). `--metodo umbral` reproduce el detector viejo.
    - **Persistencia como intervalo:** mín = última pasada mojada − primera; máx = primera pasada seca − pasada previa a la llegada del agua (nunca antes del 15/8). Se guarda el punto medio y ambas cotas.
-3. **`armonizar_tracks.py`:** mide la coincidencia (Jaccard) entre tracks distintos a ≤ 1 día. Con umbral absoluto daba 0,18–0,49 por zona; con el detector por cambio 0,27–0,58 (Merín 0,58, Río Branco 0,56, TyT 0,48; Mercedes 0,27, con muy poca agua). Hallazgo: con umbral fijo los tracks **descendentes** (~6 h, amanecer, viento calmo) veían 2–3× más agua que los **ascendentes** (~18 h, viento → agua rugosa). Comparar cada píxel contra sí mismo cancela geometría, ángulo, calibración y buena parte del viento.
-4. **`combinar_tracks.py`:** junta las máscaras de todos los tracks (grilla del track con más fechas). **Extensión confirmada** = agua nueva en ≥ 2 observaciones del 10/8 al 10/9 (es la cifra principal). Retiro = 2 observaciones secas seguidas. Persistencia con intervalo.
+3. **`armonizar_tracks.py`:** mide la coincidencia (Jaccard) entre tracks distintos a ≤ 1 día. Con umbral absoluto daba 0,18–0,49 por zona; con el detector por cambio 0,27–0,58 (Merín 0,58, Río Branco 0,56, TyT 0,48; Mercedes 0,27, con muy poca agua). Hallazgo: con umbral fijo los tracks **descendentes** (~18:30 hora local, atardecer) veían 2–3× más agua que los **ascendentes** (~06:30, amanecer). Causa abierta: ángulo y dirección de observación de cada track, rocío matinal sobre la vegetación (aclara el agua somera en los ascendentes), o una combinación. Comparar cada píxel contra sí mismo cancela todas a la vez.
+4. **`combinar_tracks.py`:** junta las máscaras de todos los tracks (grilla del track con más fechas). **Agua previa** = mojada en alguna pasada del 10–14/8, después del hueco de datos y antes de la lluvia (venía de julio): se reporta aparte (`agua_previa.tif`) y queda fuera de extensión, persistencia, ha·día y caminos. **Extensión confirmada** = agua nueva en ≥ 2 observaciones del 15/8 al 10/9 (cifra principal). Retiro = 2 observaciones secas seguidas. Persistencia con intervalo. Un track sin pasada antes del 15/8 (53D) usa la previa del combinado (`previa_en_grilla`).
 5. **`sensibilidad.py`:** barre caída ∈ {−2…−4} dB × techo ∈ {−13, −14, −15} dB. El rango mín–máx es la banda de la app (no es un intervalo estadístico).
 6. **`capas_contexto.py`:** sólo contexto. OSM (localidades, manchas urbanas, caminos, ríos, departamentos) desde el extracto de Geofabrik con el driver OSM de GDAL; HydroBASINS nivel 8; ESA WorldCover 2021 reproyectado por moda a cada track.
 7. **`monte_ribereno.py`:** HAND = suelo (mínimo de 500 m sobre el DSM) − suelo del cauce OSM más cercano. Ribereño = monte con HAND < 4 m y < 1 km del cauce; de altura = HAND > 12 m. Exceso ribereño = subida de HH−HV del ribereño − subida del de altura (resta la humedad general). Mapa `veg_inundada_ribereno.tif`: píxel ribereño que sube > 2 dB más que el monte de altura y con HH > +1 dB.
@@ -203,13 +203,14 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 
 ---
 
-## 8. Resultados (2026-11-14, detector por cambio)
+## 8. Resultados (2026-11-14, detector por cambio, sin agua previa)
 
-- **Extensión confirmada (≥ 2 observaciones):** Merín 75.154 ha (track 53D solo: 52–94 mil según parámetros) · Treinta y Tres 9.343 ha · Río Branco 2.510 ha · Mercedes 406 ha · Durazno 341 ha (un track) · Melo 58 ha. Total ≈ 87.800 ha.
-- **Retiro en Merín (53D):** 79 % de la extensión mojada el 28/8, 24 % el 21/9. Persistencia típica 10 días (intervalo mediano 1–13) en Merín y TyT; 18 días en Río Branco.
-- **Caminos:** 66 km de caminería rural bajo agua en Merín (54 km más de una semana), 19 km en TyT.
-- **Cobertura:** en Merín se inundaron 35 mil ha de pradera, 20 mil de cultivo (arroz) y 17 mil de humedal (46 % del humedal).
-- **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes (+0,15 a +0,78 dB), en Río Branco (2 tracks) y en Merín (3 tracks); nulo o negativo en Treinta y Tres, Melo y Durazno.
+- **Inundado por la tormenta (≥ 2 observaciones, 15/8–10/9):** Merín 47.927 ha (track 53D solo: 30–67 mil según parámetros) · Treinta y Tres 6.290 · Río Branco 2.510 · Durazno 341 (un track) · Mercedes 180 · Melo 35. Total ≈ 57.300 ha.
+- **Ya mojado antes de la lluvia (10–14/8, aparte):** ≈ 31.100 ha (Merín 27.700, TyT 3.100, Mercedes 240). La tormenta cayó sobre suelos ya saturados por las lluvias de julio.
+- **Retiro en Merín (53D):** 70 % del área inundada seguía mojada el 28/8, 15 % el 21/9. Persistencia típica 6 días (intervalo mediano 1–12) en Merín, 10 en TyT, 18 en Río Branco.
+- **Caminos:** 42 km de caminería rural bajo agua en Merín (29 km más de una semana), 13 km en TyT. Máximo 66 días (desde el 15/8 hasta el fin de la serie).
+- **Cobertura en Merín:** 24.600 ha de pradera, 14.100 de cultivo (arroz), 7.800 de humedal.
+- **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes, en Río Branco y en Merín; nulo o negativo en Treinta y Tres, Melo y Durazno.
 - **Validación** (`docs/validacion.md`): Jaccard entre tracks a ≤ 1 día 0,32 → 0,48; contra Sentinel-1 NISAR encuentra el 66 % del agua S1, F1 0,45 (estricta) / 0,52 (laxa); NISAR mapea más agua somera que la banda C → las extensiones son cota alta. Débil en Durazno.
 
 ---

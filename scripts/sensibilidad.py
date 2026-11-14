@@ -15,7 +15,7 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from metricas_evento import BASE, CAMBIO_DB, EVENTO, FIN_BASE, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva
+from metricas_evento import BASE, CAMBIO_DB, EVENTO, FIN_BASE, INICIO_LLUVIA, previa_en_grilla, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva
 from zonas import ZONAS
 
 CAMBIOS = [-2.0, -2.5, -3.0, -3.5, -4.0]
@@ -27,6 +27,7 @@ def procesar(zona, tdir):
     fechas = pd.DatetimeIndex(fechas)
     es_base = np.asarray(fechas < pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE)))
     es_ev = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    es_previa = es_ev & np.asarray(fechas < INICIO_LLUVIA)      # 10–14/8: agua previa, fuera de la extensión
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
     agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
@@ -36,12 +37,16 @@ def procesar(zona, tdir):
     por_fecha, resumen = [], []
     for c, t in itertools.product(CAMBIOS, TECHOS):
         ext = np.zeros(valid.shape, bool)
+        previa = np.zeros(valid.shape, bool)
         for i, f in enumerate(fechas):
             m = detectar_nueva(hh[i], med, agua_base, cambio=c, techo=t) & valid
             por_fecha.append(dict(zona=zona, track=tdir.name, fecha=f.date(), cambio=c, techo=t,
                                   pct_agua_nueva=100 * m.sum() / nv))
-            if es_ev[i]:
+            if es_previa[i]:
+                previa |= m
+            elif es_ev[i]:
                 ext |= m
+        ext &= ~previa_en_grilla(zona, perfil, previa)   # incluye la previa vista por otros tracks
         resumen.append(dict(zona=zona, track=tdir.name, cambio=c, techo=t, ha_extension_max=ext.sum() * ha_px,
                             pct_extension_max=100 * ext.sum() / nv))
     print(f"== {zona}/{tdir.name}")

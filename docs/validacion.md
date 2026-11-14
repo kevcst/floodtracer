@@ -15,7 +15,7 @@ Dos pasadas de órbitas distintas separadas por 1 día deberían ver casi la mis
 | Río Branco (31A ↔ 53D) | 0,39 | 0,56 |
 | Mercedes (161A ↔ 10D) | 0,18 | 0,27 |
 
-- Con umbral fijo, en el pico (22–23/8) los **descendentes** veían 2–3× más agua que los **ascendentes**. NISAR vuela en órbita amanecer–atardecer: a las ~6 h el viento suele estar calmo y el agua somera queda oscura; a las ~18 h el viento la riza y la aclara. Comparar cada píxel contra su propia base cancela geometría, ángulo, calibración y buena parte del viento.
+- Con umbral fijo, en el pico (22–23/8) los **descendentes** veían 2–3× más agua que los **ascendentes**. NISAR vuela en órbita amanecer–atardecer. Según los nombres de las escenas (UTC), los **ascendentes pasan ~09:30–10:00 UTC = 06:30–07:00 hora local** y los **descendentes ~21:35–22:00 UTC = 18:35–19:00**. O sea: las pasadas de la **tarde** ven más agua. (Una versión anterior de este documento tenía los horarios invertidos y lo atribuía al viento calmo del amanecer; eso no cierra.) Causa abierta: ángulo y dirección de observación de cada track, rocío matinal sobre pasto y cultivo que aclara el agua somera en los ascendentes, o una combinación. Comparar cada píxel contra su propia base cancela todas esas causas sin necesidad de saber cuál domina.
 - La normalización por escena corrigió la pasada del 27/9 (132A, TyT), que estaba 1,4 dB más oscura en toda la escena (de 5,7 % de agua falsa a 1,2 %).
 - Barrido de parámetros (`--barrido`): meseta en Jaccard ≈ 0,48–0,49; el elegido (−3 / −14 / 10 px) está a 0,01 del mejor.
 - Lo que no llega: Mercedes tiene muy poca agua abierta (ruido de borde) y el par 27–28/8 de Río Branco (4 % vs. 13 %) probablemente es un cambio real en un día de crecida del Yaguarón.

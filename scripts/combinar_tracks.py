@@ -7,7 +7,8 @@ las máscaras de agua nueva 0/1 en una grilla común → revisita ~6 días en ve
   python scripts/combinar_tracks.py [--zona treinta_y_tres]
 
 Reglas por píxel sobre la secuencia de observaciones (todas las pasadas, todos los tracks, por fecha):
-  - primera  = primera observación del evento (10/8–10/9) con agua nueva
+  - agua previa = mojada en alguna obs. del 10–14/8 (antes de la lluvia): aparte, fuera de todo lo que sigue
+  - primera  = primera observación de la tormenta (15/8–10/9) con agua nueva
   - retiro   = primera observación seca posterior que es seguida por OTRA observación seca (o es la última):
                evita que una sola pasada de otra geometría que "no ve" el agua cuente como retiro
   - persistencia = intervalo [última obs mojada − primera, retiro − obs previa (≥ 15/8)]; se guarda el punto medio
@@ -25,7 +26,7 @@ import pandas as pd
 import rasterio
 from rasterio.warp import Resampling, reproject
 
-from metricas_evento import BASE, EVENTO, guardar, intervalos_persistencia
+from metricas_evento import BASE, EVENTO, INICIO_LLUVIA, guardar, intervalos_persistencia
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -62,8 +63,12 @@ def procesar(zona):
     es_evento = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
     doy = np.asarray(fechas.day_of_year)
 
-    ext_max = (agua & es_evento[:, None, None]).any(axis=0)
-    # extensión confirmada: agua nueva en ≥ 2 observaciones (de cualquier track) entre el 10/8 y el 10/9.
+    # agua previa: mojada en alguna observación del 10–14/8 (antes de la lluvia) → aparte, fuera del evento
+    es_previa = es_evento & np.asarray(fechas < INICIO_LLUVIA)
+    agua_previa = (agua & es_previa[:, None, None]).any(axis=0)
+    es_evento = es_evento & ~es_previa                          # desde acá, "evento" = tormenta (15/8–10/9)
+    ext_max = (agua & es_evento[:, None, None]).any(axis=0) & ~agua_previa
+    # extensión confirmada: agua nueva en ≥ 2 observaciones (de cualquier track) entre el 15/8 y el 10/9.
     # Descarta lo que sólo ve una pasada (charco efímero o falsa alarma de un track).
     n_mojado = (agua & ok)[:, :, :].sum(axis=0)
     ext_conf = ext_max & ((agua & es_evento[:, None, None]).sum(axis=0) >= 2)
@@ -105,6 +110,7 @@ def procesar(zona):
     guardar(out / "persistencia_max.tif", pmax, perfil, "int16", -1)
     guardar(out / "n_obs.tif", n_obs, perfil, "uint8")
     guardar(out / "extension_confirmada.tif", ext_conf, perfil, "uint8")
+    guardar(out / "agua_previa.tif", agua_previa, perfil, "uint8")
     guardar(out / "n_mojado.tif", np.minimum(n_mojado, 254), perfil, "uint8")
 
     cubierto = ok.any(axis=0)
@@ -114,6 +120,7 @@ def procesar(zona):
                 obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if EVENTO[0] <= f <= EVENTO[1]),
                 pct_extension_max=100 * ext_max.sum() / nv,
                 ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                ha_agua_previa=agua_previa.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
                 ha_extension_confirmada=ext_conf.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
                 pct_extension_confirmada=100 * ext_conf.sum() / nv,
                 persistencia_mediana_dias=float(np.median(pv)) if pv.size else np.nan,

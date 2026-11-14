@@ -1,32 +1,32 @@
 zona,nombre,ha_area,ha_inundada,pct_inundada,ha_dia,ha_dia_min,ha_dia_max,ha_sigue,retiro_mediano,hybas_id
-treinta_y_tres,Arroyo de los Arrayanes (24 km SE of Treinta y Tres),3068.64,1247.68,40.66,20014.4,6940.28,33088.52,1.68,2026-09-03,6080887560
-treinta_y_tres,Río Olimar Grande (9 km E of Treinta y Tres),39952.44,2742.92,6.87,34568.0,9194.56,59941.44,31.52,2026-09-03,6080887170
-treinta_y_tres,Arroyo de los Ceibos (13 km E of Poblado Alonzo),6814.08,105.68,1.55,3731.56,3087.12,4376.0,27.92,2026-09-15,6080887100
-treinta_y_tres,Arroyo Corrales (13 km SE of Villa Sara),28866.08,4949.76,17.15,127876.8,69958.08,185795.52,111.88,2026-09-03,6080889420
-treinta_y_tres,Río Olimar Chico (11 km SW of Villa Sara),6570.52,13.76,0.21,228.88,90.0,367.76,0.0,2026-09-03,6080886980
-treinta_y_tres,Arroyo Sauce de Olimar (10 km NW of Villa Sara),16300.84,171.28,1.05,2642.24,994.56,4289.92,0.44,2026-09-03,6080887090
-treinta_y_tres,Río Olimar Grande (13 km NW of Villa Sara),2209.72,4.48,0.2,110.64,66.08,155.2,0.0,2026-09-15,6080886950
-treinta_y_tres,Arroyo de los Porongos (15 km E of Poblado Alonzo),5205.04,17.8,0.34,515.44,293.12,737.76,0.0,2026-09-15,6080886710
-treinta_y_tres,Arroyo Yerbal Grande (4 km NW of Poblado Alonzo),15158.84,89.36,0.59,1364.64,545.68,2183.6,0.44,2026-09-03,6080886990
-merin_arrozales,Arroyo San Miguel (14 km SW of San Luis al Medio),23052.0,5841.08,25.34,104992.0,72069.44,139411.04,146.24,2026-09-03,6080890230
-merin_arrozales,Río San Luis (11 km W of San Luis al Medio),94840.92,22867.2,24.11,616880.24,462962.28,774861.16,1404.72,2026-09-03,6080890220
-merin_arrozales,Arroyo de Pelotas (19 km S of Villa Passano),60949.4,15068.36,24.72,346224.84,245007.0,449735.68,331.6,2026-09-03,6080889400
-merin_arrozales,Basin 15 km NE of San Luis al Medio,1114.8,396.12,35.53,10395.48,7220.0,13595.36,0.0,2026-09-09,6080889410
-merin_arrozales,Río Cebollatí (13 km SW of Villa Passano),32400.32,5603.44,17.29,74426.36,44556.48,106125.68,90.52,2026-08-28,6080887560
-merin_arrozales,Cañada Grande (11 km E of Cebollatí),36298.56,11089.28,30.55,286180.96,216074.84,357910.16,255.04,2026-09-09,6080886180
-merin_arrozales,Río Olimar Grande (2 km W of Arrocera Procipa),8496.48,297.32,3.5,3333.24,2010.96,4643.36,0.0,2026-08-28,6080887500
-merin_arrozales,Río Cebollatí (4 km NW of Cebollatí),11232.44,619.6,5.52,5926.76,2636.08,9417.48,0.36,2026-08-28,6080886810
-merin_arrozales,Río Olimar Grande (12 km W of Arrocera Procipa),9153.28,817.64,8.93,12107.56,7647.2,17040.76,35.08,2026-08-28,6080887170
-merin_arrozales,Río Cebollatí (7 km E of La Charqueada),13136.64,2969.8,22.61,97992.52,87074.76,109766.92,791.36,2026-09-09,6080886340
+treinta_y_tres,Arroyo de los Arrayanes (24 km SE of Treinta y Tres),3068.64,971.0,31.64,10221.68,1495.8,18947.56,0.0,2026-09-03,6080887560
+treinta_y_tres,Río Olimar Grande (9 km E of Treinta y Tres),39952.44,2532.68,6.34,26677.2,4076.16,49278.24,11.04,2026-09-03,6080887170
+treinta_y_tres,Arroyo de los Ceibos (13 km E of Poblado Alonzo),6814.08,62.6,0.92,1916.36,1650.56,2182.16,15.48,2026-09-15,6080887100
+treinta_y_tres,Arroyo Corrales (13 km SE of Villa Sara),28866.08,2491.08,8.63,27719.2,5710.88,49727.52,17.84,2026-09-03,6080889420
+treinta_y_tres,Río Olimar Chico (11 km SW of Villa Sara),6570.52,11.12,0.17,121.6,26.56,216.64,0.0,2026-09-03,6080886980
+treinta_y_tres,Arroyo Sauce de Olimar (10 km NW of Villa Sara),16300.84,138.84,0.85,1547.36,345.44,2749.28,0.44,2026-09-03,6080887090
+treinta_y_tres,Río Olimar Grande (13 km NW of Villa Sara),2209.72,1.72,0.08,24.72,10.48,38.96,0.0,2026-09-03,6080886950
+treinta_y_tres,Arroyo de los Porongos (15 km E of Poblado Alonzo),5205.04,4.32,0.08,70.72,41.8,99.64,0.0,2026-09-15,6080886710
+treinta_y_tres,Arroyo Yerbal Grande (4 km NW of Poblado Alonzo),15158.84,77.08,0.51,911.44,236.6,1586.28,0.0,2026-09-03,6080886990
+merin_arrozales,Arroyo San Miguel (14 km SW of San Luis al Medio),23052.0,4433.76,19.23,55590.76,35517.8,76956.12,5.56,2026-09-03,6080890230
+merin_arrozales,Río San Luis (11 km W of San Luis al Medio),94840.92,11510.04,12.14,147501.72,97934.32,199720.52,358.44,2026-08-28,6080890220
+merin_arrozales,Arroyo de Pelotas (19 km S of Villa Passano),60949.4,8172.2,13.41,101913.32,66889.64,137589.36,55.48,2026-09-03,6080889400
+merin_arrozales,Basin 15 km NE of San Luis al Medio,1114.8,142.88,12.82,1711.28,1141.24,2273.28,0.0,2026-08-28,6080889410
+merin_arrozales,Río Cebollatí (13 km SW of Villa Passano),32400.32,4508.88,13.92,41632.52,21033.76,63798.84,9.52,2026-08-28,6080887560
+merin_arrozales,Cañada Grande (11 km E of Cebollatí),36298.56,6929.8,19.09,131130.48,102052.56,160804.4,163.72,2026-09-04,6080886180
+merin_arrozales,Río Olimar Grande (2 km W of Arrocera Procipa),8496.48,236.48,2.78,2001.04,1025.0,2947.44,0.0,2026-08-28,6080887500
+merin_arrozales,Río Cebollatí (4 km NW of Cebollatí),11232.44,564.04,5.02,4700.44,1921.72,7696.2,0.0,2026-08-28,6080886810
+merin_arrozales,Río Olimar Grande (12 km W of Arrocera Procipa),9153.28,651.6,7.12,5250.52,2058.48,8889.28,1.36,2026-08-28,6080887170
+merin_arrozales,Río Cebollatí (7 km E of La Charqueada),13136.64,2669.92,20.32,85414.6,76158.28,95528.16,675.84,2026-09-15,6080886340
 merin_arrozales,Basin 11 km SE of Arrozal Treinta y Tres,107.32,4.12,3.84,49.44,24.72,74.16,0.0,2026-09-15,6080885780
-merin_arrozales,Arroyo de los Ceibos (10 km S of Arrocera Santa Fé),4318.92,355.92,8.24,3372.8,1610.56,5275.52,0.36,2026-08-28,6080887100
-merin_arrozales,Río Cebollatí (14 km SE of Arrozal Treinta y Tres),454.4,74.36,16.36,1592.64,1282.84,1903.32,0.88,2026-09-21,6080886210
-merin_arrozales,Arroyo de Ayala (6 km SE of Arrozal Treinta y Tres),5318.8,1469.28,27.62,51157.88,44620.16,57889.68,288.04,2026-09-21,6080885770
-merin_arrozales,Basin 6 km E of Arrozal Treinta y Tres,4442.72,1334.88,30.05,47381.12,42655.36,51941.56,339.36,2026-09-21,6080885380
-merin_arrozales,Arroyo de Ayala (5 km SW of Arrozal Treinta y Tres),20815.0,3002.32,14.42,82665.6,70681.84,94313.56,412.2,2026-09-03,6080886290
-merin_arrozales,Arroyo del Parao (4 km E of Arrocera Las Palmas),60588.64,3199.36,5.28,38345.2,23019.32,52792.16,35.24,2026-08-28,6080886710
-merin_arrozales,Basin 6 km NE of Arrozal Treinta y Tres,700.48,135.76,19.38,3623.44,3123.08,4081.16,31.44,2026-08-22,6080884770
-melo,Arroyo Conventos (in Melo),24444.24,57.84,0.24,2374.16,2074.56,2673.76,20.16,2026-09-08,6080882130
+merin_arrozales,Arroyo de los Ceibos (10 km S of Arrocera Santa Fé),4318.92,341.88,7.92,2925.72,1294.12,4695.04,0.16,2026-08-28,6080887100
+merin_arrozales,Río Cebollatí (14 km SE of Arrozal Treinta y Tres),454.4,72.56,15.97,1561.44,1265.96,1859.16,0.68,2026-09-21,6080886210
+merin_arrozales,Arroyo de Ayala (6 km SE of Arrozal Treinta y Tres),5318.8,1216.56,22.87,41168.84,36355.84,46107.24,224.0,2026-09-21,6080885770
+merin_arrozales,Basin 6 km E of Arrozal Treinta y Tres,4442.72,1171.64,26.37,40950.88,36908.56,44798.28,281.24,2026-09-21,6080885380
+merin_arrozales,Arroyo de Ayala (5 km SW of Arrozal Treinta y Tres),20815.0,2547.28,12.24,67289.0,58090.4,76075.8,332.68,2026-09-03,6080886290
+merin_arrozales,Arroyo del Parao (4 km E of Arrocera Las Palmas),60588.64,2679.6,4.42,25729.36,14311.88,36254.48,15.2,2026-08-28,6080886710
+merin_arrozales,Basin 6 km NE of Arrozal Treinta y Tres,700.48,67.4,9.62,517.8,250.72,723.72,0.0,2026-08-22,6080884770
+melo,Arroyo Conventos (in Melo),24444.24,34.84,0.14,1238.48,1118.56,1358.4,11.52,2026-09-08,6080882130
 rio_branco_jaguarao,Basin in Casarone,134.6,24.36,18.1,1272.48,1219.72,1330.16,12.48,2026-10-14,6080881010
 rio_branco_jaguarao,Basin 10 km NE of Río Branco,1318.68,30.0,2.28,1250.64,1171.48,1333.96,14.88,2026-09-08,6080880770
 rio_branco_jaguarao,Rio Jaguarão / Río Yaguarón (2 km N of Río Branco),19831.52,1920.52,9.68,68673.64,60390.56,77035.28,576.88,2026-09-08,6080880980
@@ -38,6 +38,6 @@ durazno,Río Yi (11 km E of Durazno) · 8650,964.36,1.8,0.19,25.0,9.6,40.4,0.0,2
 durazno,Río Yi (3 km NE of Durazno),25482.92,279.24,1.1,7208.92,4744.32,9673.52,24.24,2026-09-22,6080888320
 durazno,Basin 11 km NW of Durazno,865.08,33.96,3.93,776.64,369.12,1184.16,0.0,2026-10-04,6080887320
 durazno,Río Yi (11 km E of Durazno) · 8620,220.0,0.0,0.0,0.0,0.0,0.0,0.0,,6080888620
-mercedes,Arroyo Bequeló (6 km E of Mercedes),8351.92,87.56,1.05,1387.12,722.36,2071.76,0.88,2026-09-05,6080886930
-mercedes,Río Negro (3 km SW of Mercedes),13880.08,267.04,1.92,6446.28,4071.96,8844.36,4.88,2026-09-06,6080016720
-mercedes,Río Negro (3 km N of Los Arrayanes),1315.76,51.68,3.93,1378.48,939.0,1828.48,0.0,2026-09-10,6080886920
+mercedes,Arroyo Bequeló (6 km E of Mercedes),8351.92,51.48,0.62,852.8,623.08,1105.0,0.88,2026-09-10,6080886930
+mercedes,Río Negro (3 km SW of Mercedes),13880.08,105.6,0.76,1784.36,1330.24,2272.48,2.96,2026-09-10,6080016720
+mercedes,Río Negro (3 km N of Los Arrayanes),1315.76,22.6,1.72,296.56,204.92,401.76,0.0,2026-09-10,6080886920

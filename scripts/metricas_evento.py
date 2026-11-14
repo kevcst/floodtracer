@@ -9,7 +9,8 @@ Métricas de la crecida de agosto 2026 por zona y track ("¿Cuánto tiempo se qu
 Entrada : data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif  (gamma0 lineal, misma grilla por track)
 Salida  : .../T*/metricas/
             agua_base.tif         1 = agua "normal" (mayoría de fechas jun–jul)
-            extension_max.tif     1 = agua nueva en alguna pasada del evento (10/8–10/9)
+            extension_max.tif     1 = agua nueva en alguna pasada de la tormenta (15/8–10/9) que no estaba antes
+            agua_previa.tif       1 = agua nueva ya presente en las pasadas del 10–14/8 (antes de la lluvia; aparte)
             primera_fecha.tif     día del año de la primera pasada con agua nueva (0 = nunca)
             fecha_retiro.tif      día del año de la primera pasada seca después (0 = no aplica, 999 = sigue con agua)
             persistencia_dias.tif punto medio del intervalo de persistencia (días; -1 = no aplica)
@@ -77,6 +78,23 @@ def detectar_nueva(hh, hh_base_med, agua_base, metodo="cambio", umbral=UMBRAL_DE
     off = float(np.nanmedian(d[tierra])) if normalizar and tierra.any() else 0.0
     m = (d - off < cambio) & (hh < techo) & ~agua_base
     return filtrar_mmu(m, mmu)
+
+
+def previa_en_grilla(zona, perfil, propia=None):
+    """Agua previa (ya mojada el 10–14/8) llevada a la grilla de un track. Usa la del COMBINADO si existe, porque un
+    track sin pasada antes del 15/8 (p. ej. 53D) no puede separarla solo. Si no, la propia del track."""
+    from rasterio.warp import Resampling, reproject
+
+    f = BASE / zona / "combinado" / "agua_previa.tif"
+    if not f.exists():
+        return propia if propia is not None else np.zeros((perfil["height"], perfil["width"]), bool)
+    with rasterio.open(f) as r:
+        src, ps = r.read(1), r.profile
+    out = np.zeros((perfil["height"], perfil["width"]), "uint8")
+    reproject(src, out, src_transform=ps["transform"], src_crs=ps["crs"], dst_transform=perfil["transform"],
+              dst_crs=perfil["crs"], resampling=Resampling.nearest)
+    out = out == 1
+    return out | propia if propia is not None else out
 
 
 def intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, primera_i):
@@ -197,9 +215,18 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
                       for i in range(len(fechas))])            # agua nueva por fecha
     W = (W_abs & agua_base) | nueva                             # agua total = base + nueva
 
-    ext_max = nueva[es_evento].any(axis=0)
+    # agua previa: agua nueva en pasadas de la ventana ANTERIORES a la lluvia (10–14/8, después del hueco de datos).
+    # Venía de las lluvias de julio y del hueco; no se le puede atribuir a la tormenta ni fechar su llegada,
+    # así que se reporta aparte (agua_previa.tif) y queda FUERA de la extensión y la persistencia del evento.
+    es_previa = es_evento & np.asarray(fechas < INICIO_LLUVIA)
+    agua_previa = nueva[es_previa].any(axis=0) if es_previa.any() else np.zeros(valid.shape, bool)
+    es_tormenta = es_evento & ~es_previa
+    if not es_tormenta.any():
+        print("   ! sin pasadas después del 15/8 en la ventana, se saltea")
+        return None, []
+    ext_max = nueva[es_tormenta].any(axis=0) & ~agua_previa
     doy = np.asarray(fechas.day_of_year)
-    idx_ev = np.where(es_evento)[0]
+    idx_ev = np.where(es_tormenta)[0]
 
     # primera pasada del evento con agua nueva y primera pasada seca posterior (cualquier fecha hasta el final)
     primera_i = np.full(valid.shape, -1, "int16")
@@ -227,6 +254,7 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     out.mkdir(exist_ok=True)
     guardar(out / "agua_base.tif", agua_base, perfil, "uint8")
     guardar(out / "extension_max.tif", ext_max, perfil, "uint8")
+    guardar(out / "agua_previa.tif", agua_previa, perfil, "uint8")
     guardar(out / "primera_fecha.tif", primera, perfil, "int16", 0)
     guardar(out / "fecha_retiro.tif", retiro, perfil, "int16", 0)
     guardar(out / "persistencia_dias.tif", persist, perfil, "int16", -1)
@@ -259,6 +287,7 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
                 umbral_db=round(umbral, 2), agua_perm_db=w and round(w, 1), tierra_db=t and round(t, 1),
                 pct_agua_base=100 * agua_base.sum() / nv, pct_extension_max=100 * ext_max.sum() / nv,
                 ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                ha_agua_previa=agua_previa.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
                 persistencia_mediana_dias=float(np.median(pers_validos)) if pers_validos.size else np.nan,
                 persistencia_min_mediana=float(np.median(pmin[ext_max & ~sigue])) if pers_validos.size else np.nan,
                 persistencia_max_mediana=float(np.median(pmax[ext_max & ~sigue])) if pers_validos.size else np.nan,
