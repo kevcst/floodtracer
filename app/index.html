@@ -150,6 +150,26 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 #map-loading[data-error="true"] {cursor:default}#map-loading[data-error="true"] .map-loading-spinner {display:none}
 @keyframes map-loading-spin {to {transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.map-loading-spinner{animation:none}}
+/* Date comparison and source explanations */
+#map-before {position:absolute;inset:0;z-index:1;pointer-events:none}
+#map-before[hidden],#compare-controls[hidden],#compare-overlay[hidden],#date-ctrl[hidden] {display:none}
+#compare-overlay {position:absolute;inset:0;z-index:3;pointer-events:none;--split:50%}
+#compare-divider {position:absolute;left:var(--split);top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 5px #0008}
+.compare-label {position:absolute;top:12px;max-width:44%;padding:6px 9px;background:#101c28e8;color:#fff;border-radius:6px;font:12px var(--f-mono)}
+#compare-before-label {left:12px}#compare-after-label {right:54px}
+#compare-handle {position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:48px;border:2px solid #fff;border-radius:24px;background:#152432;color:#fff;display:grid;place-items:center;pointer-events:auto;touch-action:none;cursor:ew-resize;font-size:22px}
+#compare-handle:focus-visible {outline:3px solid #eb6834;outline-offset:4px}
+.compare-split {position:absolute;bottom:42px;left:18px;right:18px;padding:10px 14px;border-radius:8px;background:#101c28e8;color:#fff;font-size:.8rem;pointer-events:auto}
+.compare-split input {display:block;margin-top:6px;touch-action:pan-y}
+.compare-dates {display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compare-dates label {display:grid;gap:6px;font-size:.8rem;color:var(--fg2)}
+.compare-dates select {width:100%;min-width:0;background:var(--chip);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit}
+#provenance {border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.83rem;line-height:1.65}
+#provenance summary {cursor:pointer;font-weight:600;color:var(--fg)}
+#provenance-content {display:grid;gap:10px;margin-top:12px;color:var(--fg2)}
+#provenance-content p {margin:0}#provenance-content a {overflow-wrap:anywhere}
+#map > .maplibregl-control-container {position:relative;z-index:4}
+.stamp {z-index:4}
 </style>
 </head>
 <body>
@@ -213,6 +233,14 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
     </div>
     <div class="explorer">
       <div id="map" role="region" aria-label="Map" aria-busy="true"><div class="stamp" id="stamp"></div>
+        <div id="map-before" hidden aria-hidden="true"></div>
+        <div id="compare-overlay" hidden>
+          <span class="compare-label" id="compare-before-label"></span><span class="compare-label" id="compare-after-label"></span>
+          <div id="compare-divider"><div id="compare-handle" role="slider" tabindex="0" aria-label="Comparison divider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">↔</div></div>
+          <label class="compare-split">Drag to compare · earlier date on the left, later date on the right
+            <input id="compare-split" type="range" min="0" max="100" value="50" aria-label="Before and after comparison split" aria-valuetext="50% earlier date, 50% later date">
+          </label>
+        </div>
         <div id="map-loading" role="status" aria-live="polite" aria-atomic="true">
           <div class="map-loading-card"><span class="map-loading-spinner" aria-hidden="true"></span><strong id="map-loading-title">Loading map…</strong><p id="map-loading-detail">Preparing the map and water polygons.</p><button type="button" class="btn" id="map-loading-retry" hidden>Try again</button></div>
         </div>
@@ -227,6 +255,13 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
             <button type="button" data-layer="retreat" aria-pressed="false">Date it dried</button>
             <button type="button" data-layer="forest" aria-pressed="false">Under the trees</button>
           </div></div>
+        <div class="stack">
+          <label class="readout"><input type="checkbox" id="chk-compare"> Before / After</label>
+          <div id="compare-controls" class="stack" hidden>
+            <div class="compare-dates"><label>Before<select id="compare-before" aria-label="Before date"></select></label><label>After<select id="compare-after" aria-label="After date"></select></label></div>
+            <p class="note">Compare two observed dates from the same orbit track. Pan and zoom either side together. The chart cursor follows the After date; no observations are interpolated. Roads show event-wide exposure on both sides, not conditions on each date.</p>
+          </div>
+        </div>
         <div class="stack" id="date-ctrl"><span class="ctrl-label">Pass date · track <span id="trk"></span></span>
           <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Pass date"></div>
           <div class="ticks" id="ticks"></div></div>
@@ -240,6 +275,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
         <p class="note" id="vector-status" role="status">Water polygons use the existing published masks.</p>
         <button type="button" class="btn" id="download-polygons" disabled>Download current polygons</button>
         <div class="legend" id="legend"></div>
+        <details id="provenance" open><summary>Where does this result come from?</summary><div id="provenance-content" aria-live="polite"></div></details>
         <div class="stats" id="stats"></div>
         <div class="stack"><span class="ctrl-label">New water on each pass (% of area)</span><div style="position:relative"><svg class="chart" id="zchart" viewBox="0 0 420 160" role="img" aria-label="New water by pass"></svg></div></div>
         <div class="stack"><span class="ctrl-label">This spot (~200 m cell)</span><div id="probe"><p class="probe-empty">Click the map.</p></div></div>
@@ -477,6 +513,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
 
   let zid = "merin_arrozales", layer = "date", di = 0, timer = null, mapReady = false, probeData = {}, probeMarker = null;
   const mapLoaded = map ? new Promise(r => map.on("load", r)) : Promise.resolve();
+  let comparisonEnabled = false, beforeDi = 0, comparisonMap = null, comparisonReady = null;
   const img = (z, f) => `data/${z}/${f}`;
 
   async function initMap() {
@@ -486,6 +523,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     map.addLayer({id:'water-fill',type:'fill',source:'water-vectors',paint:{'fill-color':['get','color'],'fill-opacity':.5}});
     map.addLayer({id:'water-outline',type:'line',source:'water-vectors',paint:{'line-color':['get','color'],'line-width':.65,'line-opacity':.65}});
     map.on('click','water-fill',event=>{
+      if(comparisonEnabled)return;
       const feature=event.features?.[0];if(!feature)return;
       const info=waterDisplayContext;
       const container=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');
@@ -504,12 +542,28 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       map.addLayer({ id: "roads", type: "line", source: "roads", paint: { "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1.5, 13, 4],
         "line-color": ["step", ["get", "dias_mid"], "#fdd6bf", 8, "#f7a67a", 15, "#e66e3c", 29, "#b44216", 43, "#6e2507"] } });
       map.on("click", "roads", (e) => {
+        if(comparisonEnabled)return;
         const p = e.features[0].properties;
         new maplibregl.Popup({ closeButton: true }).setLngLat(e.lngLat).setHTML(`<b>${esc(p.nombre)}</b><br>${nf(+p.km_bajo_agua, 2)} km under water<br>~${p.dias_mid} days (${p.dias_min}–${p.dias_max})${p.sigue === "true" || p.sigue === true ? "<br>still wet on 20 Oct" : ""}`).addTo(map);
       });
       map.on("mouseenter", "roads", () => map.getCanvas().style.cursor = "pointer"); map.on("mouseleave", "roads", () => map.getCanvas().style.cursor = "");
     } catch (e) { console.warn("vector layers", e); }
-    map.on("click", (e) => { if (map.queryRenderedFeatures(e.point, { layers: ["roads"].filter(l => map.getLayer(l)) }).length) return; probe(e.lngLat); });
+    map.on('move', syncComparisonCamera);
+    map.on("click", (e) => {
+      if (comparisonEnabled) {
+        if(mapIsLoading)return;
+        const left=e.point.x < map.getContainer().clientWidth * +$('#compare-split').value / 100;
+        const target=left?comparisonMap:map;
+        if(!target?.getLayer('water-fill'))return;
+        const feature=target.queryRenderedFeatures(e.point,{layers:['water-fill']})[0];
+        if(feature){
+          const box=document.createElement('div');
+          box.textContent=`${left?'Before':'After'} · ${fmtDate(Z[zid].capas.serie.fechas[left?beforeDi:di])} 2026 · ${feature.properties.label}`;
+          new maplibregl.Popup().setLngLat(e.lngLat).setDOMContent(box).addTo(map);
+        }
+        return;
+      }
+      if (map.queryRenderedFeatures(e.point, { layers: ["roads"].filter(l => map.getLayer(l)) }).length) return; probe(e.lngLat); });
     mapReady = true;
   }
 
@@ -532,13 +586,16 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   function finishAfterMapRender(request,onReady) {
     if(cancelMapReadyWait)cancelMapReadyWait();
+    const other=comparisonEnabled?comparisonMap:null;
+    const cancel=()=>{map.off('idle',ready);if(other)other.off('idle',ready);cancelMapReadyWait=null;};
     const ready=()=>{
-      if(request!==vectorRenderId||!map.isSourceLoaded('water-vectors')||map.isMoving())return;
-      map.off('idle',ready);cancelMapReadyWait=null;
+      if(request!==vectorRenderId||!map.isSourceLoaded('water-vectors')||map.isMoving()||!map.areTilesLoaded())return;
+      if(other&&(!other.isSourceLoaded('water-before')||other.isMoving()||!other.areTilesLoaded()))return;
+      cancel();
       requestAnimationFrame(()=>{if(request===vectorRenderId){onReady();setMapLoading(false);}});
     };
-    map.on('idle',ready);
-    cancelMapReadyWait=()=>{map.off('idle',ready);cancelMapReadyWait=null;};
+    map.on('idle',ready);if(other)other.on('idle',ready);
+    cancelMapReadyWait=cancel;
   }
   function getVectorWorker() {
     if(vectorWorker)return vectorWorker;
@@ -593,15 +650,136 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const status=$('#vector-status');status.textContent='Drawing the selected water polygons…';
     map.getSource('water-vectors').setData(emptyWater());visibleWater=null;
     try{
-      const data=await tracePublishedMask(url,corners,vectorClasses(view));
+      const compare=comparisonEnabled, earlier=Z[zone].capas.serie.fechas[beforeDi];
+      const [data,before]=await Promise.all([
+        tracePublishedMask(url,corners,vectorClasses(view)),
+        compare?ensureComparisonMap().then(()=>tracePublishedMask(img(zone,`agua_${earlier}.png`),corners,vectorClasses('date'))):Promise.resolve(null)
+      ]);
       if(request!==vectorRenderId)return;
       visibleWater=data;
       waterDisplayContext={zone,date,view};
       $('#map-loading-detail').textContent=`Rendering the selected view of ${Z[zone].nombre}.`;
       finishAfterMapRender(request,()=>{status.textContent='Interactive polygons from the existing display masks. Published measurements are unchanged.';});
+      if(compare){syncComparisonLayers(earlier);comparisonMap.getSource('water-before').setData(before);comparisonMap.triggerRepaint();}
       map.getSource('water-vectors').setData(data);
       map.triggerRepaint();
     }catch(error){if(request===vectorRenderId){status.textContent=error.message;failMapLoading(error);}}
+  }
+
+  /* The second map is clipped visually; the primary map handles all navigation. */
+  function syncComparisonCamera() {
+    if(!comparisonEnabled||!comparisonMap)return;
+    comparisonMap.jumpTo({center:map.getCenter(),zoom:map.getZoom(),bearing:map.getBearing(),pitch:map.getPitch(),padding:map.getPadding()});
+  }
+  function ensureComparisonMap() {
+    if(comparisonReady)return comparisonReady;
+    const current=map.getStyle(),sources={base:current.sources.base};
+    for(const id of ['roads','towns'])if(current.sources[id])sources[id]=current.sources[id];
+    comparisonMap=new maplibregl.Map({container:'map-before',interactive:false,attributionControl:false,
+      center:map.getCenter(),zoom:map.getZoom(),bearing:map.getBearing(),pitch:map.getPitch(),maxZoom:16,
+      style:{version:8,glyphs:current.glyphs,sources,layers:current.layers.filter(l=>['base','roads','towns','towns-l'].includes(l.id))}});
+    comparisonReady=new Promise(resolve=>comparisonMap.once('load',()=>{
+      comparisonMap.addSource('water-before',{type:'geojson',data:emptyWater()});
+      const below=comparisonMap.getLayer('roads')?'roads':comparisonMap.getLayer('towns')?'towns':undefined;
+      comparisonMap.addLayer({id:'water-fill',type:'fill',source:'water-before',paint:{'fill-color':['get','color'],'fill-opacity':+$('#water-opacity').value/100}},below);
+      comparisonMap.addLayer({id:'water-outline',type:'line',source:'water-before',paint:{'line-color':['get','color'],'line-width':.65,'line-opacity':.65}},below);
+      syncComparisonCamera();resolve();
+    }));
+    syncComparisonCamera();return comparisonReady;
+  }
+  function syncComparisonLayers(date) {
+    if(!comparisonMap?.getLayer('water-fill'))return;
+    const d=Z[zid],radar=$('#chk-radar').checked;
+    if(radar){
+      if(!comparisonMap.getSource('hh')){
+        comparisonMap.addSource('hh',{type:'image',url:img(zid,`hh_${date}.webp`),coordinates:d.capas.serie.esquinas});
+        comparisonMap.addLayer({id:'hh',type:'raster',source:'hh',paint:{'raster-opacity':.92,'raster-fade-duration':0}},'water-fill');
+      }else comparisonMap.getSource('hh').updateImage({url:img(zid,`hh_${date}.webp`),coordinates:d.capas.serie.esquinas});
+    }
+    if(comparisonMap.getLayer('hh'))comparisonMap.setLayoutProperty('hh','visibility',radar?'visible':'none');
+    for(const [id,checked] of [['water-fill',$('#chk-polygons').checked],['water-outline',$('#chk-polygons').checked],['roads',$('#chk-roads').checked],['towns',$('#chk-towns').checked],['towns-l',$('#chk-towns').checked]]){
+      if(comparisonMap.getLayer(id))comparisonMap.setLayoutProperty(id,'visibility',checked?'visible':'none');
+    }
+    comparisonMap.setPaintProperty('water-fill','fill-opacity',+$('#water-opacity').value/100);
+    for(const [k,v] of Object.entries(basePaint(dark())))comparisonMap.setPaintProperty('base',k,v);
+    syncComparisonCamera();
+  }
+  function updateComparisonSplit() {
+    const split=+$('#compare-split').value;
+    $('#map-before').style.clipPath=`inset(0 ${100-split}% 0 0)`;
+    $('#compare-overlay').style.setProperty('--split',split+'%');
+    $('#compare-split').setAttribute('aria-valuetext',`${split}% earlier date, ${100-split}% later date`);
+    $('#compare-handle').setAttribute('aria-valuenow',split);
+    $('#compare-handle').setAttribute('aria-valuetext',`${split}% earlier date, ${100-split}% later date`);
+  }
+  function updateComparisonControls() {
+    const dates=Z[zid].capas.serie.fechas;
+    $('#chk-compare').disabled=dates.length<2;
+    if(comparisonEnabled){
+      di=Math.max(1,di);beforeDi=Math.min(beforeDi,di-1);
+      const option=(date,i)=>`<option value="${i}">${fmtDate(date)} 2026</option>`;
+      $('#compare-before').innerHTML=dates.map((date,i)=>i<di?option(date,i):'').join('');
+      $('#compare-after').innerHTML=dates.map((date,i)=>i>beforeDi?option(date,i):'').join('');
+      $('#compare-before').value=beforeDi;$('#compare-after').value=di;
+      $('#compare-before-label').textContent=`Before · ${fmtDate(dates[beforeDi])} 2026`;
+      $('#compare-after-label').textContent=`After · ${fmtDate(dates[di])} 2026`;
+    }
+    for(const id of ['map-before','compare-controls','compare-overlay'])$('#'+id).hidden=!comparisonEnabled;
+    $('#date-ctrl').hidden=comparisonEnabled;$('#stamp').hidden=comparisonEnabled;
+    $('#download-polygons').textContent=comparisonEnabled?'Download After polygons':'Download current polygons';
+    updateComparisonSplit();
+    if(comparisonEnabled&&comparisonMap){comparisonMap.resize();syncComparisonCamera();}
+  }
+  $('#chk-compare').addEventListener('change',()=>{
+    comparisonEnabled=$('#chk-compare').checked;stop();
+    if(comparisonEnabled){beforeDi=0;setLayer('date');}else render();
+  });
+  $('#compare-before').addEventListener('change',event=>{beforeDi=+event.target.value;render();});
+  $('#compare-after').addEventListener('change',event=>{di=+event.target.value;render();});
+  $('#compare-split').addEventListener('input',updateComparisonSplit);
+  const handle=$('#compare-handle');
+  const dragDivider=event=>{
+    const box=$('#map').getBoundingClientRect();
+    $('#compare-split').value=Math.round(Math.max(0,Math.min(100,100*(event.clientX-box.left)/box.width)));
+    updateComparisonSplit();
+  };
+  handle.addEventListener('pointerdown',event=>{event.preventDefault();event.stopPropagation();handle.setPointerCapture(event.pointerId);dragDivider(event);});
+  handle.addEventListener('pointermove',event=>{if(handle.hasPointerCapture(event.pointerId))dragDivider(event);});
+  handle.addEventListener('pointerup',event=>{if(handle.hasPointerCapture(event.pointerId))handle.releasePointerCapture(event.pointerId);});
+  handle.addEventListener('keydown',event=>{
+    const value=+$('#compare-split').value;
+    const next={ArrowLeft:value-2,ArrowRight:value+2,Home:0,End:100}[event.key];
+    if(next==null)return;event.preventDefault();$('#compare-split').value=next;updateComparisonSplit();
+  });
+
+  function updateProvenance() {
+    const d=Z[zid],dates=d.capas.serie.fechas,base=d.fechas.filter(p=>p.fase==='base').map(p=>p.fecha);
+    const track=t=>`${trk(t).short} (${trk(t).dir})`;
+    const tracks=d.resumen.tracks.map(t=>track(t.track)).join(', ');
+    const period=`${fmtDate(M.evento.ventana[0])}–${fmtDate(M.evento.ventana[1])} 2026`;
+    const single=d.resumen.fuente==='single track';
+    const baseline=base.length===1?`one observation, ${fmtDate(base[0])} 2026`:`${base.length} observations, ${base.map(fmtDate).join(', ')} 2026`;
+    const methods={
+      date:{name:'Water by date',method:'Published per-pass mask: candidate new water requires an HH drop greater than 3 dB against the pixel’s baseline after scene normalization, HH below −14 dB, and a patch of at least 10 pixels. Baseline water is excluded from new-water detection.',tells:'Where the detector classified baseline water and candidate new water on the selected pass.',cannot:'A water classification is not a measurement of water depth or volume. Dark surfaces and changes in water roughness can cause errors; the baseline-water mask may miss permanent water.'},
+      extent:{name:'Flood extent',method:single?'This area uses the union of detections from one track: water detected at least once in the event window. It does not apply the two-observation rule used by the combined areas.':'This area combines per-track masks and retains pixels detected as new water in at least two observations during the event window.',tells:'The published footprint of candidate new water during the event window, rather than the water extent on one date.',cannot:'Repeated radar detections do not independently confirm flooding. This footprint excludes the separate forest-signal layer and does not establish damage.'},
+      persist:{name:'Days under water',method:'The display uses the midpoint of an interval inferred from wet and dry radar observations. Combined tracks require a second dry observation to confirm retreat, except at the end of the sequence; the single-track product uses the first later dry observation.',tells:'An estimated duration of the first detected wet episode, with uncertainty between satellite passes.',cannot:'The midpoint is not an observed exact number of days. No dry observation means the end is unknown; the legacy “20 Oct” label is a reporting cutoff, not necessarily an acquisition date.'},
+      retreat:{name:'Date it dried',method:'Published retreat intervals group the first later dry classification. Combined tracks normally confirm it with a subsequent dry observation; single-track results do not use that confirmation.',tells:'When the radar first classified the location as dry after detecting water.',cannot:'It does not identify the exact day the ground dried or exclude later flooding. A dry classification is not confirmation that a road reopened.'},
+      forest:{name:'Under the trees',method:'Candidate forest pixels are selected using baseline HH/HV and approximate height and distance to mapped streams. The mask flags an HH−HV rise over 2 dB beyond the upland reference and an HH rise over 1 dB on any event pass.',tells:'Where radar changes are compatible with possible inundation under riverside vegetation.',cannot:'This is an indirect signal, not independently confirmed water under trees. HH−HV changes cannot be converted directly into water depth, volume or damage.'}
+    };
+    const info=methods[layer],temporal=layer==='date';
+    const selection=comparisonEnabled?`Before: ${fmtDate(dates[beforeDi])}; After: ${fmtDate(dates[di])} 2026. Both use ${track(d.resumen.serie_track)}.`:temporal?`${fmtDate(dates[di])} 2026 · ${track(d.resumen.serie_track)}.`:`Event window: ${period}. ${layer==='forest'?'Union of available track signals':single?'Single-track product':'Combined-track product'}: ${tracks}.`;
+    const pairs=M.validacion.s1.filter(r=>r.zona===zid&&r.pct_s1>=.5);
+    const validation=pairs.length?`${pairs.length} paired observations with Sentinel-1 water ≥0.5%; mean F1 against the strict reference is ${nf(pairs.reduce((a,r)=>a+r.f1_cambio,0)/pairs.length,2)} (1 means identical classifications). This measures agreement with another detector, not ground-truth accuracy.`:'No Sentinel-1 comparisons with water ≥0.5% are published for this area; independent accuracy is not established.';
+    const files=temporal?[img(zid,`agua_${dates[di]}.png`),...(comparisonEnabled?[img(zid,`agua_${dates[beforeDi]}.png`)]:[])]:[img(zid,{extent:'extension.png',persist:'persistencia.png',retreat:'retiro.png',forest:'monte.png'}[layer])];
+    const table=layer==='forest'?'data/manifest.json':temporal?'data/descargas/new_water_by_pass.csv':single?'data/descargas/flood_metrics_by_track.csv':'data/descargas/flood_metrics_combined.csv';
+    $('#provenance-content').innerHTML=`<p><b>${esc(info.name)} · ${esc(d.nombre)}</b><br>${esc(selection)}</p>
+      <p><b>Source</b><br>NASA/ISRO NISAR L2 GCOV, PROVISIONAL, L-band HH/HV, 20 m grid with a 5×5 filter. Classification masks are published analysis outputs; polygons trace those masks for display. <a href="https://nisar-docs.asf.alaska.edu/" target="_blank" rel="noopener">NISAR data guide</a>.</p>
+      <p><b>Baseline for the date series</b><br>${esc(baseline)}. Other orbit tracks use their own baseline. ${base.length===1?'A single baseline observation gives less evidence of normal conditions.':''}</p>
+      <p><b>How it was derived</b><br>${esc(info.method)}</p>
+      <p><b>What this tells us</b><br>${esc(info.tells)}</p>
+      <p><b>What this cannot tell us</b><br>${esc(info.cannot)} Roads and towns are OpenStreetMap context. Road exposure summarizes the event, not the selected date; proximity to detected water does not confirm a closure or isolation.</p>
+      <p><b>Independent comparison</b><br>${esc(validation)} This comparison assesses open-water masks, not duration, retreat or the forest-signal layer. <a href="data/descargas/validation_sentinel1.csv" download>Comparison table</a>.</p>
+      <p><b>Inspect the published inputs</b><br>${files.map((f,i)=>`<a href="${esc(f)}" target="_blank" rel="noopener">${comparisonEnabled?(i?'Before mask':'After mask'):'Display mask'}</a>`).join(' · ')} · <a href="${table}" download>Result data</a> · <a href="#method">Method and limits</a><br>Results generated ${esc(M.generado)}. Study dates available on this track: ${fmtDate(dates[0])}–${fmtDate(dates[dates.length-1])} 2026.</p>`;
   }
 
   /* ---------- zone ---------- */
@@ -621,12 +799,13 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     if (!mapReady) return;
     for (const id of ['water-fill', 'water-outline']) {
       map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+      if(comparisonMap?.getLayer(id))comparisonMap.setLayoutProperty(id,'visibility',visible?'visible':'none');
     }
     map.getCanvas().style.cursor = '';
   }
   $('#chk-polygons').addEventListener('change', updatePolygonVisibility);
   $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
-  $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
+  $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);if(comparisonMap?.getLayer('water-fill'))comparisonMap.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
   $('#download-polygons').addEventListener('click',()=>{
     if(!visibleWater)return;
     const data={...visibleWater,metadata:{...waterDisplayContext,source:'Existing app display mask',note:'Display geometry only. All published measurements and validation results are unchanged.'}};
@@ -635,8 +814,8 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   });
   $("#chk-roads").addEventListener("change", render);
   $("#chk-towns").addEventListener("change", render);
-  function setLayer(l) { layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
-  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
+  function setLayer(l) { if(l!=='date'&&comparisonEnabled){comparisonEnabled=false;$('#chk-compare').checked=false;} layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
+  function play() { if(comparisonEnabled)return; if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
   function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
 
   function setZone(z) {
@@ -661,11 +840,14 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
 
   function render() {
-    const d = Z[zid], fe = d.capas.serie.fechas, f = fe[di];
+    const d = Z[zid], fe = d.capas.serie.fechas;
+    updateComparisonControls();
+    const f = fe[di];
+    updateProvenance();
     range.value = di;
     $("#date-ctrl").style.opacity = layer === "date" ? 1 : .45;
     const phase = ms(f) < ms(GAP[0]) ? "before the storm" : ms(f) <= ms(M.evento.ventana[1]) ? "flood window" : "after";
-    const names = { extent: "Flooded on ≥2 observations, 10 Aug – 10 Sep", persist: "Days under water", retreat: "Date the water left", forest: "Water under riverside forest" };
+    const names = { extent: `${d.resumen.fuente === "single track" ? "Detected on ≥1 observation" : "Detected on ≥2 observations"}, 10 Aug – 10 Sep`, persist: "Days under water", retreat: "Date the water left", forest: "Water under riverside forest" };
     $("#stamp").textContent = layer === "date" ? `${fmtDate(f)} 2026 · ${phase}` : names[layer];
     legend();
     if (map && mapReady) {
@@ -692,7 +874,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const sw = (c, t) => `<div><span class="sw" style="background:${c}"></span>${t}</div>`;
     let h = "";
     if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)");
-    if (layer === "extent") h = sw(css("--flood"), "Flooded on at least two observations");
+    if (layer === "extent") h = sw(css("--flood"), Z[zid].resumen.fuente === "single track" ? "Detected on at least one observation (single track)" : "Detected on at least two observations");
     if (layer === "persist") h = lg.persistencia.map(p => sw(p.color, p.rango + " days")).join("") + sw(lg.sigue, "Still wet on 20 Oct");
     if (layer === "retreat") h = lg.retiro.map(p => sw(p.color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(lg.sigue, "Still wet on 20 Oct");
     if (layer === "forest") h = sw("rgb(27,175,122)", "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
@@ -704,7 +886,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const r = Z[zid].resumen;
     const pers = r.persist_mid != null ? `${nf(r.persist_mid)} days` : `${nf((r.persist_min + r.persist_max) / 2)} days`;
     $("#stats").innerHTML = `
-      <div><b>${nf(r.ha_inundada)} ha</b><span>flooded (≥2 observations)</span><small>${r.ha_max_una_obs ? nf(r.ha_max_una_obs) + " ha seen on any pass" : "single track"}</small></div>
+      <div><b>${nf(r.ha_inundada)} ha</b><span>${r.fuente === "single track" ? "detected (≥1 observation)" : "detected (≥2 observations)"}</span><small>${r.ha_max_una_obs ? nf(r.ha_max_una_obs) + " ha seen on any pass" : "single track"}</small></div>
       <div><b>${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</b><span>ha, track ${trk(r.serie_track).short} across detector settings</span><small>central ${nf(r.serie_ha_ext)} ha</small></div>
       <div><b>${pers}</b><span>typical time under water</span><small>median interval ${nf(r.persist_min)}–${nf(r.persist_max)} days</small></div>
       <div><b>${nf(r.ha_dia)}</b><span>hectare-days of flooding</span><small>${nf(r.pct_sigue, 1)}% still wet on 20 Oct</small></div>

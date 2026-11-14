@@ -21,3 +21,9 @@ python3 -m http.server 8003 --bind 127.0.0.1 --directory app
 Open http://127.0.0.1:8003/#explore. There is no build step for the current `app/` website and no application backend. The historical `poc/` build is untouched.
 
 Added dependencies are vendored D3 Array 3.2.4 and D3 Contour 4.0.2, with their ISC licenses in `app/vendor/`. Existing MapLibre/OpenStreetMap loading is unchanged. The new worker and vendor files must be published alongside `app/index.html`.
+
+## Compare dates and inspect provenance
+
+Enable **Before / After** to compare two published passes from the area's primary orbit track. Choose an earlier and a later date, then drag the map divider or use the comparison slider. The divider supports arrow keys and Home/End. Both views share the same camera; optional radar imagery and the polygon visibility and opacity controls apply to both. Selecting an event layer exits date comparison. Charts and the GeoJSON download refer to the After date while comparing. Context roads describe the event as a whole, not date-specific closures.
+
+The expandable **Where does this result come from?** panel updates for each area, layer and date selection. It explains the baseline, processing method, intended interpretation and limitations, and links the published display masks and result tables. Sentinel-1 agreement is reported only for the open-water detector; it does not validate the duration or forest-signal products. The panel explicitly identifies the single-observation extent criterion and single-date baseline used for Durazno. These explanations do not constitute new validation or change the underlying published outputs.
