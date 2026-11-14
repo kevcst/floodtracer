@@ -1,0 +1,6 @@
+data_nisar/
+*.tif
+*.h5
+.venv/
+__pycache__/
+.netrc

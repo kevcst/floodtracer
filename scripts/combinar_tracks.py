@@ -1,0 +1,155 @@
+"""
+Persistencia del agua combinando tracks de una zona a nivel de MÁSCARA (regla 2 de CLAUDE.md):
+cada track usa su propio umbral y su propia línea de base (metricas_evento.py); acá sólo se juntan
+las máscaras de agua nueva 0/1 en una grilla común → revisita ~6 días en vez de 12.
+
+  python scripts/metricas_evento.py      # primero: genera metricas/agua_nueva_por_fecha.tif
+  python scripts/combinar_tracks.py [--zona treinta_y_tres]
+
+Reglas por píxel sobre la secuencia de observaciones (todas las pasadas, todos los tracks, por fecha):
+  - primera  = primera observación del evento (10/8–10/9) con agua nueva
+  - retiro   = primera observación seca posterior que es seguida por OTRA observación seca (o es la última):
+               evita que una sola pasada de otra geometría que "no ve" el agua cuente como retiro
+  - persistencia = retiro − primera (días); "sigue" si nunca se cumple
+Grilla común: la del track con más fechas (vecino más cercano).
+
+Salida: data_nisar/zonas/{zona}/combinado/{extension_max,primera_fecha,fecha_retiro,persistencia_dias,n_obs}.tif
+        data_nisar/zonas/combinado_resumen.csv · combinado_por_fecha.csv · combinado_persistencia.png
+"""
+import argparse
+import warnings
+
+import numpy as np
+import pandas as pd
+import rasterio
+from rasterio.warp import Resampling, reproject
+
+from metricas_evento import BASE, EVENTO, guardar
+from zonas import ZONAS
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+
+def leer_pila(path):
+    with rasterio.open(path) as r:
+        return r.read(), [pd.Timestamp(d) for d in r.descriptions], r.profile
+
+
+def procesar(zona):
+    pilas = sorted((BASE / zona).glob("T*_F*/metricas/agua_nueva_por_fecha.tif"))
+    if len(pilas) < 2:
+        print(f"== {zona}: {len(pilas)} track(s), no hay nada que combinar")
+        return None, None
+    datos = {p.parents[1].name: leer_pila(p) for p in pilas}
+    ref = max(datos, key=lambda k: len(datos[k][1]))
+    perfil = datos[ref][2]
+    H, W_ = perfil["height"], perfil["width"]
+
+    obs = []                                                   # (fecha, track, máscara en grilla ref)
+    for track, (arr, fechas, prof) in datos.items():
+        for i, f in enumerate(fechas):
+            dst = np.full((H, W_), 255, "uint8")
+            reproject(arr[i], dst, src_transform=prof["transform"], src_crs=prof["crs"], src_nodata=255,
+                      dst_transform=perfil["transform"], dst_crs=perfil["crs"], dst_nodata=255,
+                      resampling=Resampling.nearest)
+            obs.append((f, track, dst))
+    obs.sort(key=lambda o: (o[0], o[1]))
+    fechas = pd.DatetimeIndex([o[0] for o in obs])
+    M = np.stack([o[2] for o in obs])                          # 0 seco, 1 agua nueva, 255 sin dato
+    ok = M != 255
+    agua = M == 1
+    es_evento = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    doy = np.asarray(fechas.day_of_year)
+
+    ext_max = (agua & es_evento[:, None, None]).any(axis=0)
+    primera_i = np.full((H, W_), -1, "int16")
+    for i in np.where(es_evento)[0][::-1]:
+        primera_i[agua[i]] = i
+
+    # retiro: primera obs seca (con dato) posterior a la primera detección, confirmada por la siguiente obs con dato
+    retiro_i = np.full((H, W_), -1, "int16")
+    candidato = np.full((H, W_), -1, "int16")                  # obs seca pendiente de confirmar
+    pendiente = ext_max.copy()
+    for i in range(len(obs)):
+        despues = pendiente & ok[i] & (primera_i >= 0) & (primera_i < i)
+        seco = despues & ~agua[i]
+        mojado = despues & agua[i]
+        confirmar = seco & (candidato >= 0)
+        retiro_i[confirmar] = candidato[confirmar]
+        pendiente &= ~confirmar
+        nuevo = seco & (candidato < 0)
+        candidato[nuevo] = i
+        candidato[mojado] = -1                                  # volvió a verse agua: se descarta el candidato
+    ultimo = pendiente & (candidato >= 0)                      # seco en la última obs con dato: se acepta
+    retiro_i[ultimo] = candidato[ultimo]
+    sigue = ext_max & (retiro_i < 0)
+
+    primera = np.where(ext_max, doy[np.maximum(primera_i, 0)], 0)
+    retiro = np.where(ext_max & ~sigue, doy[np.maximum(retiro_i, 0)], 0)
+    retiro[sigue] = 999
+    persist = np.where(ext_max & ~sigue, retiro - primera, -1)
+    n_obs = ok.sum(axis=0)
+
+    out = BASE / zona / "combinado"
+    out.mkdir(exist_ok=True)
+    guardar(out / "extension_max.tif", ext_max, perfil, "uint8")
+    guardar(out / "primera_fecha.tif", primera, perfil, "int16", 0)
+    guardar(out / "fecha_retiro.tif", retiro, perfil, "int16", 0)
+    guardar(out / "persistencia_dias.tif", persist, perfil, "int16", -1)
+    guardar(out / "n_obs.tif", n_obs, perfil, "uint8")
+
+    cubierto = ok.any(axis=0)
+    nv = cubierto.sum()
+    pv = persist[ext_max & ~sigue]
+    fila = dict(zona=zona, tracks=" ".join(datos), grilla_ref=ref, n_obs=len(obs),
+                obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if EVENTO[0] <= f <= EVENTO[1]),
+                pct_extension_max=100 * ext_max.sum() / nv,
+                ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                persistencia_mediana_dias=float(np.median(pv)) if pv.size else np.nan,
+                persistencia_p90_dias=float(np.percentile(pv, 90)) if pv.size else np.nan,
+                pct_sigue_con_agua=100 * sigue.sum() / max(ext_max.sum(), 1))
+    print(f"== {zona}: " + ", ".join(f"{k}={round(v, 1) if isinstance(v, float) else v}"
+                                     for k, v in fila.items() if k != "zona"))
+    por_fecha = pd.DataFrame([dict(zona=zona, fecha=f.date(), track=t,
+                                   pct_agua_nueva=100 * agua[i][ok[i]].mean() if ok[i].any() else np.nan)
+                              for i, (f, t, _) in enumerate(obs)])
+    hist = pd.Series(pv).value_counts().sort_index()
+    return fila, (por_fecha, hist)
+
+
+def grafico(extra, path):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fig, axs = plt.subplots(len(extra), 2, figsize=(13, 2.6 * len(extra)), squeeze=False)
+    for (ax1, ax2), (zona, (pf, hist)) in zip(axs, extra.items()):
+        for t, g in pf.groupby("track"):
+            ax1.plot(pd.to_datetime(g.fecha), g.pct_agua_nueva, "o", ms=4, label=t)
+        g = pf.sort_values("fecha")
+        ax1.plot(pd.to_datetime(g.fecha), g.pct_agua_nueva, "-", color="k", lw=0.6)
+        ax1.axvspan(pd.Timestamp("2026-08-15"), pd.Timestamp("2026-08-19"), color="tab:red", alpha=0.15)
+        ax1.set_title(f"{zona}: % agua nueva por pasada (todos los tracks)", fontsize=9)
+        ax1.legend(fontsize=7)
+        ax2.bar(hist.index, 100 * hist.values / hist.sum(), width=1.5)
+        ax2.set_title(f"{zona}: persistencia (días) del agua nueva", fontsize=9)
+        ax2.set_ylabel("% del área inundada", fontsize=8)
+    plt.tight_layout()
+    plt.savefig(path, dpi=100)
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--zona", default="todas", choices=["todas", *ZONAS])
+    a = ap.parse_args()
+    filas, extra = [], {}
+    for z in (ZONAS if a.zona == "todas" else [a.zona]):
+        fila, ex = procesar(z)
+        if fila:
+            filas.append(fila)
+            extra[z] = ex
+    if filas and a.zona == "todas":           # los CSV globales sólo con todas las zonas (los usa exportar_poc.py)
+        pd.DataFrame(filas).round(2).to_csv(BASE / "combinado_resumen.csv", index=False)
+        pd.concat([e[0] for e in extra.values()]).round(2).to_csv(BASE / "combinado_por_fecha.csv", index=False)
+        grafico(extra, BASE / "combinado_persistencia.png")
+        print(f"-> {BASE / 'combinado_resumen.csv'}, {BASE / 'combinado_persistencia.png'}")
