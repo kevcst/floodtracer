@@ -142,6 +142,14 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 .probe-empty { font-size: 0.85rem; color: var(--muted); }
 .vector-opacity {display:grid;gap:6px;font-size:.8rem;color:var(--fg2)}
 #vector-status {min-height:2.5em}.maplibregl-popup-content {color:#183b43;font-size:12px;line-height:1.6;max-width:290px}
+#map-loading {position:absolute;inset:0;z-index:10;display:grid;place-items:center;background:rgba(15,24,30,.8);backdrop-filter:blur(3px);cursor:wait;padding:24px}
+#map-loading[hidden],#map-loading-retry[hidden] {display:none}
+.map-loading-card {width:100%;display:grid;justify-items:center;gap:12px;text-align:center;max-width:320px;color:#f3f6f8}
+.map-loading-card strong {font-size:1.05rem}.map-loading-card p {color:#cbd6de;font-size:.85rem;line-height:1.6;margin:0}
+.map-loading-spinner {width:38px;height:38px;border:3px solid rgba(255,255,255,.2);border-top-color:#eb6834;border-radius:50%;animation:map-loading-spin .8s linear infinite}
+#map-loading[data-error="true"] {cursor:default}#map-loading[data-error="true"] .map-loading-spinner {display:none}
+@keyframes map-loading-spin {to {transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.map-loading-spinner{animation:none}}
 </style>
 </head>
 <body>
@@ -204,7 +212,11 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
       <p class="soft">Explore the published water classifications as interactive polygons over OpenStreetMap. Orange marks candidate new water; blue marks baseline water. Switch layers or dates, adjust transparency, and click a polygon for its class and a spot's existing radar history. The optional radar photograph is off by default.</p>
     </div>
     <div class="explorer">
-      <div id="map" role="region" aria-label="Map"><div class="stamp" id="stamp"></div></div>
+      <div id="map" role="region" aria-label="Map" aria-busy="true"><div class="stamp" id="stamp"></div>
+        <div id="map-loading" role="status" aria-live="polite" aria-atomic="true">
+          <div class="map-loading-card"><span class="map-loading-spinner" aria-hidden="true"></span><strong id="map-loading-title">Loading map…</strong><p id="map-loading-detail">Preparing the map and water polygons.</p><button type="button" class="btn" id="map-loading-retry" hidden>Try again</button></div>
+        </div>
+      </div>
       <div class="panel">
         <div class="stack"><span class="ctrl-label">Area</span><div class="tabs" id="zone-tabs" role="group" aria-label="Area"></div><p class="readout" id="zone-title"></p></div>
         <div class="stack"><span class="ctrl-label">Layer</span>
@@ -225,7 +237,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
         </div>
         <label class="vector-opacity">Water polygon opacity <input type="range" id="water-opacity" min="10" max="90" value="50" aria-label="Water polygon opacity"></label>
         <p class="note" id="vector-status" role="status">Water polygons use the existing published masks.</p>
-        <button type="button" class="btn" id="download-polygons">Download current polygons</button>
+        <button type="button" class="btn" id="download-polygons" disabled>Download current polygons</button>
         <div class="legend" id="legend"></div>
         <div class="stats" id="stats"></div>
         <div class="stack"><span class="ctrl-label">New water on each pass (% of area)</span><div style="position:relative"><svg class="chart" id="zchart" viewBox="0 0 420 160" role="img" aria-label="New water by pass"></svg></div></div>
@@ -503,7 +515,30 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   /* Vector presentation of the same published masks and corner coordinates. */
   const emptyWater = () => ({type:'FeatureCollection',features:[]});
   const vectorCache = new Map(), vectorJobs = new Map();
-  let vectorWorker = null, vectorJobId = 0, vectorRenderId = 0, visibleWater = null, waterDisplayContext = null;
+  let vectorWorker = null, vectorJobId = 0, vectorRenderId = 0, visibleWater = null, waterDisplayContext = null, cancelMapReadyWait = null, mapIsLoading = true;
+  function setMapLoading(loading,detail='Preparing the map and water polygons.') {
+    mapIsLoading=loading;
+    const overlay=$('#map-loading');overlay.hidden=!loading;overlay.dataset.error='false';overlay.setAttribute('role','status');
+    $('#map').setAttribute('aria-busy',String(loading));
+    $('#map-loading-title').textContent='Loading map…';$('#map-loading-detail').textContent=detail;$('#map-loading-retry').hidden=true;
+    $('#download-polygons').disabled=loading||!visibleWater;
+  }
+  function failMapLoading(error) {
+    mapIsLoading=false;stop();
+    const overlay=$('#map-loading');overlay.hidden=false;overlay.dataset.error='true';overlay.setAttribute('role','alert');
+    $('#map').setAttribute('aria-busy','false');$('#map-loading-title').textContent='The map could not load';
+    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;$('#download-polygons').disabled=true;
+  }
+  function finishAfterMapRender(request,onReady) {
+    if(cancelMapReadyWait)cancelMapReadyWait();
+    const ready=()=>{
+      if(request!==vectorRenderId||!map.isSourceLoaded('water-vectors')||map.isMoving())return;
+      map.off('idle',ready);cancelMapReadyWait=null;
+      requestAnimationFrame(()=>{if(request===vectorRenderId){onReady();setMapLoading(false);}});
+    };
+    map.on('idle',ready);
+    cancelMapReadyWait=()=>{map.off('idle',ready);cancelMapReadyWait=null;};
+  }
   function getVectorWorker() {
     if(vectorWorker)return vectorWorker;
     vectorWorker=new Worker('vector-worker.js');
@@ -552,16 +587,20 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   async function renderWaterVectors(url,corners,view,zone,date) {
     const request=++vectorRenderId;
+    if(cancelMapReadyWait)cancelMapReadyWait();
+    setMapLoading(true,`Preparing water polygons for ${Z[zone].nombre}.`);
     const status=$('#vector-status');status.textContent='Drawing the selected water polygons…';
     map.getSource('water-vectors').setData(emptyWater());visibleWater=null;
     try{
       const data=await tracePublishedMask(url,corners,vectorClasses(view));
       if(request!==vectorRenderId)return;
       visibleWater=data;
-      map.getSource('water-vectors').setData(data);
-      status.textContent='Interactive polygons from the existing display masks. Published measurements are unchanged.';
       waterDisplayContext={zone,date,view};
-    }catch(error){if(request===vectorRenderId)status.textContent=error.message;}
+      $('#map-loading-detail').textContent=`Rendering the selected view of ${Z[zone].nombre}.`;
+      finishAfterMapRender(request,()=>{status.textContent='Interactive polygons from the existing display masks. Published measurements are unchanged.';});
+      map.getSource('water-vectors').setData(data);
+      map.triggerRepaint();
+    }catch(error){if(request===vectorRenderId){status.textContent=error.message;failMapLoading(error);}}
   }
 
   /* ---------- zone ---------- */
@@ -575,6 +614,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   range.addEventListener("input", () => { di = +range.value; stop(); render(); });
   $("#play").addEventListener("click", () => timer ? stop() : play());
   $("#chk-radar").addEventListener("change", render);
+  $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
   $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
   $('#download-polygons').addEventListener('click',()=>{
     if(!visibleWater)return;
@@ -585,10 +625,12 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   $("#chk-roads").addEventListener("change", render);
   $("#chk-towns").addEventListener("change", render);
   function setLayer(l) { layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
-  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { di = (di + 1) % n; render(); }, 1200); }
+  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
   function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
 
   function setZone(z) {
+    ++vectorRenderId;if(cancelMapReadyWait)cancelMapReadyWait();
+    setMapLoading(true,`Loading the selected area: ${Z[z].nombre}.`);
     zid = z; stop();
     const d = Z[z], fe = d.capas.serie.fechas;
     for (const host of [tabs, itabs]) [...host.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.z === z));
