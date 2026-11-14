@@ -4,3 +4,6 @@ data_nisar/
 .venv/
 __pycache__/
 .netrc
+
+# GeoTIFF livianos de descarga de la app (sí se versionan)
+!app/data/descargas/*.tif

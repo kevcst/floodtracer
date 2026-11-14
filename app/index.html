@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Long Does the Water Stay?</title>
+<meta name="description" content="NISAR L-band radar reconstruction of Uruguay's August 2026 flood: where the water went, how long it stayed, and what it cut off.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+/* Orange = flood water (maps and charts). Blue = water that was already there / time under water (sequential).
+   Green = riparian forest signal. Everything numeric on this page comes from data/manifest.json. */
+:root {
+  --bg: #f4f6f8; --surface: #ffffff; --fg: #0f1720; --fg2: #46515d; --muted: #6f7b88; --line: #dbe1e7; --grid: #e9edf1;
+  --flood: #eb6834; --still: #2a78d6; --upland: #1baf7a; --openland: #8a95a1; --img-bg: #0b0e12; --chip: #eef2f6; --focus: #2a78d6;
+  --f-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1216; --surface: #151b21; --fg: #e8edf2; --fg2: #b3bdc8; --muted: #8592a0; --line: #27313b; --grid: #1e262e;
+    --flood: #d95926; --still: #3987e5; --upland: #199e70; --openland: #6f7b88; --img-bg: #080a0d; --chip: #1c242c; --focus: #3987e5; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1216; --surface: #151b21; --fg: #e8edf2; --fg2: #b3bdc8; --muted: #8592a0; --line: #27313b; --grid: #1e262e;
+  --flood: #d95926; --still: #3987e5; --upland: #199e70; --openland: #6f7b88; --img-bg: #080a0d; --chip: #1c242c; --focus: #3987e5; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; overflow-x: clip; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--f-body); font-size: 16px; line-height: 1.55;
+  padding: 0 max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 64px; }
+.col { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 1.15rem; color: var(--fg2); }
+.soft { color: var(--fg2); }
+.stack { display: grid; gap: 14px; } .stack-lg { display: grid; gap: 24px; }
+.flood { color: var(--flood); }
+a { color: var(--still); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+nav.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 8px max(16px, env(safe-area-inset-left, 0px)); }
+nav.top .in { max-width: 1180px; margin: 0 auto; display: flex; gap: 6px 18px; flex-wrap: wrap; align-items: center; font-size: 0.85rem; }
+nav.top a { color: var(--fg2); text-decoration: none; white-space: nowrap; }
+@media (max-width: 700px) { nav.top .in { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } nav.top .brand { display: none; } } nav.top a:hover { color: var(--fg); }
+nav.top .brand { font-family: var(--f-display); font-weight: 700; color: var(--fg); margin-right: auto; }
+header.hero { padding-top: 40px; display: grid; gap: 18px; }
+.badge { justify-self: start; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase;
+  border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--fg2); background: var(--surface); }
+.figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.fig { background: var(--surface); padding: 18px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.fig .num { font-family: var(--f-display); font-weight: 700; font-size: clamp(1.7rem, 3.4vw, 2.4rem); line-height: 1; font-variant-numeric: tabular-nums; }
+.fig .lbl { font-size: 0.88rem; color: var(--fg2); } .fig .src { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+@media (max-width: 760px) { .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 32px; align-items: start; }
+@media (max-width: 860px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.ctxmap { width: 100%; height: auto; display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.ctxmap .zr { cursor: pointer; } .ctxmap .zr:hover rect { fill-opacity: .5; }
+.timeline { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 14px 18px; display: grid; gap: 2px; }
+.timeline li::before { content: ""; position: absolute; left: -6px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--surface); border: 2px solid var(--muted); }
+.timeline li.key::before { background: var(--flood); border-color: var(--flood); }
+.timeline .d { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); } .timeline .t { font-size: 0.95rem; }
+/* explorer */
+.explorer { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); overflow: hidden; }
+@media (max-width: 960px) { .explorer { grid-template-columns: minmax(0, 1fr); } }
+#map { min-height: 560px; height: 100%; background: var(--img-bg); position: relative; }
+@media (max-width: 960px) { #map { height: 62vh; min-height: 380px; } }
+.stamp { position: absolute; left: 10px; top: 10px; z-index: 2; font-family: var(--f-mono); font-size: 0.78rem; color: #e8edf2; background: rgba(8,10,13,.75); padding: 4px 8px; border-radius: 6px; pointer-events: none; }
+.panel { padding: 18px; display: grid; gap: 16px; align-content: start; grid-auto-rows: max-content; min-width: 0; max-height: 920px; overflow-y: auto; }
+@media (max-width: 960px) { .panel { max-height: none; } }
+.tabs, .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.tabs button, .seg button, .btn { font: 500 0.83rem var(--f-body); color: var(--fg2); background: var(--chip); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.tabs button[aria-pressed="true"], .seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.ctrl-label { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+input[type=range] { width: 100%; accent-color: var(--flood); }
+.ticks { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 0.66rem; color: var(--muted); }
+.legend { display: grid; gap: 5px; font-size: 0.84rem; color: var(--fg2); }
+.legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 8px; }
+.checks { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.85rem; color: var(--fg2); }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.stats div { background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+.stats b { font-family: var(--f-display); font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stats span { font-size: 0.78rem; color: var(--fg2); } .stats small { font-family: var(--f-mono); font-size: 0.68rem; color: var(--muted); }
+.readout { font-size: 0.92rem; color: var(--fg2); } .readout b { color: var(--fg); font-variant-numeric: tabular-nums; }
+.note { font-size: 0.8rem; color: var(--muted); }
+/* charts */
+.chart { width: 100%; height: auto; display: block; overflow: visible; }
+.chart text { fill: var(--muted); font-family: var(--f-mono); font-size: 10px; }
+.chart .lab { fill: var(--fg2); font-family: var(--f-body); font-size: 11px; font-weight: 500; }
+.chart .grid { stroke: var(--grid); } .chart .axis { stroke: var(--line); }
+.chart .rain { fill: var(--flood); opacity: .10; } .chart .gap { fill: var(--muted); opacity: .10; }
+.chart .band { opacity: .18; }
+.chart .ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { stroke: var(--surface); stroke-width: 2; }
+.chart .cursor { stroke: var(--fg2); stroke-dasharray: 3 3; }
+.chart .crest { stroke: var(--fg2); stroke-width: 1.5; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .cards { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px 10px; display: grid; gap: 4px; min-width: 0; position: relative; align-content: start; }
+.card.click { cursor: pointer; } .card.click:hover { border-color: var(--fg2); }
+.card .sub { font-size: 0.8rem; color: var(--muted); } .card .peak { font-family: var(--f-mono); font-size: 0.76rem; color: var(--fg2); }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); font: 500 0.75rem var(--f-mono); padding: 5px 8px; border-radius: 6px; white-space: nowrap; z-index: 5; transform: translate(-50%, -110%); }
+.keyrow { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.84rem; color: var(--fg2); }
+.keyrow i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 3px; margin-right: 6px; }
+.keyrow i.box { height: 10px; width: 14px; vertical-align: -1px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; font-size: 0.84rem; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-family: var(--f-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
+td.n, th.n { text-align: right; }
+tr.go { cursor: pointer; } tr.go:hover td { background: var(--chip); }
+.bar { height: 8px; border-radius: 0 4px 4px 0; background: var(--flood); min-width: 1px; }
+.why { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .why { grid-template-columns: minmax(0, 1fr); } }
+.why .box p { color: var(--fg2); font-size: 0.95rem; }
+.pill { display: inline-block; font: 600 0.7rem var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; justify-self: start; }
+.pill.ok { background: color-mix(in srgb, var(--upland) 20%, transparent); } .pill.warn { background: color-mix(in srgb, var(--flood) 20%, transparent); }
+.pill.info { background: color-mix(in srgb, var(--still) 18%, transparent); }
+ul.clean { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--fg2); font-size: 0.95rem; }
+.dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 24px; }
+@media (max-width: 760px) { .dl { grid-template-columns: minmax(0, 1fr); } }
+.dl a { font-family: var(--f-mono); font-size: 0.82rem; } .dl span { font-size: 0.82rem; color: var(--fg2); display: block; }
+footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 20px; }
+#err { display: none; background: color-mix(in srgb, var(--flood) 16%, var(--surface)); border: 1px solid var(--flood); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; }
+.maplibregl-ctrl-attrib { font-size: 10px; }
+.probe-empty { font-size: 0.85rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="top" aria-label="Sections"><div class="in">
+  <span class="brand">How long does the water stay?</span>
+  <a href="#country">Country</a><a href="#explore">Explore</a><a href="#impact">Impact</a><a href="#forest">Under the trees</a>
+  <a href="#why">Why</a><a href="#validation">Validation</a><a href="#method">Method</a><a href="#data">Data</a>
+</div></nav>
+<div class="wrap">
+  <div id="err" role="alert"></div>
+  <header class="hero">
+    <span class="badge">NASA Space Apps 2026 · Dancing with the SARs · Team Uruguay</span>
+    <p class="eyebrow">NISAR L-band radar · Uruguay · flood of 15–19 August 2026</p>
+    <h1>How long does the <span class="flood">water</span> stay?</h1>
+    <p class="lede col">Clouds blinded optical satellites during the August storm. NISAR's L-band radar did not. Pass after pass it mapped where new water appeared, how far it spread, what it cut off and when the land dried again, from the rice fields of the Laguna Merín basin to the forests along the Río Negro.</p>
+  </header>
+
+  <div class="figures" aria-label="Key figures">
+    <div class="fig"><span class="num" data-b="cifras.ha_total|ha"></span><span class="lbl">newly flooded across the six study areas (seen on at least two passes)</span><span class="src">NISAR, all tracks combined</span></div>
+    <div class="fig"><span class="num" data-b="cifras.merin_pico_pct|pct0"></span><span class="lbl">of the Laguna Merín flood was still under water on <span data-b="cifras.merin_pico_fecha|date"></span>, ten days after the rain</span><span class="src">NISAR track 53D</span></div>
+    <div class="fig"><span class="num" data-b="cifras.km_total|km"></span><span class="lbl">of rural roads under water at some point</span><span class="src">NISAR + OpenStreetMap roads</span></div>
+    <div class="fig"><span class="num" data-b="cifras.desplazados|int"></span><span class="lbl">people displaced across Uruguay at the peak, <span data-b="cifras.desplazados_fecha|date"></span></span><span class="src">SINAE via press · preliminary · context only</span></div>
+  </div>
+
+  <section id="country" class="two" aria-labelledby="country-h">
+    <div class="stack">
+      <p class="eyebrow">The event</p>
+      <h2 id="country-h">One storm, two watersheds</h2>
+      <p class="soft">The Cuchilla Grande splits Uruguay's east. Rain on the Atlantic side drains through the Olimar, Cebollatí and Yaguarón into the Laguna Merín. Rain on the other side runs down the Yí into the Río Negro. The same storm produced crests days apart. Click an area to explore it.</p>
+      <svg class="ctxmap" id="ctxmap" viewBox="0 0 520 440" role="img" aria-label="Map of Uruguay with the six study areas"></svg>
+    </div>
+    <div class="stack">
+      <p class="eyebrow">Timeline (press and SINAE reports, used only as context)</p>
+      <ol class="timeline">
+        <li><span class="d">~23 Jul</span><span class="t">Río Yí reaches 8.95 m in Durazno; 57 people leave their homes.</span></li>
+        <li><span class="d">27 Jul – 10 Aug</span><span class="t">Global NISAR data gap. June–July passes serve as the "normal" baseline.</span></li>
+        <li class="key"><span class="d">15–19 Aug</span><span class="t">INUMET warning: 70–100 mm/day, over 250 mm in five eastern departments; 317 mm at Laguna Merín.</span></li>
+        <li class="key"><span class="d">19–20 Aug</span><span class="t">Olimar crests at ~8.6 m in Treinta y Tres; ~1,600 people displaced in the city.</span></li>
+        <li class="key"><span class="d">22 Aug</span><span class="t">Yí crests at 9.75 m in Durazno, three days after the Olimar. National peak: 2,229 displaced.</span></li>
+        <li><span class="d">23 Aug</span><span class="t">Treinta y Tres drops to 418 displaced while Durazno rises to 416: the flood moves west.</span></li>
+        <li><span class="d">~21–25 Aug</span><span class="t">Soriano prepares for the Río Negro at Mercedes. El Niño expected to last until at least May 2027.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="stack-lg" aria-labelledby="pulse-h">
+    <div class="stack col">
+      <p class="eyebrow">Across the country</p>
+      <h2 id="pulse-h">The flood pulse, area by area</h2>
+      <p class="soft">Share of each area covered by new open water on every pass of one orbit track (same geometry every time). The shaded band is how much the number moves if the water detector were set reasonably stricter or looser. The vertical mark is the river crest reported in the press.</p>
+    </div>
+    <div class="keyrow"><span><i style="background:var(--flood)"></i>New open water</span><span><i class="box" style="background:var(--flood);opacity:.25"></i>Range across detector settings</span><span><i style="background:var(--fg2)"></i>Reported crest</span><span><i class="box" style="background:var(--muted);opacity:.25"></i>NISAR data gap</span></div>
+    <div class="cards" id="pulse"></div>
+  </section>
+
+  <section id="explore" class="stack-lg" aria-labelledby="explore-h">
+    <div class="stack col">
+      <p class="eyebrow">Explore</p>
+      <h2 id="explore-h">Watch the water arrive and leave</h2>
+      <p class="soft">Grey is radar brightness: calm water reflects the signal away and turns black. Orange marks water that was not there in June and July. Switch layers to see how long each 20 m pixel stayed wet and when it dried. Click anywhere on the map for that spot's own radar history.</p>
+    </div>
+    <div class="explorer">
+      <div id="map" role="region" aria-label="Map"><div class="stamp" id="stamp"></div></div>
+      <div class="panel">
+        <div class="stack"><span class="ctrl-label">Area</span><div class="tabs" id="zone-tabs" role="group" aria-label="Area"></div><p class="readout" id="zone-title"></p></div>
+        <div class="stack"><span class="ctrl-label">Layer</span>
+          <div class="seg" id="layer-seg" role="group" aria-label="Layer">
+            <button type="button" data-layer="date" aria-pressed="true">Water by date</button>
+            <button type="button" data-layer="extent" aria-pressed="false">Flood extent</button>
+            <button type="button" data-layer="persist" aria-pressed="false">Days under water</button>
+            <button type="button" data-layer="retreat" aria-pressed="false">Date it dried</button>
+            <button type="button" data-layer="forest" aria-pressed="false">Under the trees</button>
+          </div></div>
+        <div class="stack" id="date-ctrl"><span class="ctrl-label">Pass date · track <span id="trk"></span></span>
+          <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Pass date"></div>
+          <div class="ticks" id="ticks"></div></div>
+        <div class="checks">
+          <label><input type="checkbox" id="chk-radar" checked> Radar image</label>
+          <label><input type="checkbox" id="chk-roads" checked> Flooded roads</label>
+          <label><input type="checkbox" id="chk-towns" checked> Towns</label>
+        </div>
+        <div class="legend" id="legend"></div>
+        <div class="stats" id="stats"></div>
+        <div class="stack"><span class="ctrl-label">New water on each pass (% of area)</span><div style="position:relative"><svg class="chart" id="zchart" viewBox="0 0 420 160" role="img" aria-label="New water by pass"></svg></div></div>
+        <div class="stack"><span class="ctrl-label">This spot (~200 m cell)</span><div id="probe"><p class="probe-empty">Click the map.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="impact" class="stack-lg" aria-labelledby="impact-h">
+    <div class="stack col">
+      <p class="eyebrow">Impact</p>
+      <h2 id="impact-h">What the water cut off, and for how long</h2>
+      <p class="soft">Radar pixels crossed with OpenStreetMap roads and towns, HydroBASINS sub-basins and ESA WorldCover land cover. "Days" is the midpoint of the interval the radar can bound: last wet pass to first dry pass. Roads usually run on embankments, so a 20 m pixel mixes the road with its flooded verge: read this as "road at risk of being cut".</p>
+      <div class="tabs" id="impact-tabs" role="group" aria-label="Area for impact tables"></div>
+    </div>
+    <div class="grid2">
+      <div class="box"><h3>Rural roads under water</h3><p class="note" id="roads-note"></p><div class="tbl"><table id="roads"></table></div></div>
+      <div class="box"><h3>Flooded land by cover type</h3><p class="note">Hectares newly flooded, and share of each cover type. In the Merín basin "cropland" is almost all rice.</p><div id="landcover" class="tbl"></div></div>
+      <div class="box"><h3>Towns</h3><p class="note">Radar under-counts flooding inside built-up areas (buildings also bounce the signal back). The ring within 500 m of town is the reliable number.</p><div class="tbl"><table id="towns"></table></div></div>
+      <div class="box"><h3>Sub-basins</h3><p class="note">Hectare-days = hectares × days under water: a single measure of how much land was out of use, and for how long.</p><div class="tbl"><table id="basins"></table></div></div>
+    </div>
+    <div class="box"><h3>All six areas</h3><div class="tbl"><table id="allzones"></table></div></div>
+  </section>
+
+  <section id="forest" class="stack-lg" aria-labelledby="forest-h">
+    <div class="stack col">
+      <p class="eyebrow">What L-band adds</p>
+      <h2 id="forest-h">Water under the trees</h2>
+      <p class="soft">When a forest floor floods, the radar wave bounces between the water surface and the trunks and comes back stronger (HH rises over HV). L-band's 24 cm wave reaches the ground through the canopy; optical satellites and C-band radar mostly can't. Forest on higher ground also brightens a little when everything is wet, so we subtract it: what's left over riverside forest is the flood signal.</p>
+    </div>
+    <div class="keyrow"><span><i style="background:var(--still)"></i>Riverside forest (under 4 m above the nearest stream, within 1 km)</span><span><i style="background:var(--upland)"></i>Forest on higher ground (over 12 m)</span><span><i style="background:var(--openland)"></i>Open land</span></div>
+    <div class="cards" id="forest-cards"></div>
+    <div class="box"><h3>Riverside excess, all areas</h3><p class="note">Mean extra HH−HV rise of riverside forest over upland forest during the flood window. Positive on every track = water under the trees.</p><div class="tbl"><table id="forest-tbl"></table></div></div>
+  </section>
+
+  <section id="why" class="stack-lg" aria-labelledby="why-h">
+    <div class="stack col"><p class="eyebrow">Physical drivers</p><h2 id="why-h">Why the water behaved this way</h2></div>
+    <div class="why" id="why-cards"></div>
+  </section>
+
+  <section id="validation" class="stack-lg" aria-labelledby="val-h">
+    <div class="stack col">
+      <p class="eyebrow">Can we trust it?</p>
+      <h2 id="val-h">Three independent checks</h2>
+      <p class="soft">None of these sources feed the NISAR maps. They only test them.</p>
+    </div>
+    <div class="box"><span class="pill info">1 · NISAR vs NISAR</span><h3>Two orbits a day apart should see the same water</h3>
+      <p class="soft" id="val-pairs-txt"></p>
+      <div style="position:relative"><svg class="chart" id="val-pairs" viewBox="0 0 900 230" role="img" aria-label="Agreement between tracks one day apart"></svg></div>
+      <div class="keyrow"><span><i class="box" style="background:var(--openland)"></i>Old detector: fixed brightness threshold</span><span><i class="box" style="background:var(--still)"></i>Current detector: drop vs. the pixel's own June–July baseline</span></div>
+    </div>
+    <div class="grid2">
+      <div class="box"><span class="pill info">2 · Sentinel-1 (C-band)</span><h3>Same-day comparison with another radar</h3><p class="soft" id="val-s1-txt"></p><div class="tbl"><table id="val-s1"></table></div></div>
+      <div class="box"><span class="pill info">3 · River crests</span><h3>Does the radar peak follow the reported crest?</h3><p class="soft">NISAR revisits each track every 12 days, so it can't pin the crest. What it must do is light up on the first pass after it and fade afterwards, east before west.</p><div class="tbl"><table id="val-cron"></table></div></div>
+    </div>
+  </section>
+
+  <section id="method" class="stack-lg" aria-labelledby="method-h">
+    <div class="stack col"><p class="eyebrow">Method</p><h2 id="method-h">How the maps are made</h2></div>
+    <div class="grid2">
+      <div class="box"><h3>Detecting new water</h3><ul class="clean">
+        <li>NISAR L2 GCOV, HH and HV gamma-naught, 20 m, PROVISIONAL products only (June–October 2026). 5×5 speckle filter.</li>
+        <li>A pixel has <b>new water</b> when its HH drops more than 3 dB below its own June–July median, is darker than −14 dB, lies outside permanent water, and belongs to a patch of at least 10 pixels (0.4 ha). Each pass is first normalized by its scene-wide median change.</li>
+        <li>Comparing each pixel with itself cancels the geometry, incidence angle and calibration of each orbit track. That is what let us combine tracks.</li>
+        <li><b>Flood extent</b> = new water on at least two observations (any track) between 10 Aug and 10 Sep.</li>
+      </ul></div>
+      <div class="box"><h3>Measuring how long it stayed</h3><ul class="clean">
+        <li>All passes from all tracks over an area are merged at mask level (2–3 tracks, every 1–6 days).</li>
+        <li>A pixel has <b>dried</b> at the first dry observation confirmed by the next one.</li>
+        <li>Days under water is an interval: from the last wet pass minus the first wet pass, up to the first dry pass minus the pass before the water arrived (never before the rain started on 15 Aug). Maps show the midpoint.</li>
+        <li>Pixels still wet on the last pass (20 Oct) are counted with a lower bound.</li>
+      </ul></div>
+      <div class="box"><h3>Limits</h3><ul class="clean">
+        <li>12-day revisit per track: crests between passes are missed; persistence has days, not hours, of precision.</li>
+        <li>Cities are under-counted: buildings bounce the radar back like flooded forest does.</li>
+        <li>Data arrives days after each pass: this is post-event assessment and planning, not early warning.</li>
+        <li>PROVISIONAL calibration. VALIDATED products (from 21 Oct) jump ~−1.7 dB and are not mixed in.</li>
+        <li>Press and SINAE figures are preliminary and used only as context.</li>
+      </ul></div>
+      <div class="box"><h3>What this enables</h3><ul class="clean">
+        <li><b>SINAE / CECOED:</b> which rural roads and neighbourhoods stayed cut off longest, to prioritize repairs and assistance after the next flood.</li>
+        <li><b>Producers and insurers:</b> hectare-days of flooding per paddock, independent of cloud cover.</li>
+        <li><b>Planning for El Niño 2026-27:</b> the persistence map is a map of where water lingers. That is where the next flood will hurt longest.</li>
+        <li><b>Beyond Uruguay:</b> the same pipeline runs on any NISAR GCOV scene. Only the area list changes.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section id="data" class="stack-lg" aria-labelledby="data-h">
+    <div class="stack col"><p class="eyebrow">Open data</p><h2 id="data-h">Download the results</h2><p class="soft">CSV tables and GeoTIFFs (band 1 = flooded, band 2 = days under water; 255 = still wet on 20 Oct). Code and full pipeline in the project repository.</p></div>
+    <div class="dl" id="downloads"></div>
+  </section>
+
+  <footer>
+    <p>Data: NASA/ISRO NISAR L2 GCOV (PROVISIONAL, gamma0 RTC, 20 m) via ASF DAAC. Validation: Copernicus Sentinel-1 RTC (Microsoft Planetary Computer). Terrain: Copernicus DEM GLO-30. Context: © OpenStreetMap contributors (ODbL) via Geofabrik; HydroBASINS (HydroSHEDS); ESA WorldCover 2021; Natural Earth. Basemap © OpenStreetMap contributors. Event context: INUMET, SINAE and CECOED as reported by Uruguayan press; preliminary figures.</p>
+    <p id="gen"></p>
+    <p>Team Uruguay · NASA Space Apps Challenge 2026 · "Dancing with the SARs"</p>
+  </footer>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+"use strict";
+function showError(msg) { const e = document.getElementById("err"); e.textContent = msg; e.style.display = "block"; }
+window.addEventListener("error", (e) => showError("Something broke while drawing the page: " + e.message));
+if (location.protocol === "file:") showError("This page needs to be served over http to load its data. From the repository root run: python3 -m http.server -d app 8000 and open http://localhost:8000");
+
+(async function () {
+  const $ = (s) => document.querySelector(s);
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, attrs = {}, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; };
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const ms = (s) => Date.parse(s);
+  const fmtDate = (s) => new Date(s + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+  const nf = (v, d = 0) => v == null || isNaN(v) ? "–" : Number(v).toLocaleString("en-US", { maximumFractionDigits: d, minimumFractionDigits: d });
+  const FMT = { ha: v => nf(v) + " ha", km: v => nf(v) + " km", int: v => nf(v), pct0: v => nf(v) + "%", pct1: v => nf(v, 1) + "%", date: v => fmtDate(v) };
+  const get = (o, p) => p.split(".").reduce((a, k) => a == null ? a : a[k], o);
+  const trk = (t) => { const m = /T(\d+)([AD])/.exec(t || ""); return m ? { n: m[1], dir: m[2] === "D" ? "descending" : "ascending", short: m[1] + m[2] } : { n: t, dir: "", short: t }; };
+  const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  let M;
+  try { M = await (await fetch("data/manifest.json")).json(); }
+  catch (e) { showError("The data did not load (" + e.message + "). Serve the app folder over http (python3 -m http.server -d app 8000)."); return; }
+  document.querySelectorAll("[data-b]").forEach(n => { const [p, f] = n.dataset.b.split("|"); n.textContent = (FMT[f] || String)(get(M, p)); });
+  $("#gen").textContent = `Results generated ${M.generado}.`;
+  const Z = M.zonas, ZIDS = Object.keys(Z);
+  const RAIN = M.evento.lluvia, GAP = M.evento.hueco;
+
+  /* ---------- tooltip ---------- */
+  function tipOn(target, host, text) {
+    let tip;
+    target.addEventListener("pointerenter", () => {
+      if (!tip) { tip = document.createElement("div"); tip.className = "tip"; host.appendChild(tip); }
+      tip.textContent = text(); const hb = host.getBoundingClientRect(), tb = target.getBoundingClientRect();
+      tip.style.left = (tb.left + tb.width / 2 - hb.left) + "px"; tip.style.top = (tb.top - hb.top + 6) + "px"; tip.hidden = false;
+    });
+    target.addEventListener("pointerleave", () => { if (tip) tip.hidden = true; });
+  }
+
+  /* ---------- generic time chart (one y-axis) ---------- */
+  function timeChart(svg, o) {
+    svg.innerHTML = "";
+    const [W, H] = svg.getAttribute("viewBox").split(" ").slice(2).map(Number);
+    const l = 36, r = o.labelRight ? 62 : 10, t = 10, b = 22;
+    const x = (s) => l + (ms(s) - ms(o.t0)) / (ms(o.t1) - ms(o.t0)) * (W - l - r);
+    const y = (v) => t + (o.ymax - v) / (o.ymax - o.ymin) * (H - t - b);
+    const host = svg.parentElement;
+    el("rect", { class: "gap", x: x(GAP[0]), y: t, width: Math.max(0, x(GAP[1]) - x(GAP[0])), height: H - t - b }, svg);
+    el("rect", { class: "rain", x: x(RAIN[0]), y: t, width: x(RAIN[1]) - x(RAIN[0]), height: H - t - b }, svg);
+    for (const v of o.yticks) { el("line", { class: v === 0 ? "axis" : "grid", x1: l, x2: W - r, y1: y(v), y2: y(v) }, svg); el("text", { x: l - 5, y: y(v) + 3, "text-anchor": "end" }, svg).textContent = o.yfmt(v); }
+    for (const d of o.xticks) el("text", { x: x(d), y: H - 6, "text-anchor": "middle" }, svg).textContent = o.xfmt ? o.xfmt(d) : fmtDate(d);
+    if (o.crest) { el("line", { class: "crest", x1: x(o.crest), x2: x(o.crest), y1: t, y2: H - b }, svg); }
+    for (const s of o.series) {
+      const pts = s.pts.filter(p => p.v != null);
+      if (s.band) {
+        const bp = pts.filter(p => p.lo != null && p.hi != null);
+        if (bp.length) el("path", { class: "band", fill: s.color, d: "M" + bp.map(p => x(p.fecha) + "," + y(p.hi)).join("L") + "L" + bp.slice().reverse().map(p => x(p.fecha) + "," + y(p.lo)).join("L") + "Z" }, svg);
+      }
+      const segs = []; let cur = [];
+      pts.forEach((p, i) => { if (i && ms(p.fecha) - ms(pts[i - 1].fecha) > 20 * 864e5) { segs.push(cur); cur = []; } cur.push(p); });
+      segs.push(cur);
+      for (const sg of segs) if (sg.length) el("path", { class: "ln", stroke: s.color, "stroke-dasharray": s.dash || "", d: sg.map((p, i) => (i ? "L" : "M") + x(p.fecha).toFixed(1) + "," + y(p.v).toFixed(1)).join("") }, svg);
+      if (s.label && o.labelRight && pts.length) { const last = pts[pts.length - 1]; el("text", { class: "lab", x: x(last.fecha) + 6, y: y(last.v) + 4 }, svg).textContent = s.label; }
+      for (const p of pts) {
+        el("circle", { class: "dot", cx: x(p.fecha), cy: y(p.v), r: s.r || 3.5, fill: s.color, "data-f": p.fecha }, svg);
+        const hit = el("circle", { cx: x(p.fecha), cy: y(p.v), r: 11, fill: "transparent", style: o.onPick ? "cursor:pointer" : "" }, svg);
+        tipOn(hit, host, () => `${fmtDate(p.fecha)} · ${s.name}: ${o.vfmt(p)}`);
+        if (o.onPick) hit.addEventListener("click", () => o.onPick(p));
+      }
+    }
+    if (o.labelRight) { const labs = [...svg.querySelectorAll("text.lab")].sort((a, b) => +a.getAttribute("y") - +b.getAttribute("y")); for (let i = 1; i < labs.length; i++) { const py = +labs[i - 1].getAttribute("y"), cy = +labs[i].getAttribute("y"); if (cy - py < 12) labs[i].setAttribute("y", py + 12); } }
+    svg._x = x; svg._y = y; svg._t = t; svg._b = H - b;
+  }
+  const niceMax = (v) => { for (const n of [1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 40, 60, 80, 100]) if (v <= n) return n; return Math.ceil(v / 10) * 10; };
+
+  /* ---------- context map ---------- */
+  (function ctxMap() {
+    const svg = $("#ctxmap"), bb = [-58.9, -35.1, -52.9, -29.9], kx = Math.cos(-32.5 * Math.PI / 180), W = 520, H = 440, pad = 14;
+    const s = Math.min((W - 2 * pad) / ((bb[2] - bb[0]) * kx), (H - 2 * pad) / (bb[3] - bb[1]));
+    const X = (lon) => pad + (lon - bb[0]) * kx * s, Y = (lat) => pad + (bb[3] - lat) * s;
+    const path = (rings) => rings.map(r => "M" + r.map(([x, y]) => X(x).toFixed(1) + "," + Y(y).toFixed(1)).join("L") + "Z").join("");
+    const clip = el("clipPath", { id: "ctxclip" }, el("defs", {}, svg)); el("rect", { x: 0, y: 0, width: W, height: H, rx: 10 }, clip);
+    const g = el("g", { "clip-path": "url(#ctxclip)" }, svg);
+    for (const k of ["BR", "AR"]) el("path", { d: path(M.contexto.paises[k]), fill: "var(--chip)", stroke: "var(--line)" }, g);
+    el("path", { d: path(M.contexto.paises.UY), fill: "var(--bg)", stroke: "var(--fg2)", "stroke-width": 1.2 }, g);
+    const off = { treinta_y_tres: [-8, -8, "end"], merin_arrozales: [10, 30, "start"], melo: [-8, -6, "end"], rio_branco_jaguarao: [10, 4, "start"], durazno: [0, -10, "middle"], mercedes: [0, -10, "middle"] };
+    for (const [z, b] of Object.entries(M.contexto.zonas)) {
+      const a = el("g", { class: "zr", tabindex: 0, role: "button", "aria-label": "Explore " + Z[z].nombre }, g);
+      const x0 = X(b[0]), x1 = X(b[2]), y0 = Y(b[3]), y1 = Y(b[1]);
+      el("rect", { x: x0, y: y0, width: Math.max(x1 - x0, 7), height: Math.max(y1 - y0, 7), fill: "var(--flood)", "fill-opacity": .28, stroke: "var(--flood)", "stroke-width": 1.5, rx: 2 }, a);
+      const [dx, dy, an] = off[z] || [0, -8, "middle"];
+      el("text", { x: (an === "end" ? x0 : an === "start" ? x1 : (x0 + x1) / 2) + dx, y: (an === "middle" ? y0 : (y0 + y1) / 2) + dy, "text-anchor": an, fill: "var(--fg)", "font-size": 12, "font-family": "var(--f-body)", "font-weight": 600 }, a).textContent = Z[z].nombre.replace(" rice fields", "");
+      const go = () => { setZone(z); document.getElementById("explore").scrollIntoView(); };
+      a.addEventListener("click", go); a.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    }
+    const lab = (txt, lon, lat, size = 11, it = true) => { el("text", { x: X(lon), y: Y(lat), "text-anchor": "middle", fill: "var(--muted)", "font-size": size, "font-family": "var(--f-body)", "font-style": it ? "italic" : "normal" }, g).textContent = txt; };
+    lab("Laguna Merín", -53.35, -33.05); lab("BRAZIL", -54.6, -30.4, 11, false); lab("ARGENTINA", -58.45, -31.3, 11, false); lab("Atlantic", -53.6, -34.6); lab("Río de la Plata", -57.4, -34.85);
+  })();
+
+  /* ---------- pulse cards ---------- */
+  const crests = Object.fromEntries(M.validacion.cronologia.map(c => [c.zona, c]));
+  (function pulse() {
+    const host = $("#pulse");
+    for (const z of ZIDS) {
+      const d = Z[z], ser = d.fechas;
+      const ev = ser.filter(p => p.fecha >= M.evento.ventana[0] && p.fecha <= "2026-09-22");
+      const pk = (ev.length ? ev : ser).reduce((a, p) => p.v > a.v ? p : a, (ev.length ? ev : ser)[0]);
+      const card = document.createElement("div"); card.className = "card click"; card.tabIndex = 0; card.setAttribute("role", "button");
+      card.innerHTML = `<h3>${esc(d.nombre)}</h3><span class="sub">${esc(d.rio)} · track ${trk(d.resumen.serie_track).short}</span>`;
+      const box = document.createElement("div"); box.style.position = "relative"; const svg = el("svg", { class: "chart", viewBox: "0 0 320 170", role: "img", "aria-label": d.nombre + " new water by pass" }); box.appendChild(svg); card.appendChild(box);
+      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Peak ${nf(pk.v, 1)}% on ${fmtDate(pk.fecha)} · ${nf(d.resumen.ha_inundada)} ha flooded`; card.appendChild(p);
+      host.appendChild(card);
+      const ymax = niceMax(Math.max(...ser.map(s => s.hi ?? s.v)) * 1.05);
+      timeChart(svg, { t0: "2026-06-12", t1: "2026-10-20", ymin: 0, ymax, yticks: [0, ymax / 2, ymax], yfmt: v => nf(v, v < 2 && v > 0 ? 1 : 0) + "%",
+        xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: d => fmtDate(d).split(" ")[1], crest: crests[z]?.cresta,
+        series: [{ name: "new water", color: css("--flood"), pts: ser, band: true }], vfmt: p => `${nf(p.v, 1)}% (range ${nf(p.lo, 1)}–${nf(p.hi, 1)})` });
+      const go = () => { setZone(z); document.getElementById("explore").scrollIntoView(); };
+      card.addEventListener("click", go); card.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
+    }
+  })();
+
+  /* ---------- map ---------- */
+  const dark = () => document.documentElement.dataset.theme === "dark" || (document.documentElement.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+  // OpenStreetMap standard tiles (attribution required, light use). Dark mode: desaturated and dimmed.
+  const tiles = () => ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
+  const basePaint = (d) => d ? { "raster-saturation": -1, "raster-brightness-max": 0.32, "raster-contrast": 0.1 } : { "raster-saturation": -0.6, "raster-brightness-min": 0.08 };
+  if (!window.maplibregl) { showError("The map library did not load (no internet?). Charts and tables still work."); }
+  const map = window.maplibregl ? new maplibregl.Map({
+    container: "map", attributionControl: { compact: true },
+    style: { version: 8, glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "base", type: "raster", source: "base", paint: basePaint(dark()) }] },
+    center: [-54.5, -33], zoom: 7, maxZoom: 16, cooperativeGestures: false,
+  }) : null;
+  if (map) { map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right"); map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left"); }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (map && map.getLayer("base")) for (const [k, v] of Object.entries({ "raster-saturation": 0, "raster-brightness-max": 1, "raster-brightness-min": 0, "raster-contrast": 0, ...basePaint(dark()) })) map.setPaintProperty("base", k, v); });
+
+  let zid = "merin_arrozales", layer = "date", di = 0, timer = null, mapReady = false, probeData = {}, probeMarker = null;
+  const mapLoaded = map ? new Promise(r => map.on("load", r)) : Promise.resolve();
+  const img = (z, f) => `data/${z}/${f}`;
+
+  async function initMap() {
+    await mapLoaded; if (!map) return;
+    const d = Z[zid];
+    map.addSource("hh", { type: "image", url: img(zid, `hh_${d.capas.serie.fechas[0]}.webp`), coordinates: d.capas.serie.esquinas });
+    map.addLayer({ id: "hh", type: "raster", source: "hh", paint: { "raster-opacity": 0.92, "raster-fade-duration": 0 } });
+    map.addSource("ov", { type: "image", url: img(zid, `agua_${d.capas.serie.fechas[0]}.png`), coordinates: d.capas.serie.esquinas });
+    map.addLayer({ id: "ov", type: "raster", source: "ov", paint: { "raster-opacity": 0.9, "raster-resampling": "nearest", "raster-fade-duration": 0 } });
+    try {
+      const [roads, towns] = await Promise.all([fetch("data/impacto/caminos.geojson").then(r => r.json()), fetch("data/impacto/localidades.geojson").then(r => r.json())]);
+      map.addSource("towns", { type: "geojson", data: towns });
+      map.addLayer({ id: "towns", type: "line", source: "towns", paint: { "line-color": "#ffffff", "line-width": 1.2, "line-dasharray": [2, 1.5] } });
+      map.addLayer({ id: "towns-l", type: "symbol", source: "towns", layout: { "text-field": ["get", "nombre"], "text-size": 11, "text-font": ["Open Sans Semibold"] }, paint: { "text-color": "#ffffff", "text-halo-color": "#000", "text-halo-width": 1 } });
+      map.addSource("roads", { type: "geojson", data: roads });
+      map.addLayer({ id: "roads", type: "line", source: "roads", paint: { "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1.5, 13, 4],
+        "line-color": ["step", ["get", "dias_mid"], "#fdd6bf", 8, "#f7a67a", 15, "#e66e3c", 29, "#b44216", 43, "#6e2507"] } });
+      map.on("click", "roads", (e) => {
+        const p = e.features[0].properties;
+        new maplibregl.Popup({ closeButton: true }).setLngLat(e.lngLat).setHTML(`<b>${esc(p.nombre)}</b><br>${nf(+p.km_bajo_agua, 2)} km under water<br>~${p.dias_mid} days (${p.dias_min}–${p.dias_max})${p.sigue === "true" || p.sigue === true ? "<br>still wet on 20 Oct" : ""}`).addTo(map);
+      });
+      map.on("mouseenter", "roads", () => map.getCanvas().style.cursor = "pointer"); map.on("mouseleave", "roads", () => map.getCanvas().style.cursor = "");
+    } catch (e) { console.warn("vector layers", e); }
+    map.on("click", (e) => { if (map.queryRenderedFeatures(e.point, { layers: ["roads"].filter(l => map.getLayer(l)) }).length) return; probe(e.lngLat); });
+    mapReady = true;
+  }
+
+  /* ---------- zone ---------- */
+  const tabs = $("#zone-tabs"), itabs = $("#impact-tabs");
+  for (const z of ZIDS) for (const host of [tabs, itabs]) {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = Z[z].nombre.replace(" rice fields", ""); b.dataset.z = z;
+    b.addEventListener("click", () => setZone(z)); host.appendChild(b);
+  }
+  document.querySelectorAll("#layer-seg button").forEach(b => b.addEventListener("click", () => { setLayer(b.dataset.layer); }));
+  const range = $("#date-range");
+  range.addEventListener("input", () => { di = +range.value; stop(); render(); });
+  $("#play").addEventListener("click", () => timer ? stop() : play());
+  $("#chk-radar").addEventListener("change", render);
+  $("#chk-roads").addEventListener("change", render);
+  $("#chk-towns").addEventListener("change", render);
+  function setLayer(l) { layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
+  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { di = (di + 1) % n; render(); }, 1200); }
+  function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
+
+  function setZone(z) {
+    zid = z; stop();
+    const d = Z[z], fe = d.capas.serie.fechas;
+    for (const host of [tabs, itabs]) [...host.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.z === z));
+    $("#zone-title").textContent = d.descripcion;
+    $("#trk").textContent = `${trk(d.resumen.serie_track).n} ${trk(d.resumen.serie_track).dir}`;
+    const inEv = (p) => p.fecha >= M.evento.ventana[0] && p.fecha <= "2026-09-22";
+    const pk = d.fechas.reduce((a, p, i) => (inEv(p) && (!inEv(d.fechas[a]) || p.v > d.fechas[a].v)) ? i : a, 0);
+    di = pk; range.max = fe.length - 1; range.value = di;
+    $("#ticks").innerHTML = ""; fe.forEach((f, i) => { if (i === 0 || i === fe.length - 1 || i === pk) { const s = document.createElement("span"); s.textContent = fmtDate(f); $("#ticks").appendChild(s); } });
+    fe.forEach(f => { new Image().src = img(z, `hh_${f}.webp`); new Image().src = img(z, `agua_${f}.png`); });
+    stats(); zchart(); impact(); $("#probe").innerHTML = '<p class="probe-empty">Click the map.</p>'; if (probeMarker) { probeMarker.remove(); probeMarker = null; }
+    if (map && mapReady) {
+      const c = d.capas.serie.esquinas; const lons = c.map(p => p[0]), lats = c.map(p => p[1]);
+      map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 20, duration: 600 });
+    }
+    render();
+  }
+
+  function render() {
+    const d = Z[zid], fe = d.capas.serie.fechas, f = fe[di];
+    range.value = di;
+    $("#date-ctrl").style.opacity = layer === "date" ? 1 : .45;
+    const phase = ms(f) < ms(GAP[0]) ? "before the storm" : ms(f) <= ms(M.evento.ventana[1]) ? "flood window" : "after";
+    const names = { extent: "Flooded on ≥2 observations, 10 Aug – 10 Sep", persist: "Days under water", retreat: "Date the water left", forest: "Water under riverside forest" };
+    $("#stamp").textContent = layer === "date" ? `${fmtDate(f)} 2026 · ${phase}` : names[layer];
+    legend();
+    if (map && mapReady) {
+      const hh = map.getSource("hh"), ov = map.getSource("ov");
+      hh.updateImage({ url: img(zid, `hh_${f}.webp`), coordinates: d.capas.serie.esquinas });
+      const ovs = { date: [`agua_${f}.png`, d.capas.serie.esquinas], extent: ["extension.png", d.capas.evento.esquinas], persist: ["persistencia.png", d.capas.evento.esquinas], retreat: ["retiro.png", d.capas.evento.esquinas], forest: ["monte.png", d.capas.evento.esquinas] }[layer];
+      ov.updateImage({ url: img(zid, ovs[0]), coordinates: ovs[1] });
+      map.setLayoutProperty("hh", "visibility", $("#chk-radar").checked ? "visible" : "none");
+      for (const [id, chk] of [["roads", "#chk-roads"], ["towns", "#chk-towns"], ["towns-l", "#chk-towns"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
+    }
+    const svg = $("#zchart"); svg.querySelectorAll(".dot").forEach(c => c.setAttribute("r", c.dataset.f === f && layer === "date" ? 6 : 3.5));
+    const cur = svg.querySelector(".cursor"); if (cur && svg._x) { const x = svg._x(f); cur.setAttribute("x1", x); cur.setAttribute("x2", x); cur.setAttribute("visibility", layer === "date" ? "visible" : "hidden"); }
+    const p = d.fechas.find(p => p.fecha === f);
+    const ro = $("#zone-readout"); if (ro && p) ro.innerHTML = p.remaining == null ? `Before the storm: <b>${nf(p.v, 1)}%</b> new water (noise and small ponds).` : `<b>${nf(p.v, 1)}%</b> of the area is new water${p.km != null ? `; <b>${nf(p.km, 1)} km</b> of road wet` : ""}.`;
+  }
+
+  function legend() {
+    const L = $("#legend"), lg = M.leyendas;
+    const sw = (c, t) => `<div><span class="sw" style="background:${c}"></span>${t}</div>`;
+    let h = "";
+    if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)");
+    if (layer === "extent") h = sw(css("--flood"), "Flooded on at least two observations");
+    if (layer === "persist") h = lg.persistencia.map(p => sw(p.color, p.rango + " days")).join("") + sw(lg.sigue, "Still wet on 20 Oct");
+    if (layer === "retreat") h = lg.retiro.map(p => sw(p.color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(lg.sigue, "Still wet on 20 Oct");
+    if (layer === "forest") h = sw("rgb(27,175,122)", "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
+    if ($("#chk-roads").checked) h += `<div><span class="sw" style="background:linear-gradient(90deg,#fdd6bf,#f7a67a,#e66e3c,#b44216,#6e2507)"></span>Roads: days under water (light 1–7 · dark 43+)</div>`;
+    L.innerHTML = h + `<p class="readout" id="zone-readout"></p>`;
+  }
+
+  function stats() {
+    const r = Z[zid].resumen;
+    const pers = r.persist_mid != null ? `${nf(r.persist_mid)} days` : `${nf((r.persist_min + r.persist_max) / 2)} days`;
+    $("#stats").innerHTML = `
+      <div><b>${nf(r.ha_inundada)} ha</b><span>flooded (≥2 observations)</span><small>${r.ha_max_una_obs ? nf(r.ha_max_una_obs) + " ha seen on any pass" : "single track"}</small></div>
+      <div><b>${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</b><span>ha, track ${trk(r.serie_track).short} across detector settings</span><small>central ${nf(r.serie_ha_ext)} ha</small></div>
+      <div><b>${pers}</b><span>typical time under water</span><small>median interval ${nf(r.persist_min)}–${nf(r.persist_max)} days</small></div>
+      <div><b>${nf(r.ha_dia)}</b><span>hectare-days of flooding</span><small>${nf(r.pct_sigue, 1)}% still wet on 20 Oct</small></div>
+      <div><b>${nf(r.km_caminos, 1)} km</b><span>rural roads under water</span><small>${nf(r.km_caminos_7d, 1)} km for more than a week</small></div>
+      <div><b>${r.tracks.length}</b><span>orbit track${r.tracks.length > 1 ? "s" : ""} combined</span><small>${r.tracks.map(t => trk(t.track).short).join(" · ")}</small></div>`;
+  }
+
+  function zchart() {
+    const d = Z[zid], svg = $("#zchart");
+    const ymax = niceMax(Math.max(...d.fechas.map(s => s.hi ?? s.v)) * 1.05);
+    timeChart(svg, { t0: "2026-06-12", t1: "2026-10-20", ymin: 0, ymax, yticks: [0, ymax / 2, ymax], yfmt: v => nf(v, v < 2 && v > 0 ? 1 : 0) + "%",
+      xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: s => fmtDate(s).split(" ")[1], crest: crests[zid]?.cresta,
+      series: [{ name: "new water", color: css("--flood"), pts: d.fechas, band: true }],
+      vfmt: p => `${nf(p.v, 1)}% (${nf(p.lo, 1)}–${nf(p.hi, 1)})${p.remaining != null ? ` · ${nf(p.remaining)}% of max extent` : ""}`,
+      onPick: p => { di = d.capas.serie.fechas.indexOf(p.fecha); setLayer("date"); } });
+    el("line", { class: "cursor", x1: 0, x2: 0, y1: svg._t, y2: svg._b, visibility: "hidden" }, svg);
+  }
+
+  /* ---------- probe ---------- */
+  async function loadProbe(z) {
+    if (probeData[z]) return probeData[z];
+    const buf = await (await fetch(`data/${z}/sonda.bin`)).arrayBuffer();
+    return (probeData[z] = new Uint8Array(buf));
+  }
+  async function probe(ll) {
+    const d = Z[zid], s = d.capas.sonda, c = s.esquinas;
+    // affine inverse from TL, TR, BL corners (lon/lat)
+    const [tl, tr, , bl] = c, ax = tr[0] - tl[0], ay = tr[1] - tl[1], bx = bl[0] - tl[0], by = bl[1] - tl[1];
+    const px = ll.lng - tl[0], py = ll.lat - tl[1], det = ax * by - ay * bx;
+    const u = (px * by - py * bx) / det, v = (ax * py - ay * px) / det;
+    if (u < 0 || u >= 1 || v < 0 || v >= 1) { $("#probe").innerHTML = '<p class="probe-empty">Outside the radar scene for this area.</p>'; return; }
+    const col = Math.floor(u * s.ancho), row = Math.floor(v * s.alto), N = s.ancho * s.alto;
+    const a = await loadProbe(zid), fe = d.capas.serie.fechas;
+    const rows = fe.map((f, i) => { const h = a[(2 * i) * N + row * s.ancho + col], w = a[(2 * i + 1) * N + row * s.ancho + col]; return { fecha: f, hh: h === 255 ? null : h / 5 - 30, wet: w === 255 ? null : w }; });
+    if (map) { if (probeMarker) probeMarker.remove(); probeMarker = new maplibregl.Marker({ color: css("--still"), scale: 0.7 }).setLngLat(ll).addTo(map); }
+    const host = $("#probe"); host.innerHTML = `<p class="note">${ll.lat.toFixed(4)}, ${ll.lng.toFixed(4)} · radar brightness (HH) on each pass, and the share of the cell flagged as new water.</p><div style="position:relative"><svg class="chart" id="probe-svg" viewBox="0 0 420 150" role="img" aria-label="Radar history of this spot"></svg></div><div id="probe-strip" style="display:flex;gap:3px;margin-top:4px"></div>`;
+    const pts = rows.filter(r => r.hh != null).map(r => ({ fecha: r.fecha, v: r.hh }));
+    const lo = Math.floor(Math.min(...pts.map(p => p.v), -20) / 5) * 5, hi = Math.ceil(Math.max(...pts.map(p => p.v), -5) / 5) * 5;
+    timeChart($("#probe-svg"), { t0: "2026-06-12", t1: "2026-10-20", ymin: lo, ymax: hi, yticks: [lo, (lo + hi) / 2, hi].map(Math.round), yfmt: v => v + " dB",
+      xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: s => fmtDate(s).split(" ")[1],
+      series: [{ name: "HH", color: css("--fg2"), pts }], vfmt: p => nf(p.v, 1) + " dB" });
+    const strip = $("#probe-strip");
+    strip.innerHTML = rows.map(r => `<div title="${fmtDate(r.fecha)}: ${r.wet == null ? "no data" : r.wet + "% new water"}" style="flex:1;height:14px;border-radius:3px;background:${r.wet == null ? "var(--grid)" : `color-mix(in srgb, var(--flood) ${Math.max(r.wet, 4)}%, var(--chip))`}"></div>`).join("");
+    strip.insertAdjacentHTML("afterend", `<div class="ticks"><span>${fmtDate(fe[0])}</span><span>new water per pass (darker = more of the cell)</span><span>${fmtDate(fe[fe.length - 1])}</span></div>`);
+  }
+
+  /* ---------- impact ---------- */
+  function impact() {
+    const d = Z[zid];
+    const cl = { rural: "rural", departmental: "departmental", national: "national" };
+    $("#roads-note").textContent = d.caminos.length ? `Top ${d.caminos.length} roads by length under water. Click a row to find it on the map.` : "No mapped roads under water.";
+    $("#roads").innerHTML = `<thead><tr><th>Road</th><th>Type</th><th class="n">Km wet</th><th class="n">Days</th></tr></thead><tbody>` + d.caminos.map((r, i) =>
+      `<tr class="go" data-i="${i}" tabindex="0"><td>${esc(r.nombre)}${r.donde ? `<br><span class="note">${esc(r.donde)}</span>` : ""}</td><td>${cl[r.clase] || r.clase}</td><td class="n">${nf(r.km_bajo_agua, 2)}</td><td class="n">${r.sigue ? "≥" : ""}${nf(r.dias_mid)} <span class="note">(${nf(r.dias_min)}–${nf(r.dias_max)})</span></td></tr>`).join("") + "</tbody>";
+    $("#roads").querySelectorAll("tr.go").forEach(tr => { const go = () => { const r = d.caminos[+tr.dataset.i]; if (map) { map.flyTo({ center: [r.lon, r.lat], zoom: 13 }); document.getElementById("explore").scrollIntoView(); } }; tr.addEventListener("click", go); tr.addEventListener("keydown", e => { if (e.key === "Enter") go(); }); });
+    const lc = d.uso_suelo.filter(r => r.ha_inundada > 0).sort((a, b) => b.ha_inundada - a.ha_inundada);
+    const mx = Math.max(...lc.map(r => r.ha_inundada), 1);
+    $("#landcover").innerHTML = `<table><thead><tr><th>Cover</th><th>Hectares flooded</th><th class="n">Share of cover</th></tr></thead><tbody>` + lc.map(r =>
+      `<tr><td>${esc(r.clase)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="width:${(r.ha_inundada / mx * 100).toFixed(1)}%"></div><span>${nf(r.ha_inundada)}</span></div></td><td class="n">${nf(r.pct_clase_inundada, 1)}%</td></tr>`).join("") + "</tbody></table>";
+    $("#towns").innerHTML = `<thead><tr><th>Town</th><th class="n">Built-up area (ha)</th><th class="n">Flooded inside</th><th class="n">Flooded within 500 m</th></tr></thead><tbody>` + d.localidades.map(r =>
+      `<tr><td>${esc(r.nombre)}</td><td class="n">${nf(r.ha_area)}</td><td class="n">${nf(r.ha_inundada)} ha</td><td class="n">${nf(r.ha_inundada_500m)} ha</td></tr>`).join("") + "</tbody>";
+    $("#basins").innerHTML = `<thead><tr><th>Sub-basin</th><th class="n">Flooded</th><th class="n">Hectare-days</th><th>Median dry date</th></tr></thead><tbody>` + d.subcuencas.filter(r => r.ha_inundada > 0).map(r =>
+      `<tr><td>${esc(r.nombre)}</td><td class="n">${nf(r.ha_inundada)} ha · ${nf(r.pct_inundada, 1)}%</td><td class="n">${nf(r.ha_dia)} <span class="note">(${nf(r.ha_dia_min)}–${nf(r.ha_dia_max)})</span></td><td>${r.retiro_mediano ? fmtDate(r.retiro_mediano) : "–"}</td></tr>`).join("") + "</tbody>";
+  }
+  $("#allzones").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded (ha)</th><th class="n">Range, one track</th><th class="n">Typical days</th><th class="n">Hectare-days</th><th class="n">Roads wet (km)</th><th class="n">Still wet 20 Oct</th></tr></thead><tbody>` +
+    ZIDS.map(z => { const r = Z[z].resumen; return `<tr class="go" data-z="${z}" tabindex="0"><td>${esc(Z[z].nombre)}</td><td class="n">${nf(r.ha_inundada)}</td><td class="n">${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</td><td class="n">${nf(r.persist_mid ?? (r.persist_min + r.persist_max) / 2)} <span class="note">(${nf(r.persist_min)}–${nf(r.persist_max)})</span></td><td class="n">${nf(r.ha_dia)}</td><td class="n">${nf(r.km_caminos, 1)}</td><td class="n">${nf(r.pct_sigue, 1)}%</td></tr>`; }).join("") + "</tbody>";
+  $("#allzones").querySelectorAll("tr.go").forEach(tr => tr.addEventListener("click", () => setZone(tr.dataset.z)));
+
+  /* ---------- forest ---------- */
+  (function forest() {
+    const host = $("#forest-cards"), tn = { T10D_F105: "track 10, descending", T161A_F161: "track 161, ascending", T60A_F161: "track 60, ascending" };
+    for (const m of M.monte_mercedes) {
+      const s = m.series, card = document.createElement("div"); card.className = "card";
+      card.innerHTML = `<h3>Mercedes · Río Negro</h3><span class="sub">${tn[m.track] || m.track}</span>`;
+      const box = document.createElement("div"); box.style.position = "relative"; const svg = el("svg", { class: "chart", viewBox: "0 0 320 170", role: "img", "aria-label": "Mercedes forest HH minus HV" }); box.appendChild(svg); card.appendChild(box);
+      const ev = (arr) => { const e = (arr || []).filter(p => p.fecha >= M.evento.ventana[0] && p.fecha <= M.evento.ventana[1]); return e.length ? e.reduce((a, p) => a + p.v, 0) / e.length : NaN; };
+      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Flood window: riverside ${ev(s.ribereno) >= 0 ? "+" : ""}${nf(ev(s.ribereno), 1)} dB · upland ${ev(s.altura) >= 0 ? "+" : ""}${nf(ev(s.altura), 1)} dB`; card.appendChild(p);
+      host.appendChild(card);
+      timeChart(svg, { t0: "2026-06-12", t1: "2026-10-20", ymin: -1, ymax: 3, yticks: [-1, 0, 1, 2, 3], yfmt: v => (v > 0 ? "+" : "") + v + " dB", xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: d => fmtDate(d).split(" ")[1], labelRight: true,
+        series: [{ name: "open land", label: "open", color: css("--openland"), dash: "4 3", r: 2.5, pts: s.no_monte || [] }, { name: "upland forest", label: "upland", color: css("--upland"), pts: s.altura || [] }, { name: "riverside forest", label: "riverside", color: css("--still"), pts: s.ribereno || [] }],
+        vfmt: p => (p.v >= 0 ? "+" : "") + nf(p.v, 2) + " dB vs baseline" });
+    }
+    const rows = ZIDS.flatMap(z => Z[z].resumen.monte.map(m => ({ ...m, nombre: Z[z].nombre })));
+    $("#forest-tbl").innerHTML = `<thead><tr><th>Area</th><th>Track</th><th class="n">Riverside rise</th><th class="n">Upland rise</th><th class="n">Excess</th><th class="n">Forest with flood signal</th></tr></thead><tbody>` + rows.map(r =>
+      `<tr><td>${esc(r.nombre)}</td><td>${trk(r.track).short}</td><td class="n">${r.subida_ribereno_db >= 0 ? "+" : ""}${nf(r.subida_ribereno_db, 2)} dB</td><td class="n">${r.subida_altura_db >= 0 ? "+" : ""}${nf(r.subida_altura_db, 2)} dB</td><td class="n"><b>${r.exceso_ribereno_db >= 0 ? "+" : ""}${nf(r.exceso_ribereno_db, 2)} dB</b></td><td class="n">${nf(r.ha_veg_inundada)} ha</td></tr>`).join("") + "</tbody>";
+  })();
+
+  /* ---------- why ---------- */
+  (function why() {
+    const c = Object.fromEntries(M.validacion.cronologia.map(r => [r.zona, r]));
+    const mer = Z.merin_arrozales, tyt = Z.treinta_y_tres;
+    const fallMer = mer.fechas.filter(p => p.remaining != null);
+    const pairs = M.validacion.pares.filter(p => p.fase !== "base" && Math.max(p.pct_a_cambio, p.pct_b_cambio) >= 0.5);
+    const asc = (t) => t.includes("A_");
+    const ratio = pairs.filter(p => asc(p.track_a) !== asc(p.track_b)).map(p => { const d = asc(p.track_a) ? p.pct_b_umbral : p.pct_a_umbral, a = asc(p.track_a) ? p.pct_a_umbral : p.pct_b_umbral; return a > 0.2 ? d / a : null; }).filter(v => v != null);
+    const med = ratio.length ? ratio.sort((a, b) => a - b)[Math.floor(ratio.length / 2)] : null;
+    const cards = [
+      ["Same storm, two clocks", `The Olimar, a short and steep river, crested around ${fmtDate(c.treinta_y_tres?.cresta || "2026-08-19")}; the Yí in Durazno three days later. NISAR shows the Atlantic-side areas lit up on the first passes after the rain, while the Río Negro side stayed almost dark in open water. The flood moved west through the river network, not through the sky.`],
+      ["The Laguna Merín backwater", `All eastern rivers drain into the Laguna Merín, which received the heaviest rain in the country. With the lagoon high, the Cebollatí and Tacuarí drained slowly: in the rice-field area ${nf(fallMer.find(p => p.fecha >= "2026-08-28")?.remaining)}% of the flood was still wet on ${fmtDate(fallMer.find(p => p.fecha >= "2026-08-28")?.fecha || "2026-08-28")} and ${nf(fallMer.find(p => p.fecha >= "2026-09-20")?.remaining)}% a month after the storm. Treinta y Tres, upstream, drained within about ${nf(tyt.resumen.persist_mid)} days.`],
+      ["Water under the trees", "Along the Río Negro and Yaguarón the flood spread inside gallery forest. L-band reaches the forest floor and bounces between water and trunks: HH rises relative to HV. Riverside forest at Mercedes brightened more than upland forest on all three tracks, which separates flooding from simply wet soil."],
+      ["Calm dawn, windy dusk", `NISAR flies a dawn–dusk orbit. Descending passes (~6 am) saw ${med ? nf(med, 1) + "×" : "far"} more dark water than ascending passes (~6 pm) a day apart when using a fixed brightness threshold: evening wind roughens shallow water and makes it brighter. Comparing every pixel with its own baseline removes most of that bias.`],
+      ["HH vs HV", "Open water is dark in both polarizations, but HV hits the instrument noise floor and differs between tracks. HH carries the open-water signal; the HH−HV difference carries the flooded-forest signal. Using both lets one sensor map two kinds of flooding."],
+      ["Rice country", "Most of the flooded land in the Merín basin is grassland, wetland and rice paddies: flat, low and already engineered to hold water. The same paddies will be flooded on purpose for planting in November–December. NISAR can tell the two apart by timing alone."],
+    ];
+    $("#why-cards").innerHTML = cards.map(([h, p]) => `<div class="box"><h3>${h}</h3><p>${p}</p></div>`).join("");
+  })();
+
+  /* ---------- validation ---------- */
+  (function validation() {
+    const nm = (z) => Z[z]?.nombre.replace(" rice fields", "") || z;
+    const pairs = M.validacion.pares.filter(p => p.fase !== "base" && Math.max(p.pct_a_cambio, p.pct_b_cambio) >= 0.5)
+      .sort((a, b) => a.zona.localeCompare(b.zona) || a.fecha_a.localeCompare(b.fecha_a));
+    const mean = (k) => pairs.length ? pairs.reduce((a, p) => a + p[k], 0) / pairs.length : NaN;
+    $("#val-pairs-txt").textContent = `Pairs of passes from different orbit tracks at most one day apart, during and after the flood (${pairs.length} pairs with water). Jaccard = overlap ÷ union of the two water masks (1 = identical). Mean agreement rose from ${nf(mean("jaccard_umbral"), 2)} with a fixed threshold to ${nf(mean("jaccard_cambio"), 2)} with the per-pixel detector. Disagreement left over comes mostly from water that really changed in a day and from shallow flooding at the edge of detection.`;
+    const svg = $("#val-pairs"), W = 900, H = 230, l = 34, r = 8, t = 10, b = 60, n = pairs.length, bw = (W - l - r) / Math.max(n, 1);
+    const y = (v) => t + (1 - v) * (H - t - b);
+    for (const v of [0, 0.5, 1]) { el("line", { class: v ? "grid" : "axis", x1: l, x2: W - r, y1: y(v), y2: y(v) }, svg); el("text", { x: l - 5, y: y(v) + 3, "text-anchor": "end" }, svg).textContent = v; }
+    pairs.forEach((p, i) => {
+      const x0 = l + i * bw;
+      for (const [k, c, o] of [["jaccard_umbral", css("--openland"), 0.12], ["jaccard_cambio", css("--still"), 0.5]]) {
+        const v = p[k] || 0, w = bw * 0.36, x = x0 + bw * o;
+        const rc = el("rect", { x, y: y(v), width: w, height: Math.max(0, y(0) - y(v)), fill: c, rx: 2 }, svg);
+        tipOn(rc, svg.parentElement, () => `${nm(p.zona)} ${fmtDate(p.fecha_a)}/${fmtDate(p.fecha_b)}: ${nf(v, 2)}`);
+      }
+      const tx = el("text", { x: x0 + bw / 2, y: H - b + 12, "text-anchor": "end", transform: `rotate(-55 ${x0 + bw / 2} ${H - b + 12})` }, svg);
+      tx.textContent = `${nm(p.zona).slice(0, 11)} ${p.fecha_a.slice(5)}`;
+    });
+    const s1 = M.validacion.s1;
+    if (!s1.length) { $("#val-s1-txt").textContent = "Sentinel-1 comparison not available in this build."; }
+    else {
+      const best = s1.filter(r => Math.abs(r.dt_dias) <= 1 && r.pct_s1 >= 0.5);
+      const m = (k, arr = best) => arr.length ? arr.reduce((a, r) => a + r[k], 0) / arr.length : NaN;
+      $("#val-s1-txt").textContent = `Sentinel-1 is a C-band radar from ESA. On ${best.length} passes within a day of a NISAR pass with visible flooding, NISAR found ${nf(m("recall_cambio") * 100)}% of the water Sentinel-1 found (F1 ${nf(m("f1_cambio"), 2)}). NISAR maps more water than Sentinel-1: ${nf(m("solo_nisar_s1_oscurece_cambio") * 100)}% of the extra pixels also darken in Sentinel-1, just not enough to cross its threshold. That is the shallow and vegetated water C-band struggles with.`;
+      $("#val-s1").innerHTML = `<thead><tr><th>Area</th><th>NISAR / S1</th><th class="n">S1 water</th><th class="n">NISAR water</th><th class="n">Found by NISAR</th><th class="n">F1</th></tr></thead><tbody>` +
+        s1.filter(r => r.pct_s1 >= 0.3).map(r => `<tr><td>${esc(nm(r.zona))} <span class="note">${trk(r.track).short}</span></td><td>${fmtDate(r.fecha_nisar)} / ${fmtDate(r.fecha_s1)}</td><td class="n">${nf(r.pct_s1, 1)}%</td><td class="n">${nf(r.pct_nisar_cambio, 1)}%</td><td class="n">${nf(r.recall_cambio * 100)}%</td><td class="n">${nf(r.f1_cambio, 2)}</td></tr>`).join("") + "</tbody>";
+    }
+    $("#val-cron").innerHTML = `<thead><tr><th>Area</th><th>Reported crest</th><th>NISAR peak pass</th><th class="n">New water</th></tr></thead><tbody>` +
+      M.validacion.cronologia.map(r => `<tr><td>${esc(nm(r.zona))}</td><td>${esc(r.cresta_txt)}</td><td>${fmtDate(r.pico_nisar)} <span class="note">(${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5) >= 0 ? "+" : ""}${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5)} d)</span></td><td class="n">${nf(r.pico_pct, 1)}%</td></tr>`).join("") + "</tbody>";
+  })();
+
+  /* ---------- downloads ---------- */
+  $("#downloads").innerHTML = M.descargas.map(d => `<div><a href="${esc(d.archivo)}" download>${esc(d.archivo.split("/").pop())}</a><span>${esc(d.desc)} · ${nf(d.kb)} KB</span></div>`).join("");
+
+  await initMap();
+  setZone(zid);
+})().catch((e) => showError("Something broke while drawing the page: " + e.message));
+</script>
+</body>
+</html>

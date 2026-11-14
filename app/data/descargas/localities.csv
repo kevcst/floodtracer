@@ -1,0 +1,12 @@
+zona,nombre,ha_area,ha_inundada,pct_inundada,ha_dia,ha_dia_min,ha_dia_max,ha_sigue,retiro_mediano,ha_inundada_500m,ha_dia_500m,place
+treinta_y_tres,Treinta y Tres,931.44,0.0,0.0,0.0,0.0,0.0,0.0,,1.12,11.2,city
+treinta_y_tres,Villa Sara,81.0,0.0,0.0,0.0,0.0,0.0,0.0,,0.8,10.32,town
+merin_arrozales,Cebollatí,51.24,0.0,0.0,0.0,0.0,0.0,0.0,,0.48,2.88,town
+merin_arrozales,La Charqueada,71.6,0.0,0.0,0.0,0.0,0.0,0.0,,4.8,21.6,town
+merin_arrozales,San Luis al Medio,28.04,0.0,0.0,0.0,0.0,0.0,0.0,,0.8,11.84,village
+melo,Barrio López Benítez,20.2,0.0,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,village
+melo,Melo,1116.2,0.0,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,city
+rio_branco_jaguarao,Río Branco,28.32,0.0,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,city
+durazno,Durazno,228.48,0.0,0.0,0.0,0.0,0.0,0.0,,0.0,0.0,city
+mercedes,Los Arrayanes,25.88,0.0,0.0,0.0,0.0,0.0,0.0,,1.76,15.84,village
+mercedes,Mercedes,547.04,0.0,0.0,0.0,0.0,0.0,0.0,,4.84,36.56,city

@@ -100,6 +100,33 @@ def doy_a_fecha(d):
     return (pd.Timestamp("2025-12-31") + pd.Timedelta(days=int(d))).date() if d and d < 999 else None
 
 
+RUMBOS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+
+
+def referencia(geom, lugares):
+    """'4 km NE of Cebollatí' respecto de la localidad OSM más cercana (lugares en la misma proyección métrica)."""
+    if lugares is None or lugares.empty:
+        return ""
+    c = geom.centroid
+    d = lugares.distance(c)
+    i = d.idxmin()
+    lu = lugares.loc[i]
+    km = d[i] / 1000
+    if km < 1:
+        return f"in {lu['name']}"
+    ang = (np.degrees(np.arctan2(c.x - lu.geometry.x, c.y - lu.geometry.y)) + 360) % 360
+    return f"{km:.0f} km {RUMBOS[int((ang + 22.5) // 45) % 8]} of {lu['name']}"
+
+
+def lugares_zona(zona, crs):
+    try:
+        lu = gpd.read_file(CAPAS / f"{zona}.gpkg", layer="localidades").to_crs(crs)
+        lu = lu[lu["name"].notna() & lu.place.isin(["city", "town", "village", "hamlet"])]
+        return lu.reset_index(drop=True)
+    except Exception:
+        return None
+
+
 def caminos(zona, P, S):
     g = gpd.read_file(CAPAS / f"{zona}.gpkg", layer="caminos")
     g = g[g.clase != "urban"].to_crs(P["perfil"]["crs"])
@@ -131,6 +158,9 @@ def caminos(zona, P, S):
                 lon=("lon", "mean"), lat=("lat", "mean"))
            .reset_index())
     agg = agg[agg.km_bajo_agua > 0].sort_values(["dias_mid", "km_bajo_agua"], ascending=False)
+    lugares = lugares_zona(zona, P["perfil"]["crs"])
+    geo_clave = g.dissolve(by="clave").geometry
+    agg["donde"] = [referencia(geo_clave[k], lugares) for k in agg.clave]
 
     # km bajo agua por fecha (serie principal, su propia grilla)
     pila, fechas, perfil_s, t = S
@@ -164,6 +194,28 @@ def poligonos(zona, P, gdf, nombre_col, ha_px):
                           ha_sigue=float((P["sigue"] & m).sum() * ha_px),
                           retiro_mediano=doy_a_fecha(int(np.median(ret))) if ret.size else None))
     return pd.DataFrame(filas)
+
+
+def nombres_subcuencas(zona, sc, crs):
+    """Nombre legible: el curso de agua con nombre más largo dentro de la subcuenca + localidad de referencia."""
+    rios = gpd.read_file(CAPAS / f"{zona}.gpkg", layer="rios").to_crs(crs)
+    rios = rios[rios["name"].notna()]
+    lugares = lugares_zona(zona, crs)
+    out = []
+    for _, r in sc.iterrows():
+        nombre = None
+        if len(rios):
+            dentro = gpd.clip(rios, r.geometry)
+            if len(dentro):
+                largo = dentro.assign(l=dentro.length).groupby("name").l.sum()
+                nombre = largo.idxmax()
+        ref = referencia(r.geometry, lugares)
+        out.append(f"{nombre} ({ref})" if nombre and ref else nombre or (f"Basin {ref}" if ref else f"HYBAS {r.HYBAS_ID}"))
+    # nombres repetidos: se desambiguan con el id
+    s = pd.Series(out)
+    dup = s.duplicated(keep=False)
+    s[dup] = [f"{n} · {h}" for n, h in zip(s[dup], sc.HYBAS_ID.astype(str).str[-4:][dup.values])]
+    return s.values
 
 
 def localidades(zona, P, S):
@@ -239,8 +291,9 @@ def main():
         if len(gloc):
             geo["localidades"].append(gloc[["zona", "nombre", "place", "geometry"]].to_crs("EPSG:4326"))
         sc = gpd.read_file(CAPAS / f"{zona}.gpkg", layer="subcuencas").to_crs(P["perfil"]["crs"])
-        sc["nombre"] = sc.HYBAS_ID.astype(str)
+        sc["nombre"] = nombres_subcuencas(zona, sc, P["perfil"]["crs"])
         s = poligonos(zona, P, sc, "nombre", ha_px)
+        s["hybas_id"] = sc.HYBAS_ID.astype(str).values
         out["subcuencas"].append(s)
         geo["subcuencas"].append(sc.assign(zona=zona)[["zona", "nombre", "geometry"]].to_crs("EPSG:4326"))
         dp = gpd.read_file(CAPAS / f"{zona}.gpkg", layer="departamentos").to_crs(P["perfil"]["crs"])
