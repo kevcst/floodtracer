@@ -140,6 +140,16 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 #err { display: none; background: color-mix(in srgb, var(--flood) 16%, var(--surface)); border: 1px solid var(--flood); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; }
 .maplibregl-ctrl-attrib { font-size: 10px; }
 .probe-empty { font-size: 0.85rem; color: var(--muted); }
+.vector-opacity {display:grid;gap:6px;font-size:.8rem;color:var(--fg2)}
+#vector-status {min-height:2.5em}.maplibregl-popup-content {color:#183b43;font-size:12px;line-height:1.6;max-width:290px}
+#map-loading {position:absolute;inset:0;z-index:10;display:grid;place-items:center;background:rgba(15,24,30,.8);backdrop-filter:blur(3px);cursor:wait;padding:24px}
+#map-loading[hidden],#map-loading-retry[hidden] {display:none}
+.map-loading-card {width:100%;display:grid;justify-items:center;gap:12px;text-align:center;max-width:320px;color:#f3f6f8}
+.map-loading-card strong {font-size:1.05rem}.map-loading-card p {color:#cbd6de;font-size:.85rem;line-height:1.6;margin:0}
+.map-loading-spinner {width:38px;height:38px;border:3px solid rgba(255,255,255,.2);border-top-color:#eb6834;border-radius:50%;animation:map-loading-spin .8s linear infinite}
+#map-loading[data-error="true"] {cursor:default}#map-loading[data-error="true"] .map-loading-spinner {display:none}
+@keyframes map-loading-spin {to {transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.map-loading-spinner{animation:none}}
 </style>
 </head>
 <body>
@@ -199,10 +209,14 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
     <div class="stack col">
       <p class="eyebrow">Explore</p>
       <h2 id="explore-h">Watch the water arrive and leave</h2>
-      <p class="soft">Grey is radar brightness: calm water reflects the signal away and turns black. Orange marks water that was not there in June and July. Switch layers to see how long each 20 m pixel stayed wet and when it dried. Click anywhere on the map for that spot's own radar history.</p>
+      <p class="soft">Explore the published water classifications as interactive polygons over OpenStreetMap. Orange marks candidate new water; blue marks baseline water. Switch layers or dates, adjust transparency, and click a polygon for its class and a spot's existing radar history. The optional radar photograph is off by default.</p>
     </div>
     <div class="explorer">
-      <div id="map" role="region" aria-label="Map"><div class="stamp" id="stamp"></div></div>
+      <div id="map" role="region" aria-label="Map" aria-busy="true"><div class="stamp" id="stamp"></div>
+        <div id="map-loading" role="status" aria-live="polite" aria-atomic="true">
+          <div class="map-loading-card"><span class="map-loading-spinner" aria-hidden="true"></span><strong id="map-loading-title">Loading map…</strong><p id="map-loading-detail">Preparing the map and water polygons.</p><button type="button" class="btn" id="map-loading-retry" hidden>Try again</button></div>
+        </div>
+      </div>
       <div class="panel">
         <div class="stack"><span class="ctrl-label">Area</span><div class="tabs" id="zone-tabs" role="group" aria-label="Area"></div><p class="readout" id="zone-title"></p></div>
         <div class="stack"><span class="ctrl-label">Layer</span>
@@ -217,10 +231,13 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
           <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Pass date"></div>
           <div class="ticks" id="ticks"></div></div>
         <div class="checks">
-          <label><input type="checkbox" id="chk-radar" checked> Radar image</label>
+          <label><input type="checkbox" id="chk-radar"> Radar image (optional)</label>
           <label><input type="checkbox" id="chk-roads" checked> Flooded roads</label>
           <label><input type="checkbox" id="chk-towns" checked> Towns</label>
         </div>
+        <label class="vector-opacity">Water polygon opacity <input type="range" id="water-opacity" min="10" max="90" value="50" aria-label="Water polygon opacity"></label>
+        <p class="note" id="vector-status" role="status">Water polygons use the existing published masks.</p>
+        <button type="button" class="btn" id="download-polygons" disabled>Download current polygons</button>
         <div class="legend" id="legend"></div>
         <div class="stats" id="stats"></div>
         <div class="stack"><span class="ctrl-label">New water on each pass (% of area)</span><div style="position:relative"><svg class="chart" id="zchart" viewBox="0 0 420 160" role="img" aria-label="New water by pass"></svg></div></div>
@@ -445,9 +462,9 @@ if (location.protocol === "file:") showError("This page needs to be served over 
 
   /* ---------- map ---------- */
   const dark = () => document.documentElement.dataset.theme === "dark" || (document.documentElement.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
-  // OpenStreetMap standard tiles (attribution required, light use). Dark mode: desaturated and dimmed.
+  // Keep standard OpenStreetMap colors legible beneath translucent polygons, including in dark UI mode.
   const tiles = () => ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
-  const basePaint = (d) => d ? { "raster-saturation": -1, "raster-brightness-max": 0.32, "raster-contrast": 0.1 } : { "raster-saturation": -0.6, "raster-brightness-min": 0.08 };
+  const basePaint = () => ({ "raster-saturation": 0, "raster-brightness-min": 0, "raster-brightness-max": 1, "raster-contrast": 0 });
   if (!window.maplibregl) { showError("The map library did not load (no internet?). Charts and tables still work."); }
   const map = window.maplibregl ? new maplibregl.Map({
     container: "map", attributionControl: { compact: true },
@@ -464,10 +481,19 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   async function initMap() {
     await mapLoaded; if (!map) return;
     const d = Z[zid];
-    map.addSource("hh", { type: "image", url: img(zid, `hh_${d.capas.serie.fechas[0]}.webp`), coordinates: d.capas.serie.esquinas });
-    map.addLayer({ id: "hh", type: "raster", source: "hh", paint: { "raster-opacity": 0.92, "raster-fade-duration": 0 } });
-    map.addSource("ov", { type: "image", url: img(zid, `agua_${d.capas.serie.fechas[0]}.png`), coordinates: d.capas.serie.esquinas });
-    map.addLayer({ id: "ov", type: "raster", source: "ov", paint: { "raster-opacity": 0.9, "raster-resampling": "nearest", "raster-fade-duration": 0 } });
+    map.addSource('water-vectors',{type:'geojson',data:emptyWater()});
+    map.addLayer({id:'water-fill',type:'fill',source:'water-vectors',paint:{'fill-color':['get','color'],'fill-opacity':.5}});
+    map.addLayer({id:'water-outline',type:'line',source:'water-vectors',paint:{'line-color':['get','color'],'line-width':.65,'line-opacity':.65}});
+    map.on('click','water-fill',event=>{
+      const feature=event.features?.[0];if(!feature)return;
+      const info=waterDisplayContext;
+      const container=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');
+      title.textContent=feature.properties.label;
+      detail.textContent=`${Z[info.zone].nombre} · ${info.view==='date'?fmtDate(info.date)+' 2026':'Published event layer'}. Boundary traced from the existing display mask; no new area estimate is calculated from this polygon.`;
+      container.append(title,detail);new maplibregl.Popup({closeButton:true}).setLngLat(event.lngLat).setDOMContent(container).addTo(map);
+    });
+    map.on('mouseenter','water-fill',()=>map.getCanvas().style.cursor='pointer');
+    map.on('mouseleave','water-fill',()=>map.getCanvas().style.cursor='');
     try {
       const [roads, towns] = await Promise.all([fetch("data/impacto/caminos.geojson").then(r => r.json()), fetch("data/impacto/localidades.geojson").then(r => r.json())]);
       map.addSource("towns", { type: "geojson", data: towns });
@@ -486,6 +512,97 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     mapReady = true;
   }
 
+  /* Vector presentation of the same published masks and corner coordinates. */
+  const emptyWater = () => ({type:'FeatureCollection',features:[]});
+  const vectorCache = new Map(), vectorJobs = new Map();
+  let vectorWorker = null, vectorJobId = 0, vectorRenderId = 0, visibleWater = null, waterDisplayContext = null, cancelMapReadyWait = null, mapIsLoading = true;
+  function setMapLoading(loading,detail='Preparing the map and water polygons.') {
+    mapIsLoading=loading;
+    const overlay=$('#map-loading');overlay.hidden=!loading;overlay.dataset.error='false';overlay.setAttribute('role','status');
+    $('#map').setAttribute('aria-busy',String(loading));
+    $('#map-loading-title').textContent='Loading map…';$('#map-loading-detail').textContent=detail;$('#map-loading-retry').hidden=true;
+    $('#download-polygons').disabled=loading||!visibleWater;
+  }
+  function failMapLoading(error) {
+    mapIsLoading=false;stop();
+    const overlay=$('#map-loading');overlay.hidden=false;overlay.dataset.error='true';overlay.setAttribute('role','alert');
+    $('#map').setAttribute('aria-busy','false');$('#map-loading-title').textContent='The map could not load';
+    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;$('#download-polygons').disabled=true;
+  }
+  function finishAfterMapRender(request,onReady) {
+    if(cancelMapReadyWait)cancelMapReadyWait();
+    const ready=()=>{
+      if(request!==vectorRenderId||!map.isSourceLoaded('water-vectors')||map.isMoving())return;
+      map.off('idle',ready);cancelMapReadyWait=null;
+      requestAnimationFrame(()=>{if(request===vectorRenderId){onReady();setMapLoading(false);}});
+    };
+    map.on('idle',ready);
+    cancelMapReadyWait=()=>{map.off('idle',ready);cancelMapReadyWait=null;};
+  }
+  function getVectorWorker() {
+    if(vectorWorker)return vectorWorker;
+    vectorWorker=new Worker('vector-worker.js');
+    vectorWorker.onmessage=({data})=>{
+      const job=vectorJobs.get(data.id);if(!job)return;
+      vectorJobs.delete(data.id);data.error?job.reject(new Error(data.error)):job.resolve(data.data);
+    };
+    vectorWorker.onerror=()=>{
+      for(const job of vectorJobs.values())job.reject(new Error('The polygon renderer could not start. Reload the page to try again.'));
+      vectorJobs.clear();vectorWorker.terminate();vectorWorker=null;
+    };
+    return vectorWorker;
+  }
+  function colorRGB(color) {
+    if(color.startsWith('#')){const value=parseInt(color.slice(1),16);return [value>>16&255,value>>8&255,value&255];}
+    return (color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+  }
+  function vectorClasses(view) {
+    const make=(color,label,rgb=colorRGB(color))=>({color,label,rgb});
+    if(view==='date')return [make(css('--flood'),'Candidate new water',[235,104,52]),make(css('--still'),'Baseline water',[42,120,214])];
+    if(view==='extent')return [make(css('--flood'),'Published flood-extent classification',[235,104,52])];
+    if(view==='persist')return [...M.leyendas.persistencia.map(p=>make(p.color,`Observed duration: ${p.rango} days`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
+    if(view==='retreat')return [...M.leyendas.retiro.map(p=>make(p.color,`Published retreat interval: ${p.desde} to ${p.hasta}`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
+    return [make('rgb(27,175,122)','Published riverside-forest signal classification')];
+  }
+  function tracePublishedMask(url,corners,classes) {
+    const key=url+'|'+classes.map(c=>c.color).join(',');
+    if(vectorCache.has(key)){const cached=vectorCache.get(key);vectorCache.delete(key);vectorCache.set(key,cached);return cached;}
+    const promise=new Promise((resolve,reject)=>{
+      const image=new Image();
+      image.onerror=()=>reject(new Error('The published water mask could not load.'));
+      image.onload=()=>{
+        try{
+          const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+          const context=canvas.getContext('2d',{willReadFrequently:true});context.drawImage(image,0,0);
+          const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
+          const id=++vectorJobId;vectorJobs.set(id,{resolve,reject});
+          getVectorWorker().postMessage({id,pixels:pixels.buffer,width:canvas.width,height:canvas.height,corners,classes},[pixels.buffer]);
+        }catch(error){reject(error);}
+      };
+      image.src=url;
+    });
+    vectorCache.set(key,promise);promise.catch(()=>vectorCache.delete(key));
+    while(vectorCache.size>5)vectorCache.delete(vectorCache.keys().next().value);
+    return promise;
+  }
+  async function renderWaterVectors(url,corners,view,zone,date) {
+    const request=++vectorRenderId;
+    if(cancelMapReadyWait)cancelMapReadyWait();
+    setMapLoading(true,`Preparing water polygons for ${Z[zone].nombre}.`);
+    const status=$('#vector-status');status.textContent='Drawing the selected water polygons…';
+    map.getSource('water-vectors').setData(emptyWater());visibleWater=null;
+    try{
+      const data=await tracePublishedMask(url,corners,vectorClasses(view));
+      if(request!==vectorRenderId)return;
+      visibleWater=data;
+      waterDisplayContext={zone,date,view};
+      $('#map-loading-detail').textContent=`Rendering the selected view of ${Z[zone].nombre}.`;
+      finishAfterMapRender(request,()=>{status.textContent='Interactive polygons from the existing display masks. Published measurements are unchanged.';});
+      map.getSource('water-vectors').setData(data);
+      map.triggerRepaint();
+    }catch(error){if(request===vectorRenderId){status.textContent=error.message;failMapLoading(error);}}
+  }
+
   /* ---------- zone ---------- */
   const tabs = $("#zone-tabs"), itabs = $("#impact-tabs");
   for (const z of ZIDS) for (const host of [tabs, itabs]) {
@@ -497,13 +614,23 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   range.addEventListener("input", () => { di = +range.value; stop(); render(); });
   $("#play").addEventListener("click", () => timer ? stop() : play());
   $("#chk-radar").addEventListener("change", render);
+  $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
+  $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
+  $('#download-polygons').addEventListener('click',()=>{
+    if(!visibleWater)return;
+    const data={...visibleWater,metadata:{...waterDisplayContext,source:'Existing app display mask',note:'Display geometry only. All published measurements and validation results are unchanged.'}};
+    const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/geo+json'}));
+    const anchor=document.createElement('a');anchor.href=url;anchor.download=`${waterDisplayContext.zone}-${waterDisplayContext.view}-${waterDisplayContext.date}.geojson`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),5000);
+  });
   $("#chk-roads").addEventListener("change", render);
   $("#chk-towns").addEventListener("change", render);
   function setLayer(l) { layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
-  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { di = (di + 1) % n; render(); }, 1200); }
+  function play() { if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
   function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
 
   function setZone(z) {
+    ++vectorRenderId;if(cancelMapReadyWait)cancelMapReadyWait();
+    setMapLoading(true,`Loading the selected area: ${Z[z].nombre}.`);
     zid = z; stop();
     const d = Z[z], fe = d.capas.serie.fechas;
     for (const host of [tabs, itabs]) [...host.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.z === z));
@@ -513,7 +640,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const pk = d.fechas.reduce((a, p, i) => (inEv(p) && (!inEv(d.fechas[a]) || p.v > d.fechas[a].v)) ? i : a, 0);
     di = pk; range.max = fe.length - 1; range.value = di;
     $("#ticks").innerHTML = ""; fe.forEach((f, i) => { if (i === 0 || i === fe.length - 1 || i === pk) { const s = document.createElement("span"); s.textContent = fmtDate(f); $("#ticks").appendChild(s); } });
-    fe.forEach(f => { new Image().src = img(z, `hh_${f}.webp`); new Image().src = img(z, `agua_${f}.png`); });
+    // The vector view requests only the selected published mask; radar images are optional.
     stats(); zchart(); impact(); $("#probe").innerHTML = '<p class="probe-empty">Click the map.</p>'; if (probeMarker) { probeMarker.remove(); probeMarker = null; }
     if (map && mapReady) {
       const c = d.capas.serie.esquinas; const lons = c.map(p => p[0]), lats = c.map(p => p[1]);
@@ -531,11 +658,15 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     $("#stamp").textContent = layer === "date" ? `${fmtDate(f)} 2026 · ${phase}` : names[layer];
     legend();
     if (map && mapReady) {
-      const hh = map.getSource("hh"), ov = map.getSource("ov");
-      hh.updateImage({ url: img(zid, `hh_${f}.webp`), coordinates: d.capas.serie.esquinas });
-      const ovs = { date: [`agua_${f}.png`, d.capas.serie.esquinas], extent: ["extension.png", d.capas.evento.esquinas], persist: ["persistencia.png", d.capas.evento.esquinas], retreat: ["retiro.png", d.capas.evento.esquinas], forest: ["monte.png", d.capas.evento.esquinas] }[layer];
-      ov.updateImage({ url: img(zid, ovs[0]), coordinates: ovs[1] });
-      map.setLayoutProperty("hh", "visibility", $("#chk-radar").checked ? "visible" : "none");
+      if($('#chk-radar').checked){
+        if(!map.getSource('hh')){
+          map.addSource('hh',{type:'image',url:img(zid,`hh_${f}.webp`),coordinates:d.capas.serie.esquinas});
+          map.addLayer({id:'hh',type:'raster',source:'hh',paint:{'raster-opacity':.92,'raster-fade-duration':0}},'water-fill');
+        }else map.getSource('hh').updateImage({url:img(zid,`hh_${f}.webp`),coordinates:d.capas.serie.esquinas});
+      }
+      if(map.getLayer('hh'))map.setLayoutProperty('hh','visibility',$('#chk-radar').checked?'visible':'none');
+      const selected={date:[`agua_${f}.png`,d.capas.serie.esquinas],extent:['extension.png',d.capas.evento.esquinas],persist:['persistencia.png',d.capas.evento.esquinas],retreat:['retiro.png',d.capas.evento.esquinas],forest:['monte.png',d.capas.evento.esquinas]}[layer];
+      renderWaterVectors(img(zid,selected[0]),selected[1],layer,zid,f);
       for (const [id, chk] of [["roads", "#chk-roads"], ["towns", "#chk-towns"], ["towns-l", "#chk-towns"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
     }
     const svg = $("#zchart"); svg.querySelectorAll(".dot").forEach(c => c.setAttribute("r", c.dataset.f === f && layer === "date" ? 6 : 3.5));
