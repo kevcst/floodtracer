@@ -7,3 +7,4 @@ shapely
 scipy
 pillow
 certifi
+scikit-image

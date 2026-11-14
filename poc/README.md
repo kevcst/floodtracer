@@ -38,3 +38,38 @@ open dist/index.html     # macOS · Linux: xdg-open · Windows: start
 La línea de tiempo y los textos están escritos a mano en `index.html`. Si cambian los números, revisen también las cifras que aparecen en el texto, que no se actualizan solas.
 
 Para cambiar de track o de zona en el visor, editen `VISOR` en `scripts/exportar_poc.py`.
+
+## Publicar en GitHub Pages
+
+El workflow `.github/workflows/pages.yml` reconstruye la página con
+`python3 scripts/build_poc.py` y publica únicamente `poc/dist/`. Se ejecuta al
+hacer push a `main` con cambios en `poc/`, en el constructor o en el propio
+workflow. También se puede ejecutar manualmente desde **Actions → Deploy GitHub
+Pages → Run workflow**.
+
+### Activación inicial (administrador del repositorio)
+
+1. Entrar a **Settings → Pages**.
+2. En **Build and deployment → Source**, seleccionar **GitHub Actions**.
+3. Ejecutar el workflow desde Actions o hacer un push que lo active.
+4. Abrir la URL que devuelve el job `deploy` en el entorno `github-pages`.
+
+La cuenta que administra el repositorio debe habilitar Pages y permitir GitHub
+Actions. Si el repositorio es privado, el plan de GitHub de su propietario debe
+admitir Pages para repositorios privados. Revisar la visibilidad del sitio en
+Settings → Pages antes de activarlo: un repositorio privado puede publicar un
+sitio público.
+
+### Actualizar el sitio
+
+- Para cambiar textos o estilos: editar `poc/index.html`, hacer commit y push.
+- Para actualizar resultados: ejecutar localmente el pipeline de datos hasta
+  `scripts/exportar_poc.py` y subir los cambios de `poc/data/`.
+- El workflow genera la versión autocontenida a partir de esas fuentes. Para
+  revisarla antes del push, ejecutar `python3 scripts/build_poc.py`.
+
+Los datos originales de `data_nisar/` y las credenciales Earthdata permanecen
+locales. El despliegue no descarga escenas ni necesita las dependencias
+geoespaciales: el constructor usa solamente la biblioteca estándar de Python.
+
+Referencia: https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages
