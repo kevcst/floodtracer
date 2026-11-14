@@ -1,0 +1,70 @@
+"""
+Incertidumbre por elección de parámetros del detector de agua nueva (A3 del plan).
+
+  python scripts/sensibilidad.py
+
+Para cada zona/track recalcula el % de agua nueva por fecha y la extensión máxima del evento barriendo
+  caída ΔHH ∈ {−2, −2,5, −3, −3,5, −4} dB  ×  techo HH ∈ {−13, −14, −15} dB
+(el central es −3 / −14, el de metricas_evento.py). El rango min–max es la banda que muestra la app:
+no es un intervalo estadístico, es "cuánto cambia la cifra si el detector fuera razonablemente otro".
+
+Salida: data_nisar/zonas/sensibilidad_por_fecha.csv · sensibilidad_resumen.csv
+"""
+import itertools
+
+import numpy as np
+import pandas as pd
+
+from metricas_evento import BASE, CAMBIO_DB, EVENTO, FIN_BASE, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva
+from zonas import ZONAS
+
+CAMBIOS = [-2.0, -2.5, -3.0, -3.5, -4.0]
+TECHOS = [-13.0, -14.0, -15.0]
+
+
+def procesar(zona, tdir):
+    fechas, hh, _, perfil = cargar_track(tdir)
+    fechas = pd.DatetimeIndex(fechas)
+    es_base = np.asarray(fechas < pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE)))
+    es_ev = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    valid = np.all(np.isfinite(hh), axis=0)
+    umbral, _, _ = calibrar_umbral(hh[es_base], valid)
+    agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
+    med = np.nanmedian(hh[es_base], axis=0)
+    nv = valid.sum()
+    ha_px = abs(perfil["transform"].a * perfil["transform"].e) / 1e4
+    por_fecha, resumen = [], []
+    for c, t in itertools.product(CAMBIOS, TECHOS):
+        ext = np.zeros(valid.shape, bool)
+        for i, f in enumerate(fechas):
+            m = detectar_nueva(hh[i], med, agua_base, cambio=c, techo=t) & valid
+            por_fecha.append(dict(zona=zona, track=tdir.name, fecha=f.date(), cambio=c, techo=t,
+                                  pct_agua_nueva=100 * m.sum() / nv))
+            if es_ev[i]:
+                ext |= m
+        resumen.append(dict(zona=zona, track=tdir.name, cambio=c, techo=t, ha_extension_max=ext.sum() * ha_px,
+                            pct_extension_max=100 * ext.sum() / nv))
+    print(f"== {zona}/{tdir.name}")
+    return por_fecha, resumen
+
+
+def bandas(df, valor, claves):
+    central = df[(df.cambio == CAMBIO_DB) & (df.techo == TECHO_DB)].set_index(claves)[valor].rename("central")
+    g = df.groupby(claves)[valor]
+    return pd.concat([g.min().rename("min"), central, g.max().rename("max")], axis=1).reset_index()
+
+
+if __name__ == "__main__":
+    pf, rs = [], []
+    for zona in ZONAS:
+        for tdir in sorted((BASE / zona).glob("T*_F*")):
+            a, b = procesar(zona, tdir)
+            pf += a
+            rs += b
+    pf, rs = pd.DataFrame(pf), pd.DataFrame(rs)
+    bf = bandas(pf, "pct_agua_nueva", ["zona", "track", "fecha"]).round(2)
+    br = bandas(rs, "ha_extension_max", ["zona", "track"]).round(0)
+    bf.to_csv(BASE / "sensibilidad_por_fecha.csv", index=False)
+    br.to_csv(BASE / "sensibilidad_resumen.csv", index=False)
+    print(br.to_string(index=False))
+    print(f"-> {BASE / 'sensibilidad_por_fecha.csv'}, {BASE / 'sensibilidad_resumen.csv'}")

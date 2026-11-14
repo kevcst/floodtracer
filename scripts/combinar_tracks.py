@@ -10,10 +10,11 @@ Reglas por píxel sobre la secuencia de observaciones (todas las pasadas, todos 
   - primera  = primera observación del evento (10/8–10/9) con agua nueva
   - retiro   = primera observación seca posterior que es seguida por OTRA observación seca (o es la última):
                evita que una sola pasada de otra geometría que "no ve" el agua cuente como retiro
-  - persistencia = retiro − primera (días); "sigue" si nunca se cumple
+  - persistencia = intervalo [última obs mojada − primera, retiro − obs previa (≥ 15/8)]; se guarda el punto medio
+                 y las cotas (persistencia_min/max.tif); "sigue" si nunca se cumple el retiro
 Grilla común: la del track con más fechas (vecino más cercano).
 
-Salida: data_nisar/zonas/{zona}/combinado/{extension_max,primera_fecha,fecha_retiro,persistencia_dias,n_obs}.tif
+Salida: data_nisar/zonas/{zona}/combinado/{extension_max,extension_confirmada,n_mojado,persistencia_min,persistencia_max,primera_fecha,fecha_retiro,persistencia_dias,n_obs}.tif
         data_nisar/zonas/combinado_resumen.csv · combinado_por_fecha.csv · combinado_persistencia.png
 """
 import argparse
@@ -24,7 +25,7 @@ import pandas as pd
 import rasterio
 from rasterio.warp import Resampling, reproject
 
-from metricas_evento import BASE, EVENTO, guardar
+from metricas_evento import BASE, EVENTO, guardar, intervalos_persistencia
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -62,6 +63,10 @@ def procesar(zona):
     doy = np.asarray(fechas.day_of_year)
 
     ext_max = (agua & es_evento[:, None, None]).any(axis=0)
+    # extensión confirmada: agua nueva en ≥ 2 observaciones (de cualquier track) entre el 10/8 y el 10/9.
+    # Descarta lo que sólo ve una pasada (charco efímero o falsa alarma de un track).
+    n_mojado = (agua & ok)[:, :, :].sum(axis=0)
+    ext_conf = ext_max & ((agua & es_evento[:, None, None]).sum(axis=0) >= 2)
     primera_i = np.full((H, W_), -1, "int16")
     for i in np.where(es_evento)[0][::-1]:
         primera_i[agua[i]] = i
@@ -87,7 +92,7 @@ def procesar(zona):
     primera = np.where(ext_max, doy[np.maximum(primera_i, 0)], 0)
     retiro = np.where(ext_max & ~sigue, doy[np.maximum(retiro_i, 0)], 0)
     retiro[sigue] = 999
-    persist = np.where(ext_max & ~sigue, retiro - primera, -1)
+    pmin, pmax, persist = intervalos_persistencia(fechas, agua, ok, ext_max, es_evento, retiro_i, primera_i)
     n_obs = ok.sum(axis=0)
 
     out = BASE / zona / "combinado"
@@ -96,7 +101,11 @@ def procesar(zona):
     guardar(out / "primera_fecha.tif", primera, perfil, "int16", 0)
     guardar(out / "fecha_retiro.tif", retiro, perfil, "int16", 0)
     guardar(out / "persistencia_dias.tif", persist, perfil, "int16", -1)
+    guardar(out / "persistencia_min.tif", pmin, perfil, "int16", -1)
+    guardar(out / "persistencia_max.tif", pmax, perfil, "int16", -1)
     guardar(out / "n_obs.tif", n_obs, perfil, "uint8")
+    guardar(out / "extension_confirmada.tif", ext_conf, perfil, "uint8")
+    guardar(out / "n_mojado.tif", np.minimum(n_mojado, 254), perfil, "uint8")
 
     cubierto = ok.any(axis=0)
     nv = cubierto.sum()
@@ -105,7 +114,11 @@ def procesar(zona):
                 obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if EVENTO[0] <= f <= EVENTO[1]),
                 pct_extension_max=100 * ext_max.sum() / nv,
                 ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                ha_extension_confirmada=ext_conf.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                pct_extension_confirmada=100 * ext_conf.sum() / nv,
                 persistencia_mediana_dias=float(np.median(pv)) if pv.size else np.nan,
+                persistencia_min_mediana=float(np.median(pmin[ext_max & ~sigue])) if pv.size else np.nan,
+                persistencia_max_mediana=float(np.median(pmax[ext_max & ~sigue])) if pv.size else np.nan,
                 persistencia_p90_dias=float(np.percentile(pv, 90)) if pv.size else np.nan,
                 pct_sigue_con_agua=100 * sigue.sum() / max(ext_max.sum(), 1))
     print(f"== {zona}: " + ", ".join(f"{k}={round(v, 1) if isinstance(v, float) else v}"
