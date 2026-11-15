@@ -23,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 from metricas_evento import (BASE, CAMBIO_DB, Evento, es_validado, MMU_PX, TECHO_DB, calibrar_umbral, cargar_track,
-                             detectar_nueva)
+                             detectar_nueva, agua_permanente, pasadas_calma)
 from zonas import ZONAS
 
 MAX_DIAS = 1
@@ -35,7 +35,7 @@ def preparar(zona, tdir):
     es_base = Evento(zona).es_base(fechas, hh)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
-    agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
+    agua_base = agua_permanente(hh, pasadas_calma(zona, tdir.name, fechas, es_base)[0], umbral, valid)
     return dict(fechas=fechas, hh=hh, perfil=perfil, umbral=umbral, agua_base=agua_base,
                 base_med=np.nanmedian(hh[es_base], axis=0), es_base=es_base)
 

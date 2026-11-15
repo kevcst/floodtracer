@@ -8,7 +8,8 @@ Métricas de la crecida de agosto 2026 por zona y track ("¿Cuánto tiempo se qu
 
 Entrada : data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif  (gamma0 lineal, misma grilla por track)
 Salida  : .../T*/metricas/
-            agua_base.tif         1 = agua "normal" (mayoría de fechas jun–jul)
+            agua_base.tif         1 = agua "normal": HH < umbral en la mayoría de las pasadas base de CALMA
+                                  (viento ERA5 < 3 m/s, clima.py; si no hay ninguna, todas las base)
             extension_max.tif     1 = agua nueva en alguna pasada de la tormenta (15/8–10/9) que no estaba antes
                                   (sin el agua previa de este track ni la del combinado: ver previa_en_grilla)
             agua_previa.tif       1 = agua nueva ya presente en las pasadas del 10–14/8 (antes de la lluvia; aparte)
@@ -269,6 +270,23 @@ def cargar_track(tdir):
     return fechas, hh, hv, perfil
 
 
+def pasadas_calma(zona, track, fechas, es_base):
+    """Pasadas base con viento ERA5 < clima.CALMA_MS a la hora del paso (clima.py). Si el track no tiene ninguna,
+    o no hay clima, devuelve todas las pasadas base (comportamiento anterior)."""
+    from clima import CALMA_MS, viento_pasadas
+
+    v = viento_pasadas(zona, track, fechas)
+    calma = es_base & (v < CALMA_MS)
+    return (calma if calma.any() else es_base), v
+
+
+def agua_permanente(hh, sel, umbral, valid):
+    """Agua base = HH < umbral del track en la MAYORÍA de las pasadas `sel` (las base de calma, ver pasadas_calma).
+    Con viento el agua abierta se riza y sube a −16/−17 dB (laguna Merín en 53D): con todas las pasadas base sólo
+    llegaba a mayoría el 5–11 % de la laguna; con las de calma, ~90 % (comparar_global.py, F1 vs JRC 0,37 → 0,50)."""
+    return ((hh[sel] < umbral) & valid).mean(axis=0) > 0.5
+
+
 def calibrar_umbral(hh_base, valid):
     """Umbral por track: 30 % del camino entre agua permanente y tierra (≈ −18 dB en 53D).
     Si no hay suficiente agua permanente en el recorte, usa el umbral por defecto."""
@@ -307,7 +325,8 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     else:
         umbral, w, t = calibrar_umbral(hh[es_base], valid)
     W_abs = (hh < umbral) & valid                               # agua abierta por fecha (umbral absoluto)
-    agua_base = W_abs[es_base].mean(axis=0) > 0.5               # agua "normal": mayoría de las fechas base
+    calma, viento = pasadas_calma(zona, tdir.name, fechas, es_base)
+    agua_base = agua_permanente(hh, calma, umbral, valid)       # agua "normal": mayoría de las pasadas base de calma
     hh_base_med = np.nanmedian(hh[es_base], axis=0)
     ok = np.isfinite(hh)
     val = es_validado(fechas)
@@ -391,6 +410,8 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     pers_validos = persist[ext_max & ~sigue]
     fila = dict(zona=zona, track=tdir.name, evento=ev.clave, metodo=metodo, n_fechas=len(fechas), n_base=int(es_base.sum()),
                 fechas_base=" ".join(str(f.date())[5:] for f in fechas[es_base]),
+                fechas_base_calma=" ".join(str(f.date())[5:] for f in fechas[calma]),
+                viento_base=" ".join(f"{x:.1f}" for x in viento[es_base]),
                 fechas_evento=" ".join(str(f.date())[5:] for f in fechas[es_evento]),
                 umbral_db=round(umbral, 2), agua_perm_db=w and round(w, 1), tierra_db=t and round(t, 1),
                 pct_agua_base=100 * agua_base.sum() / nv, pct_extension_max=100 * ext_max.sum() / nv,

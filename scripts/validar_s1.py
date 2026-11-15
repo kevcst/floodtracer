@@ -41,7 +41,7 @@ from shapely import wkt as shp_wkt
 from shapely.geometry import shape
 
 from metricas_evento import (BASE, Evento, es_validado, OUT, calibrar_umbral, cargar_track, detectar_nueva, filtrar_mmu, guardar,
-                             media_nan)
+                             media_nan, agua_permanente, pasadas_calma)
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -124,7 +124,7 @@ def validar_track(zona, tdir, s1):
     val = es_validado(fechas)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
-    agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
+    agua_base = agua_permanente(hh, pasadas_calma(zona, tdir.name, fechas, es_base)[0], umbral, valid)
     med = np.nanmedian(hh[es_base], axis=0)
     cache = CACHE / zona / tdir.name
     s1 = s1[s1.cov_fecha >= 0.2]

@@ -15,7 +15,8 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from metricas_evento import BASE, CAMBIO_DB, Evento, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva, es_validado, previa_en_grilla
+from metricas_evento import (BASE, CAMBIO_DB, Evento, TECHO_DB, agua_permanente, calibrar_umbral, cargar_track,
+                             detectar_nueva, es_validado, pasadas_calma, previa_en_grilla)
 from zonas import ZONAS
 
 CAMBIOS = [-2.0, -2.5, -3.0, -3.5, -4.0]
@@ -32,7 +33,7 @@ def procesar(zona, tdir):
     val = es_validado(fechas)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
-    agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
+    agua_base = agua_permanente(hh, pasadas_calma(zona, tdir.name, fechas, es_base)[0], umbral, valid)
     med = np.nanmedian(hh[es_base], axis=0)
     nv = valid.sum()
     ha_px = abs(perfil["transform"].a * perfil["transform"].e) / 1e4
