@@ -11,7 +11,10 @@ Recopilado 2026-11-14 de prensa y reportes SINAE/CECOED. Cifras preliminares: ve
 | 18–21 ago | Treinta y Tres – río Olimar (cuenca Laguna Merín) | Olimar ~8,60 m; 21/8 bajando en 8,30 m; ~1.600 desplazados en la ciudad | APU 20/8; Intendencia TyT 21/8; La R 21/8 |
 | 17–20 ago | Cerro Largo – arroyo Conventos (Melo) y río Yaguarón (Río Branco) | Desbordes, ~120 desplazados, rescates; Ruta 44 comprometida | APU 20/8; La R 21/8 |
 | 18–19 ago | Jaguarão (Brasil) – río Yaguarón | Emergencia desde 15/8; el prefeito atribuye la crecida a aguas de Bagé/Piratini **y al nivel alto de la Lagoa Mirim** | A Hora do Sul 18/8 |
-| ~19 ago | Rocha | 5.000–6.000 ha de campos bajos anegados; ~15.000 vacunos trasladados (zona 18 de Julio) | APU 20/8; La R 21/8 |
+| ~19 ago | Rocha | 5.000–6.000 ha de campos bajos anegados; ~15.000 vacunos trasladados (zona 18 de Julio) | APU 20/8; La R 21/8; InfoUruguay 19/8 |
+| 19 ago | Rocha – Castillos | Puente de calle Lavalleja (cerca de Ruta 9) cubierto por el agua; Camino Guardia del Monte con riesgo; Ruta 14 km 265,5 (Paso 30 Bocas) cortada | El Observador 19/8 |
+| 19 ago | Rivera, Durazno, Florida, Paysandú | Policía Caminera: Ruta 44 (arroyo Yaguarí, Paso Mazangano), Ruta 28, Ruta 6 km 408 (Rivera); Rutas 100, 42 y 6 km 202 (Durazno); Ruta 42 km 37 y 41,7 (Florida); Ruta 4 km 403, río Queguay (Paysandú) | El Observador 19/8 |
+| 24 ago | Norte de Rocha | Campos anegados en San Luis, Cebollatí, Isla Negra y San Miguel; ganado a potreros altos; drenaje lento por la Laguna Merín alta | Agrolatam 24/8 |
 | 19–25 ago | Durazno – río Yí | Sube ~3 cm/h; **pico 9,75 m el sáb. 22/8 ~22 h** (supera la crecida de julio); 25/8 en 9,01 m bajando | Durazno Digital 19–25/8 |
 | ~21 ago | Soriano – río Negro | Evacuación de paradores ante posible 6 m | La R 21/8 |
 | 22–23 ago | País (SINAE) | Sáb. 22: **2.229 desplazados**, 565 viviendas (TyT 1.811, Durazno 205, Cerro Largo 104; también Soriano, Artigas, Paysandú, Rocha, Tacuarembó). Dom. 23: 989 total, **TyT baja a 418 y Durazno sube a 416** | Subrayado 23/8 (x2) |
@@ -52,3 +55,35 @@ No hay estadística oficial de área inundada nacional. Con NISAR se puede calcu
 - https://www.duraznodigital.uy/2026/08/el-rio-yi-en-retirada-en-su-pasaje-por.html
 - https://ahoradosul.com.br/conteudos/2026/08/18/cheia-do-rio-jaguarao-mobiliza-forcas-de-resgate/
 - https://www.elobservador.com.uy/nacional/cerro-largo-agua-mas-100-desplazados-comercios-paralizados-y-la-espera-recursos-economicos-afrontar-el-dia-despues-n6054723
+
+---
+
+## Litoral oeste — río Uruguay y Cuareim (agregado 2026-11-15)
+
+Incorporado al análisis NISAR el 15/11 como **evento de octubre** (zonas `salto`, `paysandu`, `artigas`). Resultado: muy poca agua abierta nueva (Paysandú 803 ha, Artigas 46, Salto ~0), confirmado por Sentinel-1. Recopilado de prensa local; cifras de CECOED vía medios.
+
+| Fecha | Lugar | Qué pasó | Fuente |
+|---|---|---|---|
+| 9 jul | Salto | Río Uruguay 7,67 m, sin evacuados (primer pico estacional) | Uruguay Al Día |
+| ~27 jul | Paysandú | Inundaciones en la zona costera tras lluvias de semanas previas | Montevideo Portal |
+| 3 ago | Paysandú | 27 desplazados | Medios Públicos |
+| 6 ago | Todo el país | INUMET: **alerta naranja en los 19 departamentos** (tormentas severas y vientos de 90–120 km/h) | Telenoche 6/8 |
+| 7 ago | Paysandú | Río 6,09 m (cota de seguridad 5,80), más de 60 desplazados; oleaje por viento | El Telégrafo 7/8 |
+| 22 ago | País (SINAE) | Además de TyT/Durazno/Cerro Largo: desplazados en Soriano, Artigas, Paysandú, Rocha, Tacuarembó | Subrayado 23/8 |
+| 1 oct | Artigas | Cuareim > 11,5 m, ~120 personas (36 familias); agua desde Brasil aguas arriba | Telenoche 1/10 |
+| 7 oct | Oeste y sur | INUMET: alerta naranja (Colonia, Flores, Paysandú, Río Negro, San José, Soriano, Canelones, Montevideo…), amarilla al norte | Telenoche 7/10 |
+| 10–11 oct | Salto | Río ~12 m (cota de evacuación); 3 → 7 familias evacuadas, costanera cortada; Salto Grande con vertedero abierto | Montevideo Portal 10/10; La Prensa |
+| ~12–16 oct | Paysandú | Pico 6,32 m, 70 desplazados; 16/10 en 5,89 m y **108 desplazados** (máximo de la creciente). Aporte a Salto Grande ~18.400 m³/s | El Telégrafo |
+| ~22 oct | Norte | INUMET: alerta naranja Artigas, Paysandú, Rivera, Salto, Tacuarembó (fecha a confirmar) | El Observador |
+
+Causa principal: lluvias en la cuenca alta del río Uruguay (sur de Brasil) y operación de Salto Grande, más tormentas locales. El CECOED de Salto advirtió que la emergencia por El Niño podría extenderse hasta marzo–mayo 2027.
+
+**Cobertura NISAR (GCOV) del litoral:** Paysandú 10D-105, 161A-161, 60A-161, 82D-105; Salto 10D-104, 161A-162, 60A-162, 82D-104; Artigas 132A-162, 60A-162, 82D-104. Pasadas cerca de los picos de octubre: 4–5/10 (Cuareim), 11–12/10 (Salto), 11, 12, 16 y 17/10 (Paysandú), todas PROVISIONAL. El pico de Paysandú del 6–7/8 cae en el **hueco de datos** (27/7–10/8).
+
+**Descartado:** nota "3.352 desplazados, Paysandú 1.569" (Diario Extra) que aparece fechada en 2026 pero sus metadatos y contenido corresponden a **mayo de 2024**.
+
+Fuentes: eltelegrafo.com (7/8, 16/10/2026) · mediospublicos.uy · montevideo.com.uy (10/10/2026) · semanariolaprensa.com · telenoche.com.uy (6/8, 1/10, 7/10/2026) · elobservador.com.uy · uruguayaldia.com.uy
+
+**Descartado (15/11):** notas que los buscadores fechan en 2026 pero son de otros años: "19.918 desplazados en el litoral" (Última Hora, es de dic-2015) y "Uruguay registra muertes por el temporal" (Sitio Andino, es de sep-2013).
+
+**Zonas consideradas y no incluidas (15/11):** Rivera (cortes en vados de arroyos angostos, por debajo de lo que resuelve un píxel de 20 m), Tacuarembó y Florida (sin reportes de 2026 verificables), Queguay (un solo corte de ruta).

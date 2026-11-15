@@ -48,6 +48,8 @@ Earthdata Login + `~/.netrc`; GDAL CLI (`brew install gdal`); `python -m venv .v
 - Pipeline completo y método: README §4–5. Plan y estado: `docs/plan_desarrollo.md`. Validación: `docs/validacion.md`.
 - La POC (`poc/`, artifact https://claude.ai/artifact/VPErQm7A1EwbxTKpgqEj7n) quedó histórica con el detector viejo.
 
+Guía completa del método (fundamentos de SAR, bandas, polarizaciones, pipeline, problemas y glosario): `docs/guia_metodo.md`. Puntos que eran abiertos, ya resueltos (2026-11-14 tarde): §31.1 (~1/3 del agua "nueva" ya estaba el 10–11/8 → infla persistencia_max, ha·día y días de corte) y §30 (**horarios de órbita invertidos** en validacion.md, armonizar_tracks.py y app/index.html: ascendentes pasan ~06:30 local, descendentes ~18:30; la explicación por viento no cierra).
+
 ## Scripts (orden del pipeline)
 `descargar_zonas.py` → `metricas_evento.py` → `armonizar_tracks.py` → `combinar_tracks.py` → `sensibilidad.py` → `capas_contexto.py` → `monte_ribereno.py` → `agregar_impacto.py` → `validar_s1.py` (opcional, lento la 1ª vez) → `exportar_app.py`. Correr desde `scripts/` o la raíz; los CSV globales sólo se escriben sin `--zona`.
 - `descargar_zonas.py listar|descargar|resumen`: recortes GCOV por zona → `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif`. Prefiere modo principal `2005_..._M_..._N_F_`. Sintaxis GDAL `HDF5:"/vsicurl/URL"://ruta` (GDAL ≥ 3.13).

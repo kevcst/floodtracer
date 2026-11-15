@@ -278,7 +278,7 @@ Sobre Uruguay, según la hora en los nombres de los archivos (UTC, *Tiempo Unive
 
 Además miran desde lados opuestos: al cambiar la dirección de vuelo cambia la dirección desde la cual el radar ilumina el terreno.
 
-> **Corrección importante:** varios documentos del repo (`docs/validacion.md`, el docstring de `armonizar_tracks.py` y un texto de `app/index.html`) dicen lo contrario: que los descendentes pasan ~6 h y los ascendentes ~18 h. Los nombres de las escenas muestran que es al revés. Ver §30.
+> **Corrección (aplicada el 14/11):** versiones anteriores de `docs/validacion.md`, del docstring de `armonizar_tracks.py` y de `app/index.html` decían lo contrario (descendentes ~6 h, ascendentes ~18 h). Los nombres de las escenas muestran que es al revés y los tres textos ya se corrigieron. Ver §30.
 
 ### 7.3 Track, frame, revisita, *swath*
 
@@ -428,7 +428,7 @@ Hay un **hueco global de datos** entre el 27/7 y el 10/8 de 2026: el instrumento
  NISAR GCOV (HDF5, 1–2 GB por escena, en Earthdata Cloud)
    │ 1  descargar_zonas.py     recorte por zona y track → GeoTIFF HH/HV (γ⁰ lineal, 20 m)
    ▼
- Pila de imágenes por track (misma grilla, 8–10 fechas, 15/6 → 20/10)
+ Pila de imágenes por track (misma grilla, 8–11 fechas, 15/6 → 20/10; litoral hasta 5/11 con VALIDATED)
    │ 2  metricas_evento.py     grilla común → speckle → base → agua permanente → agua NUEVA por fecha
    │                           → extensión, primera fecha, retiro, persistencia (intervalo)
    │ 3  armonizar_tracks.py    ¿dos tracks a ≤ 1 día ven lo mismo? → justifica el detector
@@ -453,7 +453,7 @@ Hay un **hueco global de datos** entre el 27/7 y el 10/8 de 2026: el instrumento
 
 ## 14. Las zonas de estudio
 
-Definidas en `scripts/zonas.py`. Cada una tiene un rectángulo (WKT), los tracks que la cubren, el track de la **serie principal** (`serie`, el que se usa cuando hace falta una sola serie, regla 2) y, opcionalmente, un `fin_base` propio.
+Definidas en `scripts/zonas.py`. Cada una tiene un rectángulo (WKT), los tracks que la cubren, el track de la **serie principal** (`serie`, el que se usa cuando hace falta una sola serie, regla 2), el **evento** al que pertenece (`evento`: `agosto` u `octubre`) y, opcionalmente, un `fin_base` propio.
 
 | Zona | Qué representa | Tracks | Serie principal |
 |---|---|---|---|
@@ -463,13 +463,22 @@ Definidas en `scripts/zonas.py`. Cada una tiene un rectángulo (WKT), los tracks
 | `rio_branco_jaguarao` | Río Yaguarón, frontera con Brasil | 53D, 31A | 53D |
 | `durazno` | Río Yí (crecida de julio y pico del 22/8) | 60A | 60A |
 | `mercedes` | Río Negro aguas abajo, monte de galería | 10D, 161A, 60A | 10D |
+| `rocha_norte` | Campos bajos de 18 de Julio y San Miguel (ganado trasladado) | 53D, 132A, 31A | 53D |
+| `castillos` | Bañados de la laguna de Castillos | 53D-106, 132A-160, 154D | 53D-106 |
+| `salto` | **Octubre:** río Uruguay aguas abajo de Salto Grande | 10D, 60A | 10D |
+| `paysandu` | **Octubre:** río Uruguay, islas y costa baja | 10D, 161A, 60A | 10D |
+| `artigas` | **Octubre:** río Cuareim | 60A, 82D, 132A | 60A |
 
-Las 4 primeras están en la **cuenca de la Laguna Merín** (vertiente atlántica). Durazno y Mercedes están en la **cuenca del río Negro** (vertiente del río Uruguay). La idea es comparar cómo respondió cada cuenca a la misma lluvia.
+Treinta y Tres, Merín, Melo, Río Branco y Rocha norte están en la **cuenca de la Laguna Merín** (vertiente atlántica); Castillos drena directo al océano. Durazno y Mercedes están en la **cuenca del río Negro**. Salto, Paysandú y Artigas son el **litoral del río Uruguay**, con otra crecida (octubre) y otra causa (lluvia aguas arriba en Brasil y operación de Salto Grande). Las 5 últimas se agregaron el 15/11.
 
-**Ventana temporal:** 15/6 → 20/10/2026, sólo PROVISIONAL.
-- **Línea de base:** antes del 27/7 (inicio del hueco de datos). Son 3–4 fechas por track. Durazno: antes del 20/7.
-- **Ventana del evento:** 10/8 → 10/9 (la primera pasada después del hueco hasta unas 3 semanas después de la lluvia).
-- **Post-evento:** 10/9 → 20/10, para ver el retiro.
+**Eventos** (`metricas_evento.EVENTOS`, clase `Evento(zona)`):
+
+| | Agosto (este y centro) | Octubre (litoral) |
+|---|---|---|
+| Línea de base | pasadas antes del 27/7 (inicio del hueco), 3–4 por track; Durazno antes del 20/7 | las **4 pasadas más secas** antes del 28/9 (menor % con HH < −18 dB): el río ya estaba alto en jul–ago |
+| Ventana del evento | 10/8 → 10/9 | 28/9 → 24/10 |
+| Inicio (antes = "agua previa") | 15/8 | 28/9 |
+| Post-evento | 10/9 → 20/10 (PROVISIONAL) | 24/10 → 5/11 (VALIDATED, normalizado por escena) |
 
 ## 15. Paso 1 — Descarga (`descargar_zonas.py`)
 
@@ -620,14 +629,21 @@ Con `--barrido` se probaron combinaciones de parámetros: hay una **meseta** de 
 ![combinado](figs/guia_08_combinado.png)
 *Izquierda: % de agua nueva en cada pasada, coloreada por track, para cada zona. Derecha: distribución de la persistencia del agua nueva.*
 
+Cifras actuales (sin el agua previa, ver §31.1):
+
 | Zona | Extensión máxima | **Extensión confirmada** | Persistencia mediana (intervalo) |
 |---|---|---|---|
-| Merín (3 tracks) | 103.151 ha | **75.154 ha** | 10 d (1–13) |
-| Treinta y Tres (2) | 15.293 ha | **9.343 ha** | 10 d (1–19) |
+| Merín (3 tracks) | 75.413 ha | **47.918 ha** | 6 d (1–12) |
+| Rocha norte (3) | 16.407 ha | **9.869 ha** | 6 d (0–11) |
+| Treinta y Tres (2) | 12.197 ha | **6.290 ha** | 10 d (1–19) |
 | Río Branco (2) | 3.812 ha | **2.510 ha** | 18 d (12–24) |
-| Mercedes (3) | 664 ha | **406 ha** | 12 d (0–24) |
-| Melo (2) | 100 ha | **58 ha** | 12 d (4–16) |
+| Castillos (3) | 3.785 ha | **1.824 ha** | 6 d (0–12) |
+| Mercedes (3) | 426 ha | **180 ha** | 4 d (0–8) |
+| Melo (2) | 76 ha | **35 ha** | 6 d (0–12) |
 | Durazno (1 track) | — | **341 ha** (`extension_max`) | 24 d |
+| Paysandú (3, octubre) | 1.143 ha | **803 ha** | 1 d (0–2) |
+| Artigas (3, octubre) | 207 ha | **46 ha** | 4 d (0–8) |
+| Salto (2, octubre) | 43 ha | **~0 ha** | — |
 
 ## 22. Paso 7 — Agua bajo el monte (`monte_ribereno.py`)
 
@@ -708,7 +724,7 @@ Recopilado en `docs/contexto_nacional_ago2026.md`. Sólo para contexto y para co
 
 ### 26.1 Contra Sentinel-1
 
-1. Para cada pasada NISAR entre el 10/8 y el 22/9 se busca una escena **Sentinel-1 RTC** (banda C, polarización VV, 10 m) a ≤ 2 días que cubra al menos el 20 % de la zona. Se usa el catálogo STAC de Microsoft Planetary Computer.
+1. Para cada pasada NISAR de la ventana del evento más 12 días (10/8–22/9 en agosto, 28/9–5/11 en octubre) se busca una escena **Sentinel-1 RTC** (banda C, polarización VV, 10 m) a ≤ 2 días que cubra al menos el 20 % de la zona. Se usa el catálogo STAC de Microsoft Planetary Computer.
 2. **Base S1:** escenas de la **misma órbita relativa** en junio–julio. Es el mismo principio de comparar contra sí mismo.
 3. S1 se lleva a la grilla NISAR de 20 m **promediando** los píxeles de 10 m, leyendo sólo la parte necesaria del COG. Se guarda en caché.
 4. **Agua nueva S1**, con parámetros propios de banda C:
@@ -726,6 +742,8 @@ Recopilado en `docs/contexto_nacional_ago2026.md`. Sólo para contexto y para co
 | F1 contra S1 laxa | **0,52** | 0,39 |
 
 Por zona: Treinta y Tres (F1 laxa 0,64) y Merín (0,61) van bien; Río Branco intermedio; Mercedes, Melo y Durazno débiles porque tienen muy poca agua abierta (Durazno F1 0,14).
+
+Con las 11 zonas (15/11): 47 comparaciones, exhaustividad 0,60, F1 0,44 estricta / 0,49 laxa (umbral 0,38 / 0,34). Rocha norte es la que mejor acuerda (0,60 / 0,66) y Castillos va bien (0,54 / 0,58). En el litoral casi no hay agua en ningún sensor: Salto y Artigas 0 % en S1; Paysandú F1 0,20 sobre manchas muy angostas.
 
 **Interpretación:**
 - NISAR encuentra casi todo lo que ve S1, pero marca **más agua** (precisión ~0,3).
@@ -752,6 +770,8 @@ En el este, el pico NISAR es la primera pasada después de la cresta. En la cuen
 - **Imágenes:** radar HH por fecha en **WebP** con transparencia y capas (agua, extensión, persistencia, retiro, monte) en **PNG**. Cada imagen lleva sus **4 esquinas en lon/lat** para que MapLibre la ubique sobre el mapa base de OSM (*image source*).
 - **`sonda.bin`:** cubo de HH y agua por fecha a 200 m, en bytes. Permite hacer clic en cualquier punto y ver su historia sin servidor.
 - **GeoJSON** de caminos, localidades y subcuencas, y descargas en CSV y GeoTIFF.
+- **`secado.geojson`** (desde el 15/11): un punto por celda de ~400 m con al menos 5 % inundado; peso = días bajo agua × fracción inundada. Alimenta el **heatmap** "Where the water lingers" (capa `heatmap` de MapLibre) junto con las curvas de "% del área inundada que sigue mojada" por días desde el inicio de cada evento.
+- **Eventos por zona:** el manifest trae `evento` en cada zona (ventana, inicio, lluvia) y `eventos`; los gráficos usan la banda de lluvia o subida del río de cada zona.
 - Se sirve como página estática: `python3 -m http.server -d app 8000`.
 
 ---
@@ -903,18 +923,18 @@ Al preparar esta guía revisé los horarios en los nombres de las escenas (está
 | Ascendentes 31A, 60A, 132A, 161A | 09:29–09:54 | **06:30–07:00 (amanecer)** |
 | Descendentes 10D, 53D, 154D | 21:34–21:59 | **18:30–19:00 (atardecer)** |
 
-`docs/validacion.md`, el docstring de `scripts/armonizar_tracks.py` y el texto "Calm dawn, windy dusk" de `app/index.html` dicen lo contrario: que los descendentes pasan al amanecer con viento calmo.
+`docs/validacion.md`, el docstring de `scripts/armonizar_tracks.py` y el texto "Calm dawn, windy dusk" de `app/index.html` decían lo contrario: que los descendentes pasan al amanecer con viento calmo. **Resuelto el 14/11 (tarde):** los tres textos se corrigieron y la tarjeta de la app ahora se llama "Morning and evening passes disagree", con la causa abierta.
 
 **Qué implica:**
 - **El hallazgo se mantiene:** con umbral fijo, los descendentes veían 2–3 veces más agua.
 - **La explicación por el viento no cierra tal como está escrita.** Los descendentes pasan al **atardecer**. Si el viento fuera la causa principal, uno esperaría lo contrario (en general el amanecer es más calmo).
 - **Causas posibles a evaluar:** diferencia de ángulo de incidencia de cada track sobre la zona, dirección de iluminación respecto de surcos y taipas, rocío en la vegetación al amanecer (la vuelve más brillante y "tapa" el agua somera en los ascendentes), o una combinación.
 - **El detector por cambio sigue siendo la respuesta correcta,** porque cancela todas esas causas a la vez sin necesidad de saber cuál es.
-- **Recomendación:** corregir esos tres textos y presentar la diferencia entre órbitas como un hallazgo con causa abierta, no como un efecto del viento.
+- **Hecho:** la diferencia entre órbitas se presenta como un hallazgo con causa abierta, no como un efecto del viento.
 
 ## 31. Otros problemas y puntos abiertos
 
-### 31.1 Un tercio del "agua nueva" ya estaba antes de la lluvia (abierto)
+### 31.1 Un tercio del "agua nueva" ya estaba antes de la lluvia (resuelto)
 
 - **Qué pasa:** en la extensión confirmada, el **33 %** de los píxeles de Treinta y Tres y el **36 %** de los de Merín tienen la primera detección el 10/8 u 11/8, antes de la lluvia del 15–19/8. La figura de §20 muestra lotes ya mojados el 23/7.
 - **Por qué:** hubo lluvias en julio (la crecida del Yí fue el ~23/7) y durante el hueco de datos (27/7–10/8). La ventana del evento empieza el 10/8 porque es la primera pasada después del hueco.
@@ -922,6 +942,18 @@ Al preparar esta guía revisé los horarios en los nombres de las escenas (está
   - las **ha·día** (en Merín dan ~24 días promedio, contra una persistencia mediana de 10);
   - los **días de corte** de algunos caminos, que llegan a 72–84 días: **más que los 66 días** que hay entre el 15/8 y el 20/10.
 - **Opciones:** (a) recortar el inicio del intervalo al 10/8 (fin del hueco); (b) separar una clase "ya mojado antes del evento" y reportarla aparte; (c) usarlo en el relato: "la lluvia de agosto cayó sobre suelos ya saturados", que es una de las hipótesis físicas.
+- **Qué se hizo (14/11 tarde): (b) + (c).** Lo mojado en las pasadas del 10–14/8 es la clase **`agua_previa`** (gris en la app): queda fuera de la extensión, la persistencia, las ha·día y los caminos, y la extensión de la tormenta arranca el 15/8. Los días de corte bajaron a un máximo de 66. En la app, la tarjeta "Rain on soaked ground" lo usa en el relato. Con las 8 zonas de agosto son ≈ 38.700 ha de agua previa.
+
+### 31.1b El río Uruguay ya estaba alto antes de la crecida de octubre (15/11)
+
+- **Qué pasa:** en el litoral la base de jun–jul no es "normal": Salto marcó 7,67 m el 9/7 y Paysandú 6,09 m el 7/8, casi lo mismo que el pico de octubre (6,32 m).
+- **Qué se hizo:** para el evento de octubre la base son las **4 pasadas más secas** antes del 28/9. Aun así, el agua abierta nueva fue muy poca (Paysandú 803 ha, Artigas 46, Salto ~0), y Sentinel-1 lo confirma por su cuenta. Parte del agua de Paysandú está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks).
+- **Lectura:** el agua que desplazó gente en el litoral fue una franja urbana angosta, no grandes superficies.
+
+### 31.1c Frames que el catálogo da como cubiertos pero vienen vacíos (15/11)
+
+- **Qué pasa:** en Salto, los frames 82D-104 y 161A-162 figuraban con 62–69 % de cobertura del AOI, pero el recorte traía dato sólo en una franja del borde; el resto venía con valores ~1e-14 (−135 dB) en lugar de 0 o NaN. En Artigas, dos pasadas sueltas (5/7 y 12/7) cubrían sólo un borde.
+- **Qué se hizo:** al cargar, los valores < −50 dB se tratan como sin dato y se descartan las pasadas que cubren < 80 % de la mediana del track (si no, una sola pasada parcial achica el área válida de toda la serie). Los dos frames de Salto se sacaron de `zonas.py`.
 
 ### 31.2 Persistencias artificiales de "1 día" al combinar tracks (resuelto)
 
@@ -955,22 +987,29 @@ Mercedes, Durazno y Melo tienen menos del 2 % de agua abierta. Ahí la coinciden
 
 # PARTE V — RESULTADOS, LÍMITES Y PRÓXIMOS PASOS
 
-## 32. Resultados principales (detector por cambio, 2026-11-14)
+## 32. Resultados principales (detector por cambio, sin agua previa, 2026-11-15)
+
+**Tormenta de agosto (8 zonas):**
 
 | Zona | Extensión confirmada | Banda de sensibilidad (serie principal) | Persistencia típica | Caminos bajo agua |
 |---|---|---|---|---|
-| Merín | **75.154 ha** | 52–94 mil ha (53D) | ~10 d | 66 km (54 km > 1 semana) |
-| Treinta y Tres | **9.343 ha** | | ~10 d | 19 km |
+| Merín | **47.918 ha** | 30–67 mil ha (53D) | ~6 d | 42 km (28 km > 1 semana) |
+| Rocha norte | **9.869 ha** | 9,7–26 mil ha (53D) | ~6 d | 4,7 km |
+| Treinta y Tres | **6.290 ha** | | ~10 d | 13 km |
 | Río Branco–Jaguarão | **2.510 ha** | | ~18 d | 3,4 km |
-| Mercedes | **406 ha** | | ~12 d | 0,4 km |
+| Castillos | **1.824 ha** | | ~6 d | 0,2 km |
 | Durazno | **341 ha** | 110–933 ha | ~24 d | 0,5 km |
-| Melo | **58 ha** | | ~12 d | 0 |
-| **Total** | **≈ 87.800 ha** | | | |
+| Mercedes | **180 ha** | | ~4 d | 0,2 km |
+| Melo | **35 ha** | | ~6 d | 0 |
+| **Total** | **≈ 69.000 ha** (+ ≈ 38.700 ha ya mojadas antes de la lluvia) | | | 65 km (50 km > 1 semana) |
+
+**Creciente de octubre del río Uruguay (3 zonas):** Paysandú 803 ha, Artigas 46 ha, Salto ~0 (ver §31.1b).
 
 Otros hallazgos:
-- **Retiro en Merín (53D):** 79 % de la extensión mojada el 28/8; 24 % el 21/9.
-- **Cobertura del suelo en Merín:** 35 mil ha de pradera, 20 mil de cultivo (arroz) y 17 mil de humedal (el 46 % del humedal de la zona).
-- **Agua bajo el monte:** exceso positivo en Mercedes, Merín y Río Branco; nulo en Treinta y Tres, Melo y Durazno.
+- **Retiro en Merín (53D):** 70 % de la extensión mojada el 28/8; 15 % el 21/9.
+- **Dónde tarda más en secarse** (heatmap de la app): costa oeste de la Laguna Merín (desembocadura del Cebollatí, La Charqueada) y bañados de 18 de Julio–San Miguel. Mitad del área seca: Treinta y Tres día 20, Merín y Río Branco día 25, Rocha norte y Castillos día 37 (desde el 15/8).
+- **Cobertura del suelo en Merín:** 24,6 mil ha de pradera, 14,1 mil de cultivo (arroz) y 7,8 mil de humedal. En Rocha norte, 4,4 mil de pradera y 1,3 mil de arroz.
+- **Agua bajo el monte:** exceso positivo en Mercedes, Merín, Río Branco, Rocha norte (~1 dB en los 3 tracks), Castillos y Paysandú; nulo en Treinta y Tres, Melo, Durazno, Salto y Artigas.
 - **Cuencas:** el este (Laguna Merín) tuvo mucha agua abierta y retiro lento; la cuenca del Negro tuvo poca agua abierta y la señal está bajo el monte de galería.
 
 ## 33. Límites del método
@@ -987,8 +1026,7 @@ Otros hallazgos:
 
 ## 34. Pendientes
 
-- Resolver §31.1 (agua presente antes de la lluvia) antes de publicar ha·día y días de corte.
-- Corregir el texto de horarios de órbitas (§30) en `validacion.md`, `armonizar_tracks.py` y `app/index.html`.
+- "Campo mojado" sin agua en superficie (suelo saturado): hoy no se mide; candidato el producto L3 SME2 de humedad de suelo (PROVISIONAL, aún no bien calibrado).
 - Capítulo arrozales (riego de noviembre–diciembre): requiere datos VALIDATED y normalizarlos contra PROVISIONAL con blancos estables.
 - Publicar la app (GitHub Pages), video y slides.
 - Niveles de río DINAGUA (si aparece una fuente) y revisión de `QA_REPORT.pdf`.
