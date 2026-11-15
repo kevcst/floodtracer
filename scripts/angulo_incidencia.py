@@ -2,12 +2,13 @@
 Ángulo de incidencia por track (diagnóstico entre tracks, paso 1). Sólo geometría del propio NISAR (regla 1 OK).
   python scripts/angulo_incidencia.py                  # una escena por track (la geometría se repite entre pasadas)
   python scripts/angulo_incidencia.py --verificar      # además baja una 2.ª fecha por track y compara
+                                                       # (hecho 2026-11-15 en 3 tracks: |Δ| ≤ 0,001°)
 
 Fuente: GCOV /science/LSAR/GCOV/metadata/radarGrid/incidenceAngle, cubo de 21 alturas (−1000…9000 m, cada 500 m)
 en una grilla de 500 m en la MISMA proyección que las imágenes (x/yCoordinates). Se usa el nivel 0 m (banda 3):
 la cuenca está entre 0 y ~300 m y el ángulo cambia muy poco con la altura a esas cotas.
 Salida: data_nisar/zonas/{zona}/T*/contexto/incidencia.tif (grados, grilla del track, bilineal)
-        data_nisar/zonas/{zona}/T*/contexto/incidencia_{fecha}_500m.tif (cubo nivel 0 m, sin remuestrear)
+        data_nisar/zonas/_incidencia/T*.tif (cubo nivel 0 m por track, 500 m, sin remuestrear)
 """
 import argparse
 import os
@@ -25,6 +26,7 @@ from zonas import ZONAS
 
 RG = "//science/LSAR/GCOV/metadata/radarGrid"
 BANDA_0M = 3
+CACHE = BASE / "_incidencia"        # cubo nivel 0 m por track (500 m), compartido entre zonas
 ENV = dict(os.environ, GDAL_HTTP_NETRC="YES", GDAL_HTTP_COOKIEFILE="/tmp/gdal_cookies.txt",
            GDAL_HTTP_COOKIEJAR="/tmp/gdal_cookies.txt", GDAL_DISABLE_READDIR_ON_OPEN="TRUE",
            GDAL_HTTP_MERGE_CONSECUTIVE_RANGES="YES")
@@ -92,7 +94,9 @@ def main(verificar):
             usar = [g.iloc[0]] + ([g.iloc[len(g) // 2]] if verificar and len(g) > 1 else [])
             capas = []
             for fila in usar:
-                cubo = cubo_0m(fila.url, crs, tdir / "contexto" / f"incidencia_{fila.fecha}_500m.tif")
+                # la geometría se repite entre pasadas (verificado: |Δ| ≤ 0,001° entre fechas) y varias zonas
+                # comparten track → un cubo por track, compartido
+                cubo = cubo_0m(fila.url, crs, CACHE / (f"{nombre}.tif" if fila is usar[0] else f"{nombre}_{fila.fecha}.tif"))
                 destino = tdir / "contexto" / ("incidencia.tif" if fila is usar[0] else f"incidencia_{fila.fecha}.tif")
                 capas.append(a_grilla(cubo, ref, destino))
             a = capas[0]

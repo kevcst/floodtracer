@@ -56,6 +56,7 @@ DELTA_VEG_DB = 3.0
 CAMBIO_DB = -3.0          # caída mínima respecto de la mediana base del píxel
 TECHO_DB = -14.0          # y además HH absoluto por debajo de esto (descarta caídas de campo a campo más liso)
 MMU_PX = 10               # mancha mínima (píxeles de 20 m)
+MAX_DESVIO_ESCENA_DB = 5.0   # pasada descartada si la mediana del recorte se aleja más que esto de la del track
 INICIO_LLUVIA = pd.Timestamp("2026-08-15")   # el agua del evento no pudo llegar antes (cota de persistencia)
 
 # Eventos: cada zona declara el suyo en zonas.py (clave "evento", por defecto "agosto").
@@ -253,6 +254,16 @@ def cargar_track(tdir):
     ok = n >= 0.8 * np.median(n)
     if not ok.all():
         print(f"   ! pasadas parciales descartadas: {[str(f.date()) for f, o in zip(fechas, ok) if not o]}")
+        fechas = [f for f, o in zip(fechas, ok) if o]
+        hh, hv = hh[ok], hv[ok]
+    # pasadas con calibración rota: la mediana de TODO el recorte se aleja > 5 dB de la del track (p. ej. T60A_F162
+    # 2026-06-18: +24 dB; Artigas 2026-07-12: −15 dB). Ni una crecida ni el salto VALIDATED (~−1,7 dB) mueven tanto
+    # la mediana de un recorte entero. Sin este filtro una escena "brillante" entraba como la base más seca.
+    med = np.array([np.nanmedian(x) for x in hh])
+    ok = np.abs(med - np.nanmedian(med)) <= MAX_DESVIO_ESCENA_DB
+    if not ok.all():
+        print(f"   ! pasadas con calibración rota descartadas: "
+              f"{[f'{f.date()} ({m - np.nanmedian(med):+.0f} dB)' for f, m, o in zip(fechas, med, ok) if not o]}")
         fechas = [f for f, o in zip(fechas, ok) if o]
         hh, hv = hh[ok], hv[ok]
     return fechas, hh, hv, perfil
