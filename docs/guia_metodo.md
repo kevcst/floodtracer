@@ -689,7 +689,7 @@ Son 15 combinaciones. El mínimo, el central (−3/−14) y el máximo forman la
 
 ## 24. Pasos 6 y 8 — Contexto e impacto (`capas_contexto.py`, `agregar_impacto.py`)
 
-### 24.1 Capas de contexto (regla 1: sólo contexto)
+### 24.1 Capas de contexto (regla 1: contexto; el viento ERA5 sí entra a la detección, ver §32)
 
 | Capa | Fuente | Cómo se procesa |
 |---|---|---|

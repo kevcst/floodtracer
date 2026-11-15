@@ -15,7 +15,7 @@ Contexto para seguir trabajando con Claude Code. Idioma de trabajo: español. En
 - Capítulo secundario: arrozales — mismos lotes con agua "mala" (agosto) y "buena" (riego nov–dic).
 
 ## Reglas del equipo
-1. El análisis se apoya en **NISAR**. Otras fuentes (Sentinel-1, INUMET, DINAGUA, SINAE, DIEA, Sentinel-2, MapBiomas) sólo como **validación independiente o contexto**, nunca para entrenar ni mezcladas en las series principales.
+1. **NISAR es la fuente principal, no necesariamente la única** (actualizada 2026-11-15). Otras fuentes pueden **mejorar la detección** si la mejora se mide (p. ej. viento ERA5 para elegir las pasadas base de calma: `clima.py`). Las que se usan para **validar** (Sentinel-1, JRC Global Surface Water) nunca entran al cálculo, para que la validación siga siendo independiente. Nunca para entrenar. Contexto (OSM, WorldCover, DEM, INUMET, SINAE, DIEA…) como siempre.
 2. Series temporales: **un track por serie** (misma geometría); combinar tracks sólo a nivel de máscara de agua y con umbral calibrado por track.
 3. **No mezclar PROVISIONAL y VALIDATED** sin normalizar (salto ~−1,7 dB HH / −2,2 dB HV en tierra).
 4. Cifras de prensa = preliminares; confirmar con SINAE/CECOED antes de publicar.
