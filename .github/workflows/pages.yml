@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "poc/**"
-      - "scripts/build_poc.py"
+      - "app/**"
+      - "scripts/build_map_vectors.mjs"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -22,14 +22,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Build self-contained website
-        run: python3 scripts/build_poc.py
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install image decoder
+        run: python3 -m pip install Pillow
+      - name: Prepare display polygons
+        run: node scripts/build_map_vectors.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload website
         uses: actions/upload-pages-artifact@v4
         with:
-          path: poc/dist
+          path: app
 
   deploy:
     needs: build
