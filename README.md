@@ -213,14 +213,14 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 
 ---
 
-## 8. Resultados (2026-11-15, detector por cambio, sin agua previa, 11 zonas)
+## 8. Resultados (2026-11-15, detector por cambio, sin agua previa, agua permanente con pasadas de calma, 11 zonas)
 
-- **Inundado por la tormenta de agosto (≥ 2 observaciones, 15/8–10/9), 8 zonas:** Merín 47.918 ha (track 53D solo: 30–67 mil según parámetros) · **Rocha norte 9.869** (sobre todo pradera, 4.400 ha, y arroz, 1.300) · Treinta y Tres 6.290 · Río Branco 2.510 · **Castillos 1.824** · Durazno 341 (un track) · Mercedes 180 · Melo 35. Total ≈ 69.000 ha.
-- **Ya mojado antes de la lluvia (10–14/8, aparte):** ≈ 38.700 ha (Merín 27.700, Rocha norte 5.600, TyT 3.100, Castillos 2.000, Mercedes 240). La tormenta cayó sobre suelos ya saturados por las lluvias de julio.
-- **Creciente de octubre del río Uruguay y el Cuareim (28/9–24/10), 3 zonas:** muy poca agua abierta nueva: Paysandú 803 ha (islas y costa baja; 56 ha en el anillo de 500 m de Nuevo Paysandú), Artigas 46, Salto ~0. Sentinel-1 lo confirma (Salto y Artigas 0 %). El río ya estaba alto desde julio (Paysandú 6,09 m el 7/8 ≈ pico de octubre 6,32 m) y parte del agua está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks de Paysandú).
+- **Inundado por la tormenta de agosto (≥ 2 observaciones, 15/8–10/9), 8 zonas:** Merín 47.449 ha (track 53D solo: 30–66 mil según parámetros) · **Rocha norte 9.755** (sobre todo pradera, 4.400 ha, y arroz, 1.300) · Treinta y Tres 6.303 · Río Branco 2.510 · **Castillos 1.821** · Durazno 341 (un track) · Mercedes 179 · Melo 35. Total ≈ 68.400 ha.
+- **Ya mojado antes de la lluvia (10–14/8, aparte):** ≈ 38.550 ha (Merín 27.600, Rocha norte 5.600, TyT 3.100, Castillos 2.000, Mercedes 240). La tormenta cayó sobre suelos ya saturados por las lluvias de julio.
+- **Creciente de octubre del río Uruguay y el Cuareim (28/9–24/10), 3 zonas:** muy poca agua abierta nueva: Paysandú 784 ha (islas y costa baja), Artigas 20, Salto ~0. Sentinel-1 lo confirma (Salto y Artigas 0 %). El río ya estaba alto desde julio (Paysandú 6,09 m el 7/8 ≈ pico de octubre 6,32 m) y parte del agua está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks de Paysandú).
 - **Dónde tarda más en secarse** (heatmap `app/data/secado.geojson`, celdas de 400 m, peso = días × fracción inundada): costa oeste de la Laguna Merín (desembocadura del Cebollatí, La Charqueada) y bañados de 18 de Julio–San Miguel (Rocha). Mitad seca: TyT día 20, Merín y Río Branco día 25, Rocha norte y Castillos día 37 (desde el 15/8).
 - **Retiro en Merín (53D):** 70 % del área inundada seguía mojada el 28/8, 15 % el 21/9. Persistencia típica (sobre la extensión confirmada) 12 días (intervalo mediano 6–18) en Merín, 10 en TyT, 16 en Rocha norte, 18 en Río Branco y Castillos.
-- **Caminos:** 65 km de caminería rural bajo agua en total (50 km más de una semana): Merín 42, TyT 13, Rocha norte 5, Río Branco 3. Máximo 66 días (desde el 15/8 hasta el fin de la serie).
+- **Caminos:** 64 km de caminería rural bajo agua en total (49 km más de una semana): Merín 42, TyT 13, Rocha norte 5, Río Branco 3. Máximo 66 días (desde el 15/8 hasta el fin de la serie).
 - **Cobertura en Merín:** 24.600 ha de pradera, 14.100 de cultivo (arroz), 7.800 de humedal.
 - **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes, en Río Branco y en Merín; nulo o negativo en Treinta y Tres, Melo y Durazno.
 - **Validación** (`docs/validacion.md`): Jaccard entre tracks a ≤ 1 día 0,32 → 0,48; contra Sentinel-1 (11 zonas, 47 comparaciones) NISAR encuentra el 60 % del agua S1, F1 0,44 (estricta) / 0,49 (laxa); mejor acuerdo en Rocha norte (0,60 / 0,66). NISAR mapea más agua somera que la banda C → las extensiones son cota alta. Débil en Durazno y en el litoral (casi sin agua).

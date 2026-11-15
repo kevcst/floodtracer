@@ -629,21 +629,21 @@ Con `--barrido` se probaron combinaciones de parámetros: hay una **meseta** de 
 ![combinado](figs/guia_08_combinado.png)
 *Izquierda: % de agua nueva en cada pasada, coloreada por track, para cada zona. Derecha: distribución de la persistencia del agua nueva.*
 
-Cifras actuales (sin el agua previa, ver §31.1):
+Cifras actuales (sin el agua previa, ver §31.1; agua permanente con pasadas de calma, §31.9):
 
 | Zona | Extensión máxima | **Extensión confirmada** | Persistencia mediana (intervalo) |
 |---|---|---|---|
-| Merín (3 tracks) | 75.413 ha | **47.918 ha** | 6 d (1–12) |
-| Rocha norte (3) | 16.407 ha | **9.869 ha** | 6 d (0–11) |
-| Treinta y Tres (2) | 12.197 ha | **6.290 ha** | 10 d (1–19) |
-| Río Branco (2) | 3.812 ha | **2.510 ha** | 18 d (12–24) |
-| Castillos (3) | 3.785 ha | **1.824 ha** | 6 d (0–12) |
-| Mercedes (3) | 426 ha | **180 ha** | 4 d (0–8) |
-| Melo (2) | 76 ha | **35 ha** | 6 d (0–12) |
+| Merín (3 tracks) | 74.256 ha | **47.449 ha** | 12 d (6–18) |
+| Rocha norte (3) | 15.552 ha | **9.755 ha** | 16 d (12–19) |
+| Treinta y Tres (2) | 12.208 ha | **6.303 ha** | 10 d (1–19) |
+| Río Branco (2) | 3.824 ha | **2.510 ha** | 18 d (12–24) |
+| Castillos (3) | 3.627 ha | **1.821 ha** | 18 d (12–24) |
+| Mercedes (3) | 428 ha | **179 ha** | 16 d (12–20) |
+| Melo (2) | 84 ha | **35 ha** | 22 d (12–24) |
 | Durazno (1 track) | — | **341 ha** (`extension_max`) | 24 d |
-| Paysandú (3, octubre) | 1.143 ha | **803 ha** | 1 d (0–2) |
-| Artigas (3, octubre) | 207 ha | **46 ha** | 4 d (0–8) |
-| Salto (2, octubre) | 43 ha | **~0 ha** | — |
+| Paysandú (3, octubre) | 1.122 ha | **784 ha** | 1 d (0–2) |
+| Artigas (3, octubre) | 54 ha | **20 ha** | 16 d (8–23) |
+| Salto (2, octubre) | 25 ha | **~0 ha** | — |
 
 ## 22. Paso 7 — Agua bajo el monte (`monte_ribereno.py`)
 
@@ -947,7 +947,7 @@ Al preparar esta guía revisé los horarios en los nombres de las escenas (está
 ### 31.1b El río Uruguay ya estaba alto antes de la crecida de octubre (15/11)
 
 - **Qué pasa:** en el litoral la base de jun–jul no es "normal": Salto marcó 7,67 m el 9/7 y Paysandú 6,09 m el 7/8, casi lo mismo que el pico de octubre (6,32 m).
-- **Qué se hizo:** para el evento de octubre la base son las **4 pasadas más secas** antes del 28/9. Aun así, el agua abierta nueva fue muy poca (Paysandú 803 ha, Artigas 46, Salto ~0), y Sentinel-1 lo confirma por su cuenta. Parte del agua de Paysandú está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks).
+- **Qué se hizo:** para el evento de octubre la base son las **4 pasadas más secas** antes del 28/9. Aun así, el agua abierta nueva fue muy poca (Paysandú 784 ha, Artigas 20, Salto ~0), y Sentinel-1 lo confirma por su cuenta. Parte del agua de Paysandú está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks).
 - **Lectura:** el agua que desplazó gente en el litoral fue una franja urbana angosta, no grandes superficies.
 
 ### 31.1c Frames que el catálogo da como cubiertos pero vienen vacíos (15/11)
@@ -1025,23 +1025,23 @@ Algunas pasadas tienen todo el recorte corrido decenas de dB: T60A_F162 del 18/6
 
 # PARTE V — RESULTADOS, LÍMITES Y PRÓXIMOS PASOS
 
-## 32. Resultados principales (detector por cambio, sin agua previa, 2026-11-15)
+## 32. Resultados principales (detector por cambio, sin agua previa, agua permanente con pasadas de calma, 2026-11-15)
 
 **Tormenta de agosto (8 zonas):**
 
 | Zona | Extensión confirmada | Banda de sensibilidad (serie principal) | Persistencia típica | Caminos bajo agua |
 |---|---|---|---|---|
-| Merín | **47.918 ha** | 30–67 mil ha (53D) | ~12 d | 42 km (28 km > 1 semana) |
-| Rocha norte | **9.869 ha** | 9,7–26 mil ha (53D) | ~16 d | 4,7 km |
-| Treinta y Tres | **6.290 ha** | | ~10 d | 13 km |
+| Merín | **47.449 ha** | 30–66 mil ha (53D) | ~12 d | 42 km (28 km > 1 semana) |
+| Rocha norte | **9.755 ha** | 9,3–22 mil ha (53D) | ~16 d | 4,6 km |
+| Treinta y Tres | **6.303 ha** | | ~10 d | 13 km |
 | Río Branco–Jaguarão | **2.510 ha** | | ~18 d | 3,4 km |
-| Castillos | **1.824 ha** | | ~18 d | 0,2 km |
+| Castillos | **1.821 ha** | | ~18 d | 0,2 km |
 | Durazno | 341 ha (*no concluyente*: 1 sola pasada base) | 110–933 ha | ~24 d | 0,5 km |
-| Mercedes | 180 ha (*no concluyente*: < 2× piso de ruido, 99 ha) | | ~16 d | 0,2 km |
+| Mercedes | 179 ha (*no concluyente*: < 2× piso de ruido, 107 ha) | | ~16 d | 0,2 km |
 | Melo | **35 ha** (piso de ruido 7 ha) | | ~22 d | 0 |
-| **Total** | **≈ 69.000 ha** (+ ≈ 38.700 ha ya mojadas antes de la lluvia) | | | 65 km (50 km > 1 semana) |
+| **Total** | **≈ 68.400 ha** (+ ≈ 38.550 ha ya mojadas antes de la lluvia) | | | 64 km (49 km > 1 semana) |
 
-**Creciente de octubre del río Uruguay (3 zonas):** Paysandú 803 ha, Artigas 46 ha, Salto ~0 (*no concluyente*) (ver §31.1b). Ojo: en los tracks del litoral el propio río Uruguay no se ve oscuro (HH ~−14 dB), el detector no encuentra agua permanente para calibrar y "poca agua" es evidencia más débil que en el este.
+**Creciente de octubre del río Uruguay (3 zonas):** Paysandú 784 ha, Artigas 20 ha, Salto ~0 (*no concluyente*) (ver §31.1b). Ojo: en los tracks del litoral el propio río Uruguay no se ve oscuro (HH ~−14 dB), el detector no encuentra agua permanente para calibrar y "poca agua" es evidencia más débil que en el este.
 
 Persistencia típica = mediana sobre la extensión confirmada (≥ 2 obs.). Antes se calculaba sobre toda la extensión, incluidos píxeles vistos mojados una sola vez (persistencia mínima 0 por construcción), y daba ~6 d = media revisita. Zona *no concluyente* = lo inundado es < 2× el piso de ruido del detector (falsa alarma en pasadas base, dejar-una-afuera, mediana entre tracks) o no hay ≥ 2 pasadas base para estimarlo.
 

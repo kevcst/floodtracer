@@ -60,7 +60,7 @@ No hay estadística oficial de área inundada nacional. Con NISAR se puede calcu
 
 ## Litoral oeste — río Uruguay y Cuareim (agregado 2026-11-15)
 
-Incorporado al análisis NISAR el 15/11 como **evento de octubre** (zonas `salto`, `paysandu`, `artigas`). Resultado: muy poca agua abierta nueva (Paysandú 803 ha, Artigas 46, Salto ~0), confirmado por Sentinel-1. Recopilado de prensa local; cifras de CECOED vía medios.
+Incorporado al análisis NISAR el 15/11 como **evento de octubre** (zonas `salto`, `paysandu`, `artigas`). Resultado: muy poca agua abierta nueva (Paysandú 784 ha, Artigas 20, Salto ~0), confirmado por Sentinel-1. Recopilado de prensa local; cifras de CECOED vía medios.
 
 | Fecha | Lugar | Qué pasó | Fuente |
 |---|---|---|---|

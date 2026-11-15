@@ -67,12 +67,12 @@ Guía completa del método (fundamentos de SAR, bandas, polarizaciones, pipeline
 - `zonas.py`: AOIs, tracks, `serie` (track de la serie principal por zona, regla 2), `fin_base` (Durazno 2026-07-20).
 - Históricos: `nisar_eda_uruguay.py` (otros importan `OUT`, `POLS`, `gdal_prefijo`), `eda_extra_T53D.py`, `exportar_poc.py`/`build_poc.py`.
 
-## Resultados actuales (detector por cambio, sin agua previa, 11 zonas, 2026-11-15)
-- Inundado por la tormenta de agosto (≥ 2 obs., 15/8–10/9): Merín 47.918 ha (53D solo 30–67 mil), Rocha norte 9.869, TyT 6.290, Río Branco 2.510, Castillos 1.824, Durazno 341, Mercedes 180, Melo 35 (≈ 69.000 ha). Ya mojado antes de la lluvia (10–14/8): ≈ 38.700 ha, aparte.
-- Octubre (litoral): Paysandú 803 ha, Artigas 46, Salto ~0. S1 también ~0. Agua bajo monte de las islas en Paysandú.
+## Resultados actuales (detector por cambio, sin agua previa, agua permanente con pasadas de calma, 11 zonas, 2026-11-15)
+- Inundado por la tormenta de agosto (≥ 2 obs., 15/8–10/9): Merín 47.449 ha (53D solo 30–66 mil), Rocha norte 9.755, TyT 6.303, Río Branco 2.510, Castillos 1.821, Durazno 341, Mercedes 179, Melo 35 (≈ 68.400 ha). Ya mojado antes de la lluvia (10–14/8): ≈ 38.550 ha, aparte. Cambios del 15/11 (calma + pasadas rotas): `docs/resumen_resultados_2026-11-15.md`.
+- Octubre (litoral): Paysandú 784 ha, Artigas 20, Salto ~0. S1 también ~0. Agua bajo monte de las islas en Paysandú.
 - Más lento en secarse: costa oeste de la Merín y bañados de 18 de Julio–San Miguel. Mitad seca: TyT día 20, Merín/Río Branco 25, Rocha norte/Castillos 37. Merín 53D: 70 % mojado el 28/8, 15 % el 21/9. Persistencia típica (sobre extensión confirmada) 12 d Merín, 10 d TyT, 16 d Rocha norte, 18 d Río Branco/Castillos.
-- **No concluyentes** (manifest `concluyente`): Durazno (1 pasada base), Mercedes (180 ha < 2× ruido 99 ha), Salto. Litoral: el río no se ve oscuro → `sin_agua_permanente`, aviso en la app.
-- Caminos: 65 km en total (50 km > 1 semana): Merín 42, TyT 13, Rocha norte 5; máximo 66 días. Dentro de las ciudades el radar da ~0 (doble rebote): usar anillo 500 m.
+- **No concluyentes** (manifest `concluyente`): Durazno (1 pasada base), Mercedes (179 ha < 2× ruido 107 ha), Salto. Litoral: el río no se ve oscuro → `sin_agua_permanente`, aviso en la app.
+- Caminos: 64 km en total (49 km > 1 semana): Merín 42, TyT 13, Rocha norte 5; máximo 66 días. Dentro de las ciudades el radar da ~0 (doble rebote): usar anillo 500 m.
 - Monte ribereño: exceso positivo en Mercedes (3 tracks), Río Branco, Merín; no en TyT, Melo, Durazno.
 
 ## Nueva UI narrativa (planificada 2026-11-15)
