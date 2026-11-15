@@ -1033,7 +1033,16 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       <div><b>${pers}</b><span>typical time under water</span><small>median interval ${nf(r.persist_min)}–${nf(r.persist_max)} days</small></div>
       <div><b>${nf(r.ha_dia)}</b><span>hectare-days of flooding</span><small>${nf(r.pct_sigue, 1)}% still wet on ${fmtDate(LAST(zid))}</small></div>
       <div><b>${nf(r.km_caminos, 1)} km</b><span>rural roads under water</span><small>${nf(r.km_caminos_7d, 1)} km for more than a week</small></div>
-      <div><b>${r.tracks.length}</b><span>orbit track${r.tracks.length > 1 ? "s" : ""} combined</span><small>${r.tracks.map(t => trk(t.track).short).join(" · ")}</small></div>`;
+      <div><b>${r.tracks.length}</b><span>orbit track${r.tracks.length > 1 ? "s" : ""} combined</span><small>${r.tracks.map(t => trk(t.track).short).join(" · ")}</small></div>` + caveats(r);
+  }
+
+  // data-driven warnings: detector noise floor (leave-one-out on baseline passes) and missing permanent-water calibration
+  function caveats(r) {
+    const out = [];
+    if (r.motivo_no_concluyente === "una_base") out.push(`<strong>Not conclusive.</strong> Only one baseline pass before the event, so the detector's false-alarm rate cannot be estimated here.`);
+    if (r.motivo_no_concluyente === "bajo_ruido") out.push(`<strong>Not conclusive.</strong> ${nf(r.ha_inundada)} ha is less than ${nf(r.factor_ruido)}× the detector's noise floor here (${nf(r.ha_ruido)} ha flagged as new water on pre-event passes with no flood).`);
+    if (r.sin_agua_permanente) out.push(`<strong>Weaker evidence of absence.</strong> On this track no permanent water looked dark enough to calibrate the detector; the river itself is not dark on radar here, so rough or shallow water can be missed.`);
+    return out.map(t => `<p class="note" style="grid-column:1/-1;margin:0;padding:8px 12px;background:var(--surface)">⚠ ${t}</p>`).join("");
   }
 
   function zchart() {
@@ -1093,7 +1102,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       `<tr><td>${esc(r.nombre)}</td><td class="n">${nf(r.ha_inundada)} ha · ${nf(r.pct_inundada, 1)}%</td><td class="n">${nf(r.ha_dia)} <span class="note">(${nf(r.ha_dia_min)}–${nf(r.ha_dia_max)})</span></td><td>${r.retiro_mediano ? fmtDate(r.retiro_mediano) : "–"}</td></tr>`).join("") + "</tbody>";
   }
   $("#allzones").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded (ha)</th><th class="n">Range, one track</th><th class="n">Typical days</th><th class="n">Hectare-days</th><th class="n">Roads wet (km)</th><th class="n">Still wet on last pass</th></tr></thead><tbody>` +
-    ZIDS.map(z => { const r = Z[z].resumen; return `<tr class="go" data-z="${z}" tabindex="0"><td>${esc(Z[z].nombre)} <span class="note">${EVZ(z).clave === "octubre" ? "Oct" : "Aug"}</span></td><td class="n">${nf(r.ha_inundada)}</td><td class="n">${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</td><td class="n">${nf(r.persist_mid ?? (r.persist_min + r.persist_max) / 2)} <span class="note">(${nf(r.persist_min)}–${nf(r.persist_max)})</span></td><td class="n">${nf(r.ha_dia)}</td><td class="n">${nf(r.km_caminos, 1)}</td><td class="n">${nf(r.pct_sigue, 1)}% <span class="note">${fmtDate(LAST(z))}</span></td></tr>`; }).join("") + "</tbody>";
+    ZIDS.map(z => { const r = Z[z].resumen; return `<tr class="go" data-z="${z}" tabindex="0"><td>${esc(Z[z].nombre)} <span class="note">${EVZ(z).clave === "octubre" ? "Oct" : "Aug"}</span></td><td class="n">${nf(r.ha_inundada)}${r.concluyente ? "" : ` <span class="note">not conclusive</span>`}</td><td class="n">${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</td><td class="n">${nf(r.persist_mid ?? (r.persist_min + r.persist_max) / 2)} <span class="note">(${nf(r.persist_min)}–${nf(r.persist_max)})</span></td><td class="n">${nf(r.ha_dia)}</td><td class="n">${nf(r.km_caminos, 1)}</td><td class="n">${nf(r.pct_sigue, 1)}% <span class="note">${fmtDate(LAST(z))}</span></td></tr>`; }).join("") + "</tbody>";
   $("#allzones").querySelectorAll("tr.go").forEach(tr => tr.addEventListener("click", () => setZone(tr.dataset.z)));
 
   /* ---------- forest ---------- */
@@ -1134,7 +1143,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
         const P = Z.paysandu.resumen, S = Z.salto?.resumen, A = Z.artigas?.resumen;
         const ex = (P.monte || []).map(m => m.exceso_ribereno_db).filter(v => v != null);
         const nuevo = (Z.paysandu.localidades || []).find(l => l.nombre === "Nuevo Paysandú");
-        return `The October flood was not local rain: the Río Uruguay and the Cuareim rose with rain that fell upstream in southern Brazil, and the Salto Grande dam passed it downstream. In open fields it left a small footprint. At Paysandú NISAR saw the river spread over its islands and the low shore${nuevo ? ` (${nf(nuevo.ha_inundada_500m)} ha within 500 m of Nuevo Paysandú, where families were displaced)` : ""}, ${nf(P.ha_inundada)} ha in total${ex.length ? `, and riverside forest brightened more than upland forest on ${ex.filter(v => v > 0).length} of ${ex.length} tracks: much of the water was under the trees` : ""}. ${S ? `Below the dam at Salto the river stayed almost entirely inside its banks (${nf(S.ha_inundada)} ha). ` : ""}${A ? `At Artigas the Cuareim crested on 1 Oct, four days before the first pass, and its narrow valley left ${nf(A.ha_inundada)} ha of open water to see.` : ""} The water that displaced people in the litoral was a narrow urban fringe, not the wide sheets of the August storm.`;
+        return `The October flood was not local rain: the Río Uruguay and the Cuareim rose with rain that fell upstream in southern Brazil, and the Salto Grande dam passed it downstream. In open fields it left a small footprint. At Paysandú NISAR saw the river spread over its islands and the low shore${nuevo ? ` (${nf(nuevo.ha_inundada_500m)} ha within 500 m of Nuevo Paysandú, where families were displaced)` : ""}, ${nf(P.ha_inundada)} ha in total${ex.length ? `, and riverside forest brightened more than upland forest on ${ex.filter(v => v > 0).length} of ${ex.length} tracks: much of the water was under the trees` : ""}. ${S ? `Below the dam at Salto NISAR found almost no new water outside the river (${nf(S.ha_inundada)} ha). ` : ""}${A ? `At Artigas the Cuareim crested on 1 Oct, four days before the first pass, and its narrow valley left ${nf(A.ha_inundada)} ha of open water to see.` : ""} The water that displaced people in the litoral was a narrow urban fringe, not the wide sheets of the August storm.${[P, S, A].some(x => x?.sin_agua_permanente) ? " One caution: on these tracks the Río Uruguay itself is not dark on radar, so the detector had no calm open water to calibrate on. A small footprint here is weaker evidence than in the east." : ""}`;
       })()]] : []),
       ["HH vs HV", "Open water is dark in both polarizations, but HV hits the instrument noise floor and differs between tracks. HH carries the open-water signal; the HH−HV difference carries the flooded-forest signal. Using both lets one sensor map two kinds of flooding."],
       ["Rice country", "Most of the flooded land in the Merín basin is grassland, wetland and rice paddies: flat, low and already engineered to hold water. The same paddies will be flooded on purpose for planting in November–December. NISAR can tell the two apart by timing alone."],
@@ -1181,7 +1190,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const evColor = (z) => EVZ(z).clave === "octubre" ? css("--still") : css("--flood");
     // curves: remaining share of the area's flood footprint, by days since its event started
     const svg = $("#dry-chart"), host = svg.parentElement, W = 520, H = 300, l = 40, r = 12, t = 12, b = 30;
-    const curves = ZIDS.map(z => ({ z, pts: Z[z].fechas.filter(p => p.remaining != null && p.dia >= 0) })).filter(c => c.pts.length && Z[c.z].resumen.ha_inundada >= 100);
+    const curves = ZIDS.map(z => ({ z, pts: Z[z].fechas.filter(p => p.remaining != null && p.dia >= 0) })).filter(c => c.pts.length && Z[c.z].resumen.ha_inundada >= 100 && Z[c.z].resumen.concluyente);
     const dmax = Math.max(60, ...curves.flatMap(c => c.pts.map(p => p.dia)));
     const X = (d) => l + d / dmax * (W - l - r), Y = (v) => t + (100 - v) / 100 * (H - t - b);
     for (const v of [0, 25, 50, 75, 100]) { el("line", { class: v ? "grid" : "axis", x1: l, x2: W - r, y1: Y(v), y2: Y(v) }, svg); el("text", { x: l - 5, y: Y(v) + 3, "text-anchor": "end" }, svg).textContent = v + "%"; }
@@ -1205,8 +1214,8 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const rows = ZIDS.map(z => { const pts = Z[z].fechas.filter(p => p.remaining != null && p.dia >= 0); const h = firstBelow(pts, 50), n = firstBelow(pts, 10); return { z, h, n, r: Z[z].resumen }; })
       .sort((a, b) => b.r.ha_dia - a.r.ha_dia);
     $("#dry-tbl").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded</th><th class="n">Half dry by</th><th class="n">90% dry by</th><th class="n">Hectare-days</th></tr></thead><tbody>` +
-      rows.map(({ z, h, n, r }) => { const lastDia = Z[z].fechas.filter(p => p.remaining != null).slice(-1)[0]?.dia; const few = r.ha_inundada < 100;
-        return `<tr class="go" data-z="${z}" tabindex="0"><td><span class="sw" style="background:${evColor(z)}"></span> ${esc(Z[z].nombre)}</td><td class="n">${nf(r.ha_inundada)} ha</td>${few ? `<td class="n note" colspan="2">too little open water</td>` : `<td class="n">${h ? `day ${h.dia}` : `> day ${lastDia ?? "–"}`}</td><td class="n">${n ? `day ${n.dia}` : `> day ${lastDia ?? "–"}`}</td>`}<td class="n">${nf(r.ha_dia)}</td></tr>`; }).join("") + "</tbody>";
+      rows.map(({ z, h, n, r }) => { const lastDia = Z[z].fechas.filter(p => p.remaining != null).slice(-1)[0]?.dia; const few = r.ha_inundada < 100 || !r.concluyente;
+        return `<tr class="go" data-z="${z}" tabindex="0"><td><span class="sw" style="background:${evColor(z)}"></span> ${esc(Z[z].nombre)}</td><td class="n">${nf(r.ha_inundada)} ha</td>${few ? `<td class="n note" colspan="2">${r.concluyente ? "too little open water" : "not conclusive (detector noise)"}</td>` : `<td class="n">${h ? `day ${h.dia}` : `> day ${lastDia ?? "–"}`}</td><td class="n">${n ? `day ${n.dia}` : `> day ${lastDia ?? "–"}`}</td>`}<td class="n">${nf(r.ha_dia)}</td></tr>`; }).join("") + "</tbody>";
     $("#dry-tbl").querySelectorAll("tr.go").forEach(tr => tr.addEventListener("click", () => { setZone(tr.dataset.z); document.getElementById("explore").scrollIntoView(); }));
     $("#heat-note").textContent = `Each point is a ~${nf(M.secado.celda_m)} m cell with at least 5% of its land flooded; weight = days under water × flooded share. Cells still wet on the last pass use a lower bound. Click an area outline to explore it.`;
 

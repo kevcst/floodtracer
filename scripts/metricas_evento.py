@@ -10,6 +10,7 @@ Entrada : data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif  (g
 Salida  : .../T*/metricas/
             agua_base.tif         1 = agua "normal" (mayoría de fechas jun–jul)
             extension_max.tif     1 = agua nueva en alguna pasada de la tormenta (15/8–10/9) que no estaba antes
+                                  (sin el agua previa de este track ni la del combinado: ver previa_en_grilla)
             agua_previa.tif       1 = agua nueva ya presente en las pasadas del 10–14/8 (antes de la lluvia; aparte)
             primera_fecha.tif     día del año de la primera pasada con agua nueva (0 = nunca)
             fecha_retiro.tif      día del año de la primera pasada seca después (0 = no aplica, 999 = sigue con agua)
@@ -116,8 +117,11 @@ def filtrar_mmu(m, mmu=MMU_PX):
 
 
 def detectar_nueva(hh, hh_base_med, agua_base, metodo="cambio", umbral=UMBRAL_DEFECTO,
-                   cambio=CAMBIO_DB, techo=TECHO_DB, mmu=MMU_PX, normalizar=True, validado=False):
-    """Máscara de agua nueva para una pasada (hh en dB, 2D)."""
+                   cambio=CAMBIO_DB, techo=TECHO_DB, mmu=MMU_PX, normalizar=True, validado=False,
+                   hv=None, hv_base_med=None, hv_cambio=None, hv_techo=None):
+    """Máscara de agua nueva para una pasada (hh en dB, 2D).
+    Variante experimental (scripts/comparar_hv.py): con hv + hv_base_med exige además que HV caiga (hv_cambio) y/o
+    quede oscuro (hv_techo). Donde no hay HV (pasadas SHSH) se aplica sólo la regla de HH. Sin hv: detector de siempre."""
     if metodo == "umbral":
         return (hh < umbral) & ~agua_base
     d = hh - hh_base_med
@@ -127,7 +131,32 @@ def detectar_nueva(hh, hh_base_med, agua_base, metodo="cambio", umbral=UMBRAL_DE
     off = float(np.nanmedian(d[tierra])) if normalizar and tierra.any() else 0.0
     # VALIDATED: el salto de calibración (~−1,7 dB en tierra) también corre el techo absoluto → se le resta el mismo off
     m = (d - off < cambio) & ((hh - off if validado else hh) < techo) & ~agua_base
+    if hv is not None and hv_base_med is not None and (hv_cambio is not None or hv_techo is not None):
+        dv = hv - hv_base_med
+        hay = np.isfinite(dv)
+        off_v = float(np.nanmedian(dv[hay & ~agua_base])) if normalizar and (hay & ~agua_base).any() else 0.0
+        cond = np.ones_like(m)
+        if hv_cambio is not None:
+            cond &= dv - off_v < hv_cambio
+        if hv_techo is not None:
+            cond &= (hv - off_v if validado else hv) < hv_techo
+        m &= cond | ~hay
     return filtrar_mmu(m, mmu)
+
+
+def falsa_alarma_base(hh, es_base, agua_base, valid, validado):
+    """Piso de ruido del detector: % del recorte marcado como agua nueva en cada pasada BASE comparada contra la mediana
+    de las OTRAS pasadas base (dejar-una-afuera; sin agua real esperable). Se devuelve la mediana entre pasadas, que no
+    se infla si una pasada base tuvo agua de verdad (p. ej. 22–23/7). NaN con < 2 pasadas base (no se puede estimar)."""
+    idx = np.where(es_base)[0]
+    if len(idx) < 2 or not valid.any():
+        return np.nan
+    pcts = []
+    for i in idx:
+        med = np.nanmedian(hh[idx[idx != i]], axis=0)
+        m = detectar_nueva(hh[i], med, agua_base, validado=validado[i]) & valid
+        pcts.append(100 * m.sum() / valid.sum())
+    return float(np.median(pcts))
 
 
 def previa_en_grilla(zona, perfil, propia=None):
@@ -284,7 +313,10 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     if not es_tormenta.any():
         print(f"   ! sin pasadas después de {ev.inicio.date()} en la ventana, se saltea")
         return None, []
-    ext_max = nueva[es_tormenta].any(axis=0) & ~agua_previa
+    # también el agua previa vista por OTROS tracks: uno sin pasada el 10–14/8 (53D, 31A) no puede separarla solo y
+    # la contaría como tormenta. Requiere combinado/agua_previa.tif (combinar_tracks.py, que sólo lee las pilas por
+    # fecha y no depende de esto); en una corrida desde cero hay que volver a correr este script después de combinar.
+    ext_max = nueva[es_tormenta].any(axis=0) & ~previa_en_grilla(zona, perfil, agua_previa)
     doy = np.asarray(fechas.day_of_year)
     idx_ev = np.where(es_tormenta)[0]
 
@@ -333,6 +365,8 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
             dst.set_band_description(i + 1, str(f.date()))
 
     nv = valid.sum()
+    ha_px = abs(perfil["transform"].a * perfil["transform"].e) / 1e4
+    far = falsa_alarma_base(hh, es_base, agua_base, valid, val)
     # monte / monte ribereño: dispersión de volumen alta en la base. Si se inunda, HH y HH−HV suben (doble rebote).
     hh_base = np.nanmean(hh[es_base], axis=0)
     bosque = valid & (hh_base > -7) & (hv_base > -14)
@@ -349,8 +383,10 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
                 fechas_evento=" ".join(str(f.date())[5:] for f in fechas[es_evento]),
                 umbral_db=round(umbral, 2), agua_perm_db=w and round(w, 1), tierra_db=t and round(t, 1),
                 pct_agua_base=100 * agua_base.sum() / nv, pct_extension_max=100 * ext_max.sum() / nv,
-                ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
-                ha_agua_previa=agua_previa.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
+                ha_extension_max=ext_max.sum() * ha_px,
+                ha_agua_previa=agua_previa.sum() * ha_px,
+                ha_valida=nv * ha_px,
+                pct_falsa_alarma_base=far, ha_ruido_base=far * nv * ha_px / 100,
                 persistencia_mediana_dias=float(np.median(pers_validos)) if pers_validos.size else np.nan,
                 persistencia_min_mediana=float(np.median(pmin[ext_max & ~sigue])) if pers_validos.size else np.nan,
                 persistencia_max_mediana=float(np.median(pmax[ext_max & ~sigue])) if pers_validos.size else np.nan,

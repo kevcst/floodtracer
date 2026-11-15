@@ -12,7 +12,8 @@ Reglas por píxel sobre la secuencia de observaciones (todas las pasadas, todos 
   - retiro   = primera observación seca posterior que es seguida por OTRA observación seca (o es la última):
                evita que una sola pasada de otra geometría que "no ve" el agua cuente como retiro
   - persistencia = intervalo [última obs mojada − primera, retiro − obs previa (≥ 15/8)]; se guarda el punto medio
-                 y las cotas (persistencia_min/max.tif); "sigue" si nunca se cumple el retiro
+                 y las cotas (persistencia_min/max.tif); "sigue" si nunca se cumple el retiro.
+                 Las medianas del CSV se calculan sobre extension_confirmada (≥ 2 obs.), no sobre extension_max
 Grilla común: la del track con más fechas (vecino más cercano).
 
 Salida: data_nisar/zonas/{zona}/combinado/{extension_max,extension_confirmada,n_mojado,persistencia_min,persistencia_max,primera_fecha,fecha_retiro,persistencia_dias,n_obs}.tif
@@ -116,7 +117,9 @@ def procesar(zona):
 
     cubierto = ok.any(axis=0)
     nv = cubierto.sum()
-    pv = persist[ext_max & ~sigue]
+    # estadísticas sobre la extensión CONFIRMADA (la cifra principal): los píxeles vistos mojados una sola vez tienen
+    # persistencia_min = 0 por construcción y empujaban la mediana a "media revisita" (rasters: siguen sobre ext_max)
+    pv = persist[ext_conf & ~sigue]
     fila = dict(zona=zona, evento=ev.clave, tracks=" ".join(datos), grilla_ref=ref, n_obs=len(obs),
                 obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if ev.ventana[0] <= f <= ev.ventana[1]),
                 pct_extension_max=100 * ext_max.sum() / nv,
@@ -125,10 +128,10 @@ def procesar(zona):
                 ha_extension_confirmada=ext_conf.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
                 pct_extension_confirmada=100 * ext_conf.sum() / nv,
                 persistencia_mediana_dias=float(np.median(pv)) if pv.size else np.nan,
-                persistencia_min_mediana=float(np.median(pmin[ext_max & ~sigue])) if pv.size else np.nan,
-                persistencia_max_mediana=float(np.median(pmax[ext_max & ~sigue])) if pv.size else np.nan,
+                persistencia_min_mediana=float(np.median(pmin[ext_conf & ~sigue])) if pv.size else np.nan,
+                persistencia_max_mediana=float(np.median(pmax[ext_conf & ~sigue])) if pv.size else np.nan,
                 persistencia_p90_dias=float(np.percentile(pv, 90)) if pv.size else np.nan,
-                pct_sigue_con_agua=100 * sigue.sum() / max(ext_max.sum(), 1))
+                pct_sigue_con_agua=100 * (sigue & ext_conf).sum() / max(ext_conf.sum(), 1))
     print(f"== {zona}: " + ", ".join(f"{k}={round(v, 1) if isinstance(v, float) else v}"
                                      for k, v in fila.items() if k != "zona"))
     por_fecha = pd.DataFrame([dict(zona=zona, fecha=f.date(), track=t,

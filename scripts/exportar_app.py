@@ -81,6 +81,7 @@ MONTE = (27, 175, 122)
 PREVIA = (138, 149, 161)          # ya mojado antes de la lluvia (10–14/8): gris, fuera de la tormenta
 MAX_LADO = 2200
 SONDA_M = 200.0
+FACTOR_RUIDO = 2.0   # zona concluyente si lo inundado (≥ 2 obs.) es al menos 2× el piso de ruido del detector
 
 
 def leer(p, banda=1):
@@ -262,7 +263,22 @@ def resumen_zona(zona):
     comb = cr.loc[zona] if zona in cr.index else None
     monte = pd.read_csv(BASE / "monte_ribereno_resumen.csv")
     monte = monte[monte.zona == zona]
+    # piso de ruido: falsa alarma del detector en las pasadas base (dejar-una-afuera, metricas_evento.falsa_alarma_base),
+    # mediana entre los tracks de la zona. Sin estimación (< 2 pasadas base en todos los tracks) = no concluyente.
+    ruido = mr[mr.zona == zona].ha_ruido_base.dropna()
+    ha_ruido = float(ruido.median()) if len(ruido) else None
+    if ha_ruido is None:
+        motivo = "una_base"
+    elif float(res.ha_inundada) < FACTOR_RUIDO * ha_ruido:
+        motivo = "bajo_ruido"
+    else:
+        motivo = None
     return dict(
+        concluyente=motivo is None, motivo_no_concluyente=motivo,
+        ha_ruido=None if ha_ruido is None else round(ha_ruido), factor_ruido=FACTOR_RUIDO,
+        # el track de la serie no encontró agua permanente oscura para calibrar (calibrar_umbral): en el litoral el
+        # propio río Uruguay no se ve oscuro → la detección de agua abierta es menos confiable y "poca agua" pesa menos
+        sin_agua_permanente=bool(pd.isna(fila_t.agua_perm_db)),
         ha_inundada=round(float(res.ha_inundada)), ha_previa=round(float(res.ha_agua_previa)), fuente=res.fuente, ha_dia=round(float(res.ha_dia)),
         km_caminos=round(float(res.km_caminos_bajo_agua), 1), km_caminos_7d=round(float(res.km_caminos_mas_7_dias), 1),
         serie_track=t, serie_ha_ext=round(float(s["central"])), serie_pct_ext=round(float(fila_t.pct_extension_max), 2),
@@ -273,7 +289,8 @@ def resumen_zona(zona):
         pct_sigue=float(comb.pct_sigue_con_agua if comb is not None else fila_t.pct_sigue_con_agua),
         ha_max_una_obs=None if comb is None else round(float(comb.ha_extension_max)),
         obs_evento=None if comb is None else comb.obs_evento,
-        tracks=[dict(track=r.track, ha=round(r.ha_extension_max), pct=round(r.pct_extension_max, 2))
+        tracks=[dict(track=r.track, ha=round(r.ha_extension_max), pct=round(r.pct_extension_max, 2),
+                     pct_falsa_alarma=None if pd.isna(r.pct_falsa_alarma_base) else round(r.pct_falsa_alarma_base, 2))
                 for r in mr[mr.zona == zona].itertuples()],
         monte=json.loads(monte.to_json(orient="records", double_precision=2)))
 

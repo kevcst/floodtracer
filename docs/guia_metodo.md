@@ -993,17 +993,19 @@ Mercedes, Durazno y Melo tienen menos del 2 % de agua abierta. Ahí la coinciden
 
 | Zona | Extensión confirmada | Banda de sensibilidad (serie principal) | Persistencia típica | Caminos bajo agua |
 |---|---|---|---|---|
-| Merín | **47.918 ha** | 30–67 mil ha (53D) | ~6 d | 42 km (28 km > 1 semana) |
-| Rocha norte | **9.869 ha** | 9,7–26 mil ha (53D) | ~6 d | 4,7 km |
+| Merín | **47.918 ha** | 30–67 mil ha (53D) | ~12 d | 42 km (28 km > 1 semana) |
+| Rocha norte | **9.869 ha** | 9,7–26 mil ha (53D) | ~16 d | 4,7 km |
 | Treinta y Tres | **6.290 ha** | | ~10 d | 13 km |
 | Río Branco–Jaguarão | **2.510 ha** | | ~18 d | 3,4 km |
-| Castillos | **1.824 ha** | | ~6 d | 0,2 km |
-| Durazno | **341 ha** | 110–933 ha | ~24 d | 0,5 km |
-| Mercedes | **180 ha** | | ~4 d | 0,2 km |
-| Melo | **35 ha** | | ~6 d | 0 |
+| Castillos | **1.824 ha** | | ~18 d | 0,2 km |
+| Durazno | 341 ha (*no concluyente*: 1 sola pasada base) | 110–933 ha | ~24 d | 0,5 km |
+| Mercedes | 180 ha (*no concluyente*: < 2× piso de ruido, 99 ha) | | ~16 d | 0,2 km |
+| Melo | **35 ha** (piso de ruido 7 ha) | | ~22 d | 0 |
 | **Total** | **≈ 69.000 ha** (+ ≈ 38.700 ha ya mojadas antes de la lluvia) | | | 65 km (50 km > 1 semana) |
 
-**Creciente de octubre del río Uruguay (3 zonas):** Paysandú 803 ha, Artigas 46 ha, Salto ~0 (ver §31.1b).
+**Creciente de octubre del río Uruguay (3 zonas):** Paysandú 803 ha, Artigas 46 ha, Salto ~0 (*no concluyente*) (ver §31.1b). Ojo: en los tracks del litoral el propio río Uruguay no se ve oscuro (HH ~−14 dB), el detector no encuentra agua permanente para calibrar y "poca agua" es evidencia más débil que en el este.
+
+Persistencia típica = mediana sobre la extensión confirmada (≥ 2 obs.). Antes se calculaba sobre toda la extensión, incluidos píxeles vistos mojados una sola vez (persistencia mínima 0 por construcción), y daba ~6 d = media revisita. Zona *no concluyente* = lo inundado es < 2× el piso de ruido del detector (falsa alarma en pasadas base, dejar-una-afuera, mediana entre tracks) o no hay ≥ 2 pasadas base para estimarlo.
 
 Otros hallazgos:
 - **Retiro en Merín (53D):** 70 % de la extensión mojada el 28/8; 15 % el 21/9.
