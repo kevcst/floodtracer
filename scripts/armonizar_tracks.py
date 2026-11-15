@@ -22,7 +22,7 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from metricas_evento import (BASE, CAMBIO_DB, FIN_BASE, MMU_PX, TECHO_DB, calibrar_umbral, cargar_track,
+from metricas_evento import (BASE, CAMBIO_DB, Evento, es_validado, MMU_PX, TECHO_DB, calibrar_umbral, cargar_track,
                              detectar_nueva)
 from zonas import ZONAS
 
@@ -32,8 +32,7 @@ MAX_DIAS = 1
 def preparar(zona, tdir):
     fechas, hh, _, perfil = cargar_track(tdir)
     fechas = pd.DatetimeIndex(fechas)
-    fin_base = pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE))
-    es_base = np.asarray(fechas < fin_base)
+    es_base = Evento(zona).es_base(fechas, hh)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
     agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
@@ -58,8 +57,8 @@ def pares(datos):
 
 def jaccard(A, B, i, j, **kw):
     v = np.isfinite(A["hh"][i]) & np.isfinite(B["hh"][j]) & ~A["agua_base"] & ~B["agua_base"]
-    wa = detectar_nueva(A["hh"][i], A["base_med"], A["agua_base"], umbral=A["umbral"], **kw) & v
-    wb = detectar_nueva(B["hh"][j], B["base_med"], B["agua_base"], umbral=B["umbral"], **kw) & v
+    wa = detectar_nueva(A["hh"][i], A["base_med"], A["agua_base"], umbral=A["umbral"], validado=es_validado([A["fechas"][i]])[0], **kw) & v
+    wb = detectar_nueva(B["hh"][j], B["base_med"], B["agua_base"], umbral=B["umbral"], validado=es_validado([B["fechas"][j]])[0], **kw) & v
     union = (wa | wb).sum()
     return ((wa & wb).sum() / union if union else np.nan), 100 * wa[v].mean(), 100 * wb[v].mean()
 

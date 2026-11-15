@@ -15,7 +15,7 @@ import itertools
 import numpy as np
 import pandas as pd
 
-from metricas_evento import BASE, CAMBIO_DB, EVENTO, FIN_BASE, INICIO_LLUVIA, previa_en_grilla, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva
+from metricas_evento import BASE, CAMBIO_DB, Evento, TECHO_DB, calibrar_umbral, cargar_track, detectar_nueva, es_validado, previa_en_grilla
 from zonas import ZONAS
 
 CAMBIOS = [-2.0, -2.5, -3.0, -3.5, -4.0]
@@ -25,9 +25,11 @@ TECHOS = [-13.0, -14.0, -15.0]
 def procesar(zona, tdir):
     fechas, hh, _, perfil = cargar_track(tdir)
     fechas = pd.DatetimeIndex(fechas)
-    es_base = np.asarray(fechas < pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE)))
-    es_ev = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
-    es_previa = es_ev & np.asarray(fechas < INICIO_LLUVIA)      # 10–14/8: agua previa, fuera de la extensión
+    ev = Evento(zona)
+    es_base = ev.es_base(fechas, hh)
+    es_ev = ev.es_evento(fechas)
+    es_previa = ev.es_previa(fechas)                              # antes del inicio: agua previa, fuera de la extensión
+    val = es_validado(fechas)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
     agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
@@ -39,7 +41,7 @@ def procesar(zona, tdir):
         ext = np.zeros(valid.shape, bool)
         previa = np.zeros(valid.shape, bool)
         for i, f in enumerate(fechas):
-            m = detectar_nueva(hh[i], med, agua_base, cambio=c, techo=t) & valid
+            m = detectar_nueva(hh[i], med, agua_base, cambio=c, techo=t, validado=val[i]) & valid
             por_fecha.append(dict(zona=zona, track=tdir.name, fecha=f.date(), cambio=c, techo=t,
                                   pct_agua_nueva=100 * m.sum() / nv))
             if es_previa[i]:

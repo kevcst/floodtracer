@@ -42,7 +42,6 @@ CAPAS = BASE.parent / "contexto" / "capas"
 SAL = BASE / "impacto"
 WORLDCOVER = {10: "Tree cover", 20: "Shrubland", 30: "Grassland", 40: "Cropland (rice)", 50: "Built-up",
               60: "Bare", 80: "Water", 90: "Herbaceous wetland", 95: "Mangroves", 100: "Moss"}
-FIN_SERIE = pd.Timestamp("2026-10-20")
 
 
 def leer(p):
@@ -64,7 +63,8 @@ def productos(zona):
                                                "fecha_retiro", "primera_fecha")}
     ext = ext == 1
     sigue = ext & (p["fecha_retiro"] == 999)
-    cota = np.where(sigue, FIN_SERIE.day_of_year - p["primera_fecha"], 0)
+    fin = max(pd.Timestamp(f.name[:10]) for f in (BASE / zona).glob("T*_F*/*_HH.tif"))   # última pasada de la zona
+    cota = np.where(sigue, fin.day_of_year - p["primera_fecha"], 0)
     pers = {k: np.where(sigue, cota, np.maximum(p[f"persistencia_{k}" if k != "mid" else "persistencia_dias"], 0))
             for k in ("mid", "min", "max")}
     for k in pers:

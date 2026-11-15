@@ -35,7 +35,7 @@ python3 -m http.server -d app 8000     # desde la raíz del repo
 # abrir http://localhost:8000
 ```
 
-Secciones: cifras clave · mapa del país con las 6 zonas y línea de tiempo · "pulso" de agua por zona con banda de incertidumbre y cresta reportada · **explorador** (MapLibre: radar y agua por fecha con slider/play, extensión, días bajo agua, fecha de retiro, agua bajo monte, caminos inundados, localidades, y clic en cualquier punto para ver su historia de radar) · impacto (caminos, cobertura del suelo, localidades, subcuencas, resumen de las 6 zonas) · agua bajo el monte · causas físicas · validación (tracks, Sentinel-1, crestas) · método y límites · descargas (CSV + GeoTIFF).
+Secciones: cifras clave · mapa del país con las 11 zonas (dos eventos) y línea de tiempo · **dónde tarda más en secarse** (heatmap nacional de días bajo agua + curvas de % aún mojado vs. días desde el inicio) · "pulso" de agua por zona con banda de incertidumbre y cresta reportada · **explorador** (MapLibre: radar y agua por fecha con slider/play, extensión, días bajo agua, fecha de retiro, agua bajo monte, caminos inundados, localidades, y clic en cualquier punto para ver su historia de radar) · impacto (caminos, cobertura del suelo, localidades, subcuencas, resumen de todas las zonas) · agua bajo el monte · causas físicas · validación (tracks, Sentinel-1, crestas) · método y límites · descargas (CSV + GeoTIFF).
 
 **Ninguna cifra está escrita a mano en el HTML**: todo sale de `app/data/manifest.json`, que genera `scripts/exportar_app.py`. La excepción es la línea de tiempo de prensa (contexto).
 
@@ -189,6 +189,16 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 | `rio_branco_jaguarao` | Río Yaguarón, frontera UY/BR | 53D-105, 31A-161 |
 | `durazno` | Río Yí: crecida de julio y pico del 22/8 | 60A-161 (07-24, 08-17, 08-29) |
 | `mercedes` | Río Negro aguas abajo | 10D-105, 161A-161, 60A-161 |
+| `rocha_norte` | Campos bajos de 18 de Julio / San Miguel (5–6 mil ha anegadas, ~15.000 vacunos trasladados) | 53D-105, 132A-161, 31A-161 |
+| `castillos` | Bañados de la laguna de Castillos (puente cubierto el 19/8) | 53D-106, 132A-160, 154D-105 |
+| `salto` | **Evento de octubre:** río Uruguay aguas abajo de Salto Grande (~12 m el 10–11/10) | 10D-104 (09-30, 10-12, 10-24ᵛ), 60A-162 (10-04, 10-16, 10-28ᵛ) |
+| `paysandu` | **Evento de octubre:** río Uruguay (pico 6,32 m ~12–16/10, 108 desplazados) | 10D-105, 161A-161, 60A-161 |
+| `artigas` | **Evento de octubre:** río Cuareim (> 11,5 m el 1/10) | 60A-162, 82D-104, 132A-162 |
+
+ᵛ = VALIDATED. Cada zona declara su evento (`evento` en `zonas.py`, definiciones en `metricas_evento.EVENTOS`):
+- **agosto** (este y centro): base jun–jul (antes del hueco), ventana 10/8–10/9, inicio 15/8 (lo mojado antes es "agua previa").
+- **octubre** (litoral): ventana 28/9–24/10, inicio 28/9. El río Uruguay ya estaba alto en jul–ago (Paysandú 6,09 m el 7/8), así que la base son **las 4 pasadas más secas** antes del 28/9 (menor % con HH < −18 dB). Se usan pasadas VALIDATED (desde 21/10) para ver el retiro: el detector las normaliza por escena también en el techo de −14 dB (regla 3).
+- Salto 82D-104 y 161A-162 se descartaron: el catálogo los da con 62–69 % de cobertura, pero el recorte trae dato real sólo en una franja del borde. Pasadas parciales (que cubren < 80 % de la mediana del track) se descartan automáticamente al cargar.
 
 **Hueco global de datos NISAR:** 2026-07-27 → 2026-08-10 (no hay pasadas en ninguna zona).
 
@@ -203,15 +213,17 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 
 ---
 
-## 8. Resultados (2026-11-14, detector por cambio, sin agua previa)
+## 8. Resultados (2026-11-15, detector por cambio, sin agua previa, 11 zonas)
 
-- **Inundado por la tormenta (≥ 2 observaciones, 15/8–10/9):** Merín 47.927 ha (track 53D solo: 30–67 mil según parámetros) · Treinta y Tres 6.290 · Río Branco 2.510 · Durazno 341 (un track) · Mercedes 180 · Melo 35. Total ≈ 57.300 ha.
-- **Ya mojado antes de la lluvia (10–14/8, aparte):** ≈ 31.100 ha (Merín 27.700, TyT 3.100, Mercedes 240). La tormenta cayó sobre suelos ya saturados por las lluvias de julio.
+- **Inundado por la tormenta de agosto (≥ 2 observaciones, 15/8–10/9), 8 zonas:** Merín 47.918 ha (track 53D solo: 30–67 mil según parámetros) · **Rocha norte 9.869** (sobre todo pradera, 4.400 ha, y arroz, 1.300) · Treinta y Tres 6.290 · Río Branco 2.510 · **Castillos 1.824** · Durazno 341 (un track) · Mercedes 180 · Melo 35. Total ≈ 69.000 ha.
+- **Ya mojado antes de la lluvia (10–14/8, aparte):** ≈ 38.700 ha (Merín 27.700, Rocha norte 5.600, TyT 3.100, Castillos 2.000, Mercedes 240). La tormenta cayó sobre suelos ya saturados por las lluvias de julio.
+- **Creciente de octubre del río Uruguay y el Cuareim (28/9–24/10), 3 zonas:** muy poca agua abierta nueva: Paysandú 803 ha (islas y costa baja; 56 ha en el anillo de 500 m de Nuevo Paysandú), Artigas 46, Salto ~0. Sentinel-1 lo confirma (Salto y Artigas 0 %). El río ya estaba alto desde julio (Paysandú 6,09 m el 7/8 ≈ pico de octubre 6,32 m) y parte del agua está bajo el monte de las islas (exceso ribereño positivo en los 3 tracks de Paysandú).
+- **Dónde tarda más en secarse** (heatmap `app/data/secado.geojson`, celdas de 400 m, peso = días × fracción inundada): costa oeste de la Laguna Merín (desembocadura del Cebollatí, La Charqueada) y bañados de 18 de Julio–San Miguel (Rocha). Mitad seca: TyT día 20, Merín y Río Branco día 25, Rocha norte y Castillos día 37 (desde el 15/8).
 - **Retiro en Merín (53D):** 70 % del área inundada seguía mojada el 28/8, 15 % el 21/9. Persistencia típica 6 días (intervalo mediano 1–12) en Merín, 10 en TyT, 18 en Río Branco.
-- **Caminos:** 42 km de caminería rural bajo agua en Merín (29 km más de una semana), 13 km en TyT. Máximo 66 días (desde el 15/8 hasta el fin de la serie).
+- **Caminos:** 65 km de caminería rural bajo agua en total (50 km más de una semana): Merín 42, TyT 13, Rocha norte 5, Río Branco 3. Máximo 66 días (desde el 15/8 hasta el fin de la serie).
 - **Cobertura en Merín:** 24.600 ha de pradera, 14.100 de cultivo (arroz), 7.800 de humedal.
 - **Agua bajo el monte:** exceso ribereño positivo en los 3 tracks de Mercedes, en Río Branco y en Merín; nulo o negativo en Treinta y Tres, Melo y Durazno.
-- **Validación** (`docs/validacion.md`): Jaccard entre tracks a ≤ 1 día 0,32 → 0,48; contra Sentinel-1 NISAR encuentra el 66 % del agua S1, F1 0,45 (estricta) / 0,52 (laxa); NISAR mapea más agua somera que la banda C → las extensiones son cota alta. Débil en Durazno.
+- **Validación** (`docs/validacion.md`): Jaccard entre tracks a ≤ 1 día 0,32 → 0,48; contra Sentinel-1 (11 zonas, 47 comparaciones) NISAR encuentra el 60 % del agua S1, F1 0,44 (estricta) / 0,49 (laxa); mejor acuerdo en Rocha norte (0,60 / 0,66). NISAR mapea más agua somera que la banda C → las extensiones son cota alta. Débil en Durazno y en el litoral (casi sin agua).
 
 ---
 

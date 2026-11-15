@@ -57,6 +57,55 @@ TECHO_DB = -14.0          # y además HH absoluto por debajo de esto (descarta c
 MMU_PX = 10               # mancha mínima (píxeles de 20 m)
 INICIO_LLUVIA = pd.Timestamp("2026-08-15")   # el agua del evento no pudo llegar antes (cota de persistencia)
 
+# Eventos: cada zona declara el suyo en zonas.py (clave "evento", por defecto "agosto").
+#   ventana  = pasadas que cuentan para la extensión (≥ 2 obs. en combinar_tracks.py)
+#   inicio   = el agua del evento no pudo llegar antes: las pasadas de la ventana anteriores son "agua previa"
+#   fin_base = la línea de base son las pasadas anteriores; base="secas" se queda sólo con las n más secas
+#              (el río Uruguay ya estaba alto en jun–jul: la mediana de todas subestimaría el agua de octubre)
+EVENTOS = {
+    "agosto": dict(nombre="August storm", lluvia=("2026-08-15", "2026-08-19"), ventana=("2026-08-10", "2026-09-10"),
+                   inicio="2026-08-15", fin_base="2026-07-27", base="todas"),
+    "octubre": dict(nombre="October Uruguay river flood", lluvia=("2026-09-28", "2026-10-17"),
+                    ventana=("2026-09-28", "2026-10-24"), inicio="2026-09-28", fin_base="2026-09-28",
+                    base="secas", n_base=4),
+}
+UMBRAL_SECAS_DB = -18.0   # para elegir las pasadas base más secas (% del recorte con HH < −18 dB)
+
+
+class Evento:
+    def __init__(self, zona):
+        z = ZONAS[zona]
+        self.clave = z.get("evento", "agosto")
+        e = EVENTOS[self.clave]
+        self.nombre, self.lluvia = e["nombre"], tuple(pd.Timestamp(x) for x in e["lluvia"])
+        self.ventana = tuple(pd.Timestamp(x) for x in e["ventana"])
+        self.inicio = pd.Timestamp(e["inicio"])
+        self.fin_base = pd.Timestamp(z.get("fin_base", e["fin_base"]))
+        self.base, self.n_base = e["base"], e.get("n_base", 0)
+
+    def es_evento(self, fechas):
+        return np.asarray((fechas >= self.ventana[0]) & (fechas <= self.ventana[1]))
+
+    def es_previa(self, fechas):
+        return self.es_evento(fechas) & np.asarray(fechas < self.inicio)
+
+    def es_base(self, fechas, hh=None):
+        m = np.asarray(fechas < self.fin_base)
+        if self.base != "secas" or hh is None or m.sum() <= self.n_base:
+            return m
+        idx = np.where(m)[0]
+        agua = [np.nanmean(np.where(np.isfinite(hh[i]), hh[i] < UMBRAL_SECAS_DB, np.nan)) for i in idx]
+        sel = idx[np.argsort(agua)[:self.n_base]]
+        out = np.zeros(len(fechas), bool)
+        out[sel] = True
+        return out
+
+
+def es_validado(fechas):
+    """Pasadas VALIDATED (regla 3): el detector las normaliza por escena también en el techo absoluto."""
+    from zonas import INICIO_VALIDATED
+    return np.asarray(pd.DatetimeIndex(fechas) >= pd.Timestamp(INICIO_VALIDATED))
+
 
 def filtrar_mmu(m, mmu=MMU_PX):
     if mmu <= 1 or not m.any():
@@ -67,7 +116,7 @@ def filtrar_mmu(m, mmu=MMU_PX):
 
 
 def detectar_nueva(hh, hh_base_med, agua_base, metodo="cambio", umbral=UMBRAL_DEFECTO,
-                   cambio=CAMBIO_DB, techo=TECHO_DB, mmu=MMU_PX, normalizar=True):
+                   cambio=CAMBIO_DB, techo=TECHO_DB, mmu=MMU_PX, normalizar=True, validado=False):
     """Máscara de agua nueva para una pasada (hh en dB, 2D)."""
     if metodo == "umbral":
         return (hh < umbral) & ~agua_base
@@ -76,7 +125,8 @@ def detectar_nueva(hh, hh_base_med, agua_base, metodo="cambio", umbral=UMBRAL_DE
     # La mediana es robusta mientras el agua nueva ocupe < 50 % del recorte.
     tierra = np.isfinite(d) & ~agua_base
     off = float(np.nanmedian(d[tierra])) if normalizar and tierra.any() else 0.0
-    m = (d - off < cambio) & (hh < techo) & ~agua_base
+    # VALIDATED: el salto de calibración (~−1,7 dB en tierra) también corre el techo absoluto → se le resta el mismo off
+    m = (d - off < cambio) & ((hh - off if validado else hh) < techo) & ~agua_base
     return filtrar_mmu(m, mmu)
 
 
@@ -97,7 +147,7 @@ def previa_en_grilla(zona, perfil, propia=None):
     return out | propia if propia is not None else out
 
 
-def intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, primera_i):
+def intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, primera_i, inicio=INICIO_LLUVIA):
     """Persistencia como intervalo a partir de la secuencia de observaciones.
     min = última obs mojada antes del retiro − primera obs mojada
     max = obs de retiro − max(obs anterior a la primera detección, inicio de la lluvia)
@@ -113,7 +163,7 @@ def intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, pri
         upd = ext_max & ok[i] & (i < primera_i)
         prev[upd] = i
     t_ini = np.where(prev >= 0, t[np.maximum(prev, 0)], t[np.maximum(primera_i, 0)])
-    t_lluvia = np.datetime64(INICIO_LLUVIA.date(), "D").astype("int64")
+    t_lluvia = np.datetime64(inicio.date(), "D").astype("int64")
     t_ini = np.where(t[np.maximum(primera_i, 0)] >= t_lluvia, np.maximum(t_ini, t_lluvia), t_ini)
     hecho = ext_max & (retiro_i >= 0)
     pmin = np.where(hecho, t[np.maximum(ultima, 0)] - t[np.maximum(primera_i, 0)], -1)
@@ -137,7 +187,8 @@ def leer(path):
     with rasterio.open(path) as r:
         x = r.read(1).astype("float32")
         perfil = r.profile
-    x[(x <= 0) | ~np.isfinite(x)] = np.nan
+    # < −50 dB no es señal: relleno fuera del swath que algunos frames traen como ~1e-14 en vez de 0/NaN
+    x[(x < 1e-5) | ~np.isfinite(x)] = np.nan
     return x, perfil
 
 
@@ -167,6 +218,14 @@ def cargar_track(tdir):
         fechas.append(pd.Timestamp(f.name[:10]))
     hh, hv = np.stack(hh), np.stack(hv)
     hh[~np.isfinite(hh)] = np.nan
+    # pasadas que cubren sólo un borde del recorte (frame parcial): como el resto exige dato en TODAS las fechas,
+    # una sola achica el área válida de toda la serie → se descartan si cubren < 80 % de la mediana del track
+    n = np.isfinite(hh).sum(axis=(1, 2))
+    ok = n >= 0.8 * np.median(n)
+    if not ok.all():
+        print(f"   ! pasadas parciales descartadas: {[str(f.date()) for f, o in zip(fechas, ok) if not o]}")
+        fechas = [f for f, o in zip(fechas, ok) if o]
+        hh, hv = hh[ok], hv[ok]
     return fechas, hh, hv, perfil
 
 
@@ -195,9 +254,9 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     print(f"== {zona}/{tdir.name}")
     fechas, hh, hv, perfil = cargar_track(tdir)
     fechas = pd.DatetimeIndex(fechas)
-    fin_base = pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE))
-    es_base = np.asarray(fechas < fin_base)
-    es_evento = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    ev = Evento(zona)
+    es_base = ev.es_base(fechas, hh)
+    es_evento = ev.es_evento(fechas)
     if es_base.sum() == 0 or es_evento.sum() == 0:
         print("   ! sin fechas de base o de evento, se saltea")
         return None, []
@@ -211,18 +270,19 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     agua_base = W_abs[es_base].mean(axis=0) > 0.5               # agua "normal": mayoría de las fechas base
     hh_base_med = np.nanmedian(hh[es_base], axis=0)
     ok = np.isfinite(hh)
-    nueva = np.stack([detectar_nueva(hh[i], hh_base_med, agua_base, metodo, umbral) & ok[i] & valid
+    val = es_validado(fechas)
+    nueva = np.stack([detectar_nueva(hh[i], hh_base_med, agua_base, metodo, umbral, validado=val[i]) & ok[i] & valid
                       for i in range(len(fechas))])            # agua nueva por fecha
     W = (W_abs & agua_base) | nueva                             # agua total = base + nueva
 
     # agua previa: agua nueva en pasadas de la ventana ANTERIORES a la lluvia (10–14/8, después del hueco de datos).
     # Venía de las lluvias de julio y del hueco; no se le puede atribuir a la tormenta ni fechar su llegada,
     # así que se reporta aparte (agua_previa.tif) y queda FUERA de la extensión y la persistencia del evento.
-    es_previa = es_evento & np.asarray(fechas < INICIO_LLUVIA)
+    es_previa = ev.es_previa(fechas)
     agua_previa = nueva[es_previa].any(axis=0) if es_previa.any() else np.zeros(valid.shape, bool)
     es_tormenta = es_evento & ~es_previa
     if not es_tormenta.any():
-        print("   ! sin pasadas después del 15/8 en la ventana, se saltea")
+        print(f"   ! sin pasadas después de {ev.inicio.date()} en la ventana, se saltea")
         return None, []
     ext_max = nueva[es_tormenta].any(axis=0) & ~agua_previa
     doy = np.asarray(fechas.day_of_year)
@@ -243,7 +303,7 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     primera = np.where(ext_max, doy[np.maximum(primera_i, 0)], 0)
     retiro = np.where(ext_max & ~sigue, doy[np.maximum(retiro_i, 0)], 0)
     retiro[sigue] = 999
-    pmin, pmax, persist = intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, primera_i)
+    pmin, pmax, persist = intervalos_persistencia(fechas, nueva, ok, ext_max, es_evento, retiro_i, primera_i, ev.inicio)
 
     # agua bajo vegetación: HH sube (doble rebote) sin pasar a agua abierta, en zonas con vegetación (HV alto)
     delta = np.nanmean(hh[es_evento], axis=0) - np.nanmean(hh[es_base], axis=0)
@@ -276,13 +336,16 @@ def procesar(zona, tdir, umbral_forzado=None, metodo="cambio"):
     # monte / monte ribereño: dispersión de volumen alta en la base. Si se inunda, HH y HH−HV suben (doble rebote).
     hh_base = np.nanmean(hh[es_base], axis=0)
     bosque = valid & (hh_base > -7) & (hv_base > -14)
-    por_fecha = [dict(zona=zona, track=tdir.name, fecha=f.date(), fase="base" if b else ("evento" if e else "post"),
+    def fase(f, b, e):
+        return "base" if b else ("evento" if e else ("pre" if f < ev.ventana[0] else "post"))
+    por_fecha = [dict(zona=zona, track=tdir.name, fecha=f.date(), fase=fase(f, b, e),
                       pct_agua=100 * W[i].sum() / nv, pct_agua_nueva=100 * nueva[i].sum() / nv,
                       hh_bosque_db=float(np.median(hh[i][bosque])) if bosque.any() else np.nan,
                       hh_hv_bosque_db=float(np.nanmedian((hh[i] - hv[i])[bosque])) if bosque.any() else np.nan)
                  for i, (f, b, e) in enumerate(zip(fechas, es_base, es_evento))]
     pers_validos = persist[ext_max & ~sigue]
-    fila = dict(zona=zona, track=tdir.name, metodo=metodo, n_fechas=len(fechas), n_base=int(es_base.sum()),
+    fila = dict(zona=zona, track=tdir.name, evento=ev.clave, metodo=metodo, n_fechas=len(fechas), n_base=int(es_base.sum()),
+                fechas_base=" ".join(str(f.date())[5:] for f in fechas[es_base]),
                 fechas_evento=" ".join(str(f.date())[5:] for f in fechas[es_evento]),
                 umbral_db=round(umbral, 2), agua_perm_db=w and round(w, 1), tierra_db=t and round(t, 1),
                 pct_agua_base=100 * agua_base.sum() / nv, pct_extension_max=100 * ext_max.sum() / nv,

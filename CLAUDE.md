@@ -8,7 +8,8 @@ Contexto para seguir trabajando con Claude Code. Idioma de trabajo: español. En
 
 ## IDEA PRINCIPAL (decidida 2026-11-14) — detalle completo en `docs/idea_principal.md`
 **"How long does the water stay?" / "¿Cuánto tiempo se queda el agua?"** — reconstruir con NISAR la crecida del **15–19 ago 2026** y medir por píxel (20 m): extensión máxima, **persistencia** (días bajo agua), fecha de retiro y agua bajo vegetación (doble rebote L-band); agregar por localidad, camino rural, subcuenca y uso del suelo. Contexto país: crecidas encadenadas Olimar → Yí → río Negro y remanso de la Laguna Merín (`docs/contexto_nacional_ago2026.md`).
-- Zonas: `treinta_y_tres`, `merin_arrozales`, `melo`, `rio_branco_jaguarao`, `durazno`, `mercedes` (AOIs y tracks en `scripts/zonas.py`).
+- Zonas (AOIs, tracks y evento en `scripts/zonas.py`): **agosto** `treinta_y_tres`, `merin_arrozales`, `melo`, `rio_branco_jaguarao`, `durazno`, `mercedes`, `rocha_norte`, `castillos`; **octubre** (creciente del río Uruguay/Cuareim) `salto`, `paysandu`, `artigas`.
+- Foco (2026-11-15): cuánto tiempo después de la lluvia o la crecida el campo sigue anegado/mojado (incluye caminos cortados): evolutivo de campos mojados + heatmap de "dónde tarda más en secarse".
 - Uso social: SINAE/CECOED, caminería rural, productores/seguros, planificación de riesgo (El Niño 2026-27).
 - Límites: revisita 12 días/track, urbano confuso, latencia → post-evento, no predicción.
 - Capítulo secundario: arrozales — mismos lotes con agua "mala" (agosto) y "buena" (riego nov–dic).
@@ -25,6 +26,7 @@ Contexto para seguir trabajando con Claude Code. Idioma de trabajo: español. En
 - Bañados del Este (agua bajo vegetación) → se incorpora como métrica dentro de la idea principal.
 - 2026-11-14: detector de agua nueva pasa de umbral absoluto (HH < −17,5…−18,7 dB) a **cambio respecto de la base del mismo píxel** (armonizar_tracks.py duplicó la coincidencia entre tracks). Las cifras subieron (Merín 28.600 → ~75.000 ha confirmadas): el detector viejo se perdía agua somera (HH −14 a −17 dB) que Sentinel-1 también ve oscurecerse.
 - 2026-11-14 (tarde): (1) horarios de órbita estaban invertidos en docs/app: ascendentes ~06:30, descendentes ~18:30 hora local; la explicación por viento se retiró. (2) ~1/3 del "agua nueva" ya estaba el 10–11/8 (antes de la lluvia) e inflaba persistencia, ha·día y días de corte (hasta 84 d): se separa como "agua previa" y la extensión arranca el 15/8. Cifras bajaron (Merín 75 → 48 mil ha).
+- 2026-11-15: se suman 5 zonas. Rocha norte (5–6 mil ha anegadas y 15.000 vacunos trasladados según prensa) y Castillos al evento de agosto; Salto, Paysandú y Artigas como **evento de octubre** con fechas propias (`metricas_evento.EVENTOS`, clase `Evento`). Litoral: base = 4 pasadas más secas (el río ya estaba alto en jul–ago) y pasadas VALIDATED (≥ 21/10) normalizadas por escena también en el techo. Se descartaron Salto 82D/161A (recorte sin dato real) y pasadas parciales (< 80 % de cobertura). Resultado: el litoral casi no tuvo agua abierta nueva (Paysandú 803 ha, S1 lo confirma).
 - 2026-11-14: decisiones abiertas del plan tomadas por defecto (usuario ausente): mapa base OSM (CARTO pide API key), caminería OSM, Sentinel-1 sí como validación, arrozales queda como trabajo futuro.
 
 ## Resultados EDA (2026-11-14) — `docs/eda_T53D_F105.md`
@@ -49,7 +51,7 @@ Earthdata Login + `~/.netrc`; GDAL CLI (`brew install gdal`); `python -m venv .v
 ## Scripts (orden del pipeline)
 `descargar_zonas.py` → `metricas_evento.py` → `armonizar_tracks.py` → `combinar_tracks.py` → `sensibilidad.py` → `capas_contexto.py` → `monte_ribereno.py` → `agregar_impacto.py` → `validar_s1.py` (opcional, lento la 1ª vez) → `exportar_app.py`. Correr desde `scripts/` o la raíz; los CSV globales sólo se escriben sin `--zona`.
 - `descargar_zonas.py listar|descargar|resumen`: recortes GCOV por zona → `data_nisar/zonas/{zona}/T{track}{dir}_F{frame}/{fecha}_{HH|HV}.tif`. Prefiere modo principal `2005_..._M_..._N_F_`. Sintaxis GDAL `HDF5:"/vsicurl/URL"://ruta` (GDAL ≥ 3.13).
-- `metricas_evento.py`: **detector por cambio** (desde 2026-11-14): ΔHH vs mediana base del mismo píxel/track < −3 dB, HH < −14 dB, normalización por mediana de escena, MMU 10 px; agua base con umbral absoluto calibrado por track. Persistencia = intervalo (`persistencia_min/max.tif`, punto medio en `persistencia_dias.tif`). `--metodo umbral` = detector viejo.
+- `metricas_evento.py`: eventos por zona (`Evento(zona)`: ventana, inicio, base; `es_validado`). Carga: valores < −50 dB = sin dato y pasadas parciales descartadas. **Detector por cambio** (desde 2026-11-14): ΔHH vs mediana base del mismo píxel/track < −3 dB, HH < −14 dB, normalización por mediana de escena, MMU 10 px; agua base con umbral absoluto calibrado por track. Persistencia = intervalo (`persistencia_min/max.tif`, punto medio en `persistencia_dias.tif`). `--metodo umbral` = detector viejo.
 - `armonizar_tracks.py`: Jaccard entre tracks a ≤ 1 día. Umbral → cambio: TyT 0,18→0,48, Merín 0,49→0,58, Río Branco 0,39→0,56, Mercedes 0,18→0,27 (poca agua). Hallazgo: con umbral fijo los descendentes (~18:30 hora local) ven 2–3× más agua que los ascendentes (~06:30); causa abierta (ángulo/dirección de cada track, rocío matinal), el viento no lo explica. Horarios verificados en los nombres de escena (UTC).
 - `combinar_tracks.py`: máscaras de todos los tracks; `agua_previa.tif` (mojada el 10–14/8, antes de la lluvia: aparte y fuera de todo); `extension_confirmada.tif` (≥ 2 obs. mojadas en 15/8–10/9, sin previa) = cifra principal; retiro = 2 obs. secas seguidas.
 - `sensibilidad.py`: barrido caída {−2…−4} × techo {−13,−14,−15} → banda min/central/max.
@@ -57,13 +59,15 @@ Earthdata Login + `~/.netrc`; GDAL CLI (`brew install gdal`); `python -m venv .v
 - `monte_ribereno.py`: HAND con drenaje OSM; ribereño HAND < 4 m y < 1 km del cauce; exceso = subida ribereño − subida altura; mapa `metricas/veg_inundada_ribereno.tif`.
 - `agregar_impacto.py`: caminos (por way OSM, con "x km NE de <localidad>"), localidades (adentro + anillo 500 m), subcuencas (nombre del curso principal), departamentos, cobertura → `data_nisar/zonas/impacto/`.
 - `validar_s1.py`: Sentinel-1 RTC de Planetary Computer (token SAS anónimo), ±2 días, misma órbita para la base; sólo valida (regla 1). Caché en `data_nisar/validacion/s1/`.
-- `exportar_app.py`: manifest + WebP/PNG con esquinas lon/lat + `sonda.bin` (200 m) + GeoJSON + descargas.
+- `exportar_app.py`: manifest (con `evento` por zona y `eventos`) + WebP/PNG con esquinas lon/lat + `sonda.bin` (200 m) + GeoJSON + descargas + `secado.geojson` (heatmap de días bajo agua, celdas de 400 m).
 - `zonas.py`: AOIs, tracks, `serie` (track de la serie principal por zona, regla 2), `fin_base` (Durazno 2026-07-20).
 - Históricos: `nisar_eda_uruguay.py` (otros importan `OUT`, `POLS`, `gdal_prefijo`), `eda_extra_T53D.py`, `exportar_poc.py`/`build_poc.py`.
 
-## Resultados actuales (detector por cambio, sin agua previa)
-- Inundado por la tormenta (≥ 2 obs., 15/8–10/9): Merín 47.927 ha (53D solo 30–67 mil), TyT 6.290, Río Branco 2.510, Durazno 341, Mercedes 180, Melo 35 (≈ 57.300 ha). Ya mojado antes de la lluvia (10–14/8): ≈ 31.100 ha, aparte. Merín 53D: 70 % mojado el 28/8, 15 % el 21/9. Persistencia típica 6 d Merín, 10 d TyT, 18 d Río Branco.
-- Caminos: Merín 42 km (29 km > 1 semana), TyT 13 km; máximo 66 días. Dentro de las ciudades el radar da ~0 (doble rebote): usar anillo 500 m.
+## Resultados actuales (detector por cambio, sin agua previa, 11 zonas, 2026-11-15)
+- Inundado por la tormenta de agosto (≥ 2 obs., 15/8–10/9): Merín 47.918 ha (53D solo 30–67 mil), Rocha norte 9.869, TyT 6.290, Río Branco 2.510, Castillos 1.824, Durazno 341, Mercedes 180, Melo 35 (≈ 69.000 ha). Ya mojado antes de la lluvia (10–14/8): ≈ 38.700 ha, aparte.
+- Octubre (litoral): Paysandú 803 ha, Artigas 46, Salto ~0. S1 también ~0. Agua bajo monte de las islas en Paysandú.
+- Más lento en secarse: costa oeste de la Merín y bañados de 18 de Julio–San Miguel. Mitad seca: TyT día 20, Merín/Río Branco 25, Rocha norte/Castillos 37. Merín 53D: 70 % mojado el 28/8, 15 % el 21/9. Persistencia típica 6 d Merín, 10 d TyT, 18 d Río Branco.
+- Caminos: 65 km en total (50 km > 1 semana): Merín 42, TyT 13, Rocha norte 5; máximo 66 días. Dentro de las ciudades el radar da ~0 (doble rebote): usar anillo 500 m.
 - Monte ribereño: exceso positivo en Mercedes (3 tracks), Río Branco, Merín; no en TyT, Melo, Durazno.
 
 ## Próximos pasos

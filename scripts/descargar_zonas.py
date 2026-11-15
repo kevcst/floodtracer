@@ -18,7 +18,7 @@ import asf_search as asf
 import pandas as pd
 
 from nisar_eda_uruguay import OUT, POLS, gdal_prefijo
-from zonas import FECHA_FIN, FECHA_INI, ZONAS
+from zonas import FECHA_FIN, FECHA_FIN_VALIDATED, FECHA_INI, ZONAS
 
 BASE = OUT / "zonas"
 UMBRAL_AGUA_DB = -18.0  # ver docs/eda_T53D_F105.md (Otsu global no sirve)
@@ -35,13 +35,18 @@ def escenas(zona, madurez):
     z = ZONAS[zona]
     filas = []
     for m in madurez:
+        # PROVISIONAL hasta FECHA_FIN; VALIDATED sólo después (nunca la misma fecha en las dos madureces).
+        # Las fechas VALIDATED se reconocen por fecha (>= zonas.INICIO_VALIDATED) y se normalizan al detectar.
+        ini, fin = (FECHA_INI, FECHA_FIN) if m == "PROVISIONAL" else (FECHA_FIN, FECHA_FIN_VALIDATED)
         res = asf.search(dataset="NISAR", processingLevel="GCOV", dataMaturity=m,
-                         intersectsWith=z["wkt"], start=FECHA_INI, end=FECHA_FIN + "T23:59:59Z",
+                         intersectsWith=z["wkt"], start=ini, end=fin + "T23:59:59Z",
                          maxResults=2000)
         for g in res:
             p = g.properties
             k = (p.get("pathNumber"), p.get("flightDirection", "")[:1], p.get("frameNumber"))
             if k not in z["tracks"]:
+                continue
+            if m == "VALIDATED" and p["startTime"][:10] <= FECHA_FIN:
                 continue
             filas.append(dict(zona=zona, madurez=m, fecha=p["startTime"][:10], track=k[0], dir=k[1],
                               frame=k[2], escena=p["sceneName"], url=g.get_urls()[0]))

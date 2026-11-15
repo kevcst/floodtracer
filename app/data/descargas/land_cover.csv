@@ -1,49 +1,73 @@
 zona,clase,ha_clase,ha_inundada,pct_clase_inundada,ha_dia
-treinta_y_tres,Tree cover,17156.36,142.88,0.83,1451.0
+treinta_y_tres,Tree cover,17156.36,142.88,0.83,1449.8
 treinta_y_tres,Shrubland,28.88,3.68,12.74,49.76
-treinta_y_tres,Grassland,91476.92,4082.16,4.46,43327.84
-treinta_y_tres,Cropland (rice),17449.6,1701.8,9.75,19936.64
+treinta_y_tres,Grassland,91476.92,4082.16,4.46,43203.04
+treinta_y_tres,Cropland (rice),17449.6,1701.8,9.75,19687.44
 treinta_y_tres,Built-up,1007.72,0.0,0.0,0.0
 treinta_y_tres,Bare,58.24,1.4,2.4,14.96
-treinta_y_tres,Water,561.8,33.24,5.92,806.88
-treinta_y_tres,Herbaceous wetland,2562.48,325.32,12.7,3623.6
-merin_arrozales,Tree cover,31620.64,925.84,2.93,8054.96
+treinta_y_tres,Water,561.8,33.24,5.92,765.68
+treinta_y_tres,Herbaceous wetland,2562.48,325.32,12.7,3592.0
+merin_arrozales,Tree cover,31620.64,925.84,2.93,8050.36
 merin_arrozales,Shrubland,5.96,0.12,2.01,0.88
-merin_arrozales,Grassland,196857.52,24598.36,12.5,387361.32
-merin_arrozales,Cropland (rice),128106.84,14066.56,10.98,205178.72
+merin_arrozales,Grassland,196857.52,24595.8,12.49,382166.12
+merin_arrozales,Cropland (rice),128106.84,14064.76,10.98,203323.6
 merin_arrozales,Built-up,262.36,0.0,0.0,0.0
 merin_arrozales,Bare,230.04,25.72,11.18,298.36
-merin_arrozales,Water,17140.24,516.68,3.01,8712.32
-merin_arrozales,Herbaceous wetland,37843.6,7793.56,20.59,147589.48
-melo,Tree cover,3410.36,0.08,0.0,3.68
+merin_arrozales,Water,17140.24,516.52,3.01,8667.44
+merin_arrozales,Herbaceous wetland,37843.6,7789.76,20.58,143982.52
+melo,Tree cover,3410.36,0.08,0.0,3.2
 melo,Shrubland,3.72,0.0,0.0,0.0
-melo,Grassland,20215.72,30.28,0.15,1113.68
-melo,Cropland (rice),806.88,2.24,0.28,72.56
+melo,Grassland,20215.72,30.28,0.15,1045.76
+melo,Cropland (rice),806.88,2.24,0.28,71.84
 melo,Built-up,1087.16,0.0,0.0,0.0
 melo,Bare,12.12,0.0,0.0,0.0
 melo,Water,99.32,0.76,0.77,14.96
-melo,Herbaceous wetland,37.92,1.52,4.01,35.76
+melo,Herbaceous wetland,37.92,1.52,4.01,35.52
 rio_branco_jaguarao,Tree cover,2811.16,0.28,0.01,5.52
 rio_branco_jaguarao,Shrubland,2.12,0.0,0.0,0.0
-rio_branco_jaguarao,Grassland,12550.24,1112.8,8.87,39478.6
-rio_branco_jaguarao,Cropland (rice),10080.4,997.44,9.89,27303.76
+rio_branco_jaguarao,Grassland,12550.24,1112.8,8.87,37784.8
+rio_branco_jaguarao,Cropland (rice),10080.4,997.44,9.89,26620.36
 rio_branco_jaguarao,Built-up,919.2,0.0,0.0,0.0
 rio_branco_jaguarao,Bare,18.64,2.48,13.3,80.4
-rio_branco_jaguarao,Water,767.96,104.96,13.67,4325.4
-rio_branco_jaguarao,Herbaceous wetland,662.68,292.0,44.06,13903.76
-durazno,Tree cover,4821.6,1.08,0.02,14.84
+rio_branco_jaguarao,Water,767.96,104.96,13.67,4220.0
+rio_branco_jaguarao,Herbaceous wetland,662.68,292.0,44.06,13061.56
+durazno,Tree cover,4821.6,1.08,0.02,14.68
 durazno,Shrubland,2.32,0.04,1.72,0.28
-durazno,Grassland,21799.4,118.72,0.54,2734.2
-durazno,Cropland (rice),6189.08,186.52,3.01,4859.48
-durazno,Built-up,987.32,1.12,0.11,31.32
+durazno,Grassland,21799.4,118.72,0.54,2681.24
+durazno,Cropland (rice),6189.08,186.52,3.01,4819.16
+durazno,Built-up,987.32,1.12,0.11,29.72
 durazno,Bare,86.2,1.2,1.39,14.4
-durazno,Water,371.4,30.72,8.27,681.44
+durazno,Water,371.4,30.72,8.27,678.24
 durazno,Herbaceous wetland,11.08,1.4,12.64,16.52
 mercedes,Tree cover,4357.84,1.96,0.04,21.12
 mercedes,Shrubland,0.24,0.0,0.0,0.0
 mercedes,Grassland,8720.24,61.92,0.71,1108.56
-mercedes,Cropland (rice),8005.2,46.2,0.58,677.68
+mercedes,Cropland (rice),8005.2,46.2,0.58,662.32
 mercedes,Built-up,795.28,0.0,0.0,0.0
 mercedes,Bare,27.16,1.96,7.22,28.4
 mercedes,Water,1122.84,24.08,2.14,249.16
 mercedes,Herbaceous wetland,930.0,43.56,4.68,848.8
+rocha_norte,Tree cover,6539.88,1.56,0.02,18.64
+rocha_norte,Shrubland,1.28,0.0,0.0,0.0
+rocha_norte,Grassland,44850.92,4376.4,9.76,103688.48
+rocha_norte,Cropland (rice),23537.24,1298.68,5.52,28826.16
+rocha_norte,Built-up,1188.44,0.16,0.01,1.08
+rocha_norte,Bare,484.16,8.68,1.79,191.2
+rocha_norte,Water,43392.76,182.84,0.42,4519.24
+rocha_norte,Herbaceous wetland,16981.32,4001.08,23.56,128385.84
+castillos,Tree cover,9008.64,0.04,0.0,0.36
+castillos,Shrubland,15.6,0.08,0.51,0.96
+castillos,Grassland,36767.72,461.16,1.25,8920.04
+castillos,Cropland (rice),2048.48,29.24,1.43,746.56
+castillos,Built-up,270.52,0.04,0.01,0.16
+castillos,Bare,602.6,2.4,0.4,27.6
+castillos,Water,13053.08,47.72,0.37,809.56
+castillos,Herbaceous wetland,9486.48,1283.72,13.53,34976.68
+artigas,Tree cover,3670.8,0.0,0.0,0.0
+artigas,Shrubland,15.64,0.0,0.0,0.0
+artigas,Grassland,8960.6,26.2,0.29,249.36
+artigas,Cropland (rice),426.16,8.64,2.03,160.44
+artigas,Built-up,1186.24,0.2,0.02,0.8
+artigas,Bare,10.84,0.0,0.0,0.0
+artigas,Water,166.4,11.2,6.73,44.8
+artigas,Herbaceous wetland,12.16,0.08,0.66,0.32

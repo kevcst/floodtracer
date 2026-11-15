@@ -40,7 +40,7 @@ from rasterio.vrt import WarpedVRT
 from shapely import wkt as shp_wkt
 from shapely.geometry import shape
 
-from metricas_evento import (BASE, FIN_BASE, OUT, calibrar_umbral, cargar_track, detectar_nueva, filtrar_mmu, guardar,
+from metricas_evento import (BASE, Evento, es_validado, OUT, calibrar_umbral, cargar_track, detectar_nueva, filtrar_mmu, guardar,
                              media_nan)
 from zonas import ZONAS
 
@@ -50,7 +50,7 @@ SAS = "https://planetarycomputer.microsoft.com/api/sas/v1/token/sentinel-1-rtc"
 CTX = ssl.create_default_context(cafile=certifi.where())
 CACHE = OUT / "validacion" / "s1"
 MAX_DT = 2
-VAL_VENTANA = (pd.Timestamp("2026-08-10"), pd.Timestamp("2026-09-22"))
+VAL_EXTRA = pd.Timedelta(days=12)   # ventana de validación = ventana del evento + 12 días
 S1_CAMBIO, S1_TECHO, S1_AGUA = -3.0, -15.0, -18.0
 S1_TECHO_LAXO = -12.0      # referencia "laxa": misma caída pero sin exigir VV tan oscuro (agua somera / parcial)
 os.environ.setdefault("GDAL_DISABLE_READDIR_ON_OPEN", "EMPTY_DIR")
@@ -68,7 +68,7 @@ def token():
 def buscar(wkt):
     g = shp_wkt.loads(wkt)
     body = {"collections": ["sentinel-1-rtc"], "intersects": g.__geo_interface__,
-            "datetime": "2026-06-01/2026-10-20", "limit": 500}
+            "datetime": "2026-06-01/2026-11-15", "limit": 500}
     req = urllib.request.Request(STAC, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
     feats = json.load(urllib.request.urlopen(req, context=CTX, timeout=120))["features"]
     filas = []
@@ -118,8 +118,10 @@ def db(x):
 def validar_track(zona, tdir, s1):
     fechas, hh, _, perfil = cargar_track(tdir)
     fechas = pd.DatetimeIndex(fechas)
-    fin_base = pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE))
-    es_base = np.asarray(fechas < fin_base)
+    ev = Evento(zona)
+    fin_base = ev.fin_base
+    es_base = ev.es_base(fechas, hh)
+    val = es_validado(fechas)
     valid = np.all(np.isfinite(hh), axis=0)
     umbral, _, _ = calibrar_umbral(hh[es_base], valid)
     agua_base = ((hh[es_base] < umbral) & valid).mean(axis=0) > 0.5
@@ -129,7 +131,7 @@ def validar_track(zona, tdir, s1):
     filas, mapas = [], []
     bases = {}
     for i, f in enumerate(fechas):
-        if not (VAL_VENTANA[0] <= f <= VAL_VENTANA[1]):
+        if not (ev.ventana[0] <= f <= ev.ventana[1] + VAL_EXTRA):
             continue
         cand = s1[(s1.fecha - f).abs().dt.days <= MAX_DT].copy()
         if cand.empty:
@@ -159,7 +161,7 @@ def validar_track(zona, tdir, s1):
         fila = dict(zona=zona, track=tdir.name, fecha_nisar=f.date(), fecha_s1=fe.date(), dt_dias=dt, orbita_s1=orb,
                     n_base_s1=nb, pct_valido=round(100 * v.mean(), 1), pct_s1=100 * s1_nueva[v].mean(),
                     pct_s1_laxa=100 * s1_laxa[v].mean())
-        for nombre, kw in (("cambio", {}), ("umbral", dict(metodo="umbral", umbral=umbral))):
+        for nombre, kw in (("cambio", dict(validado=val[i])), ("umbral", dict(metodo="umbral", umbral=umbral))):
             n = detectar_nueva(hh[i], med, agua_base, **kw) & v
             fila[f"pct_nisar_{nombre}"] = 100 * n[v].mean()
             for ref, sm in (("", s1_nueva), ("_laxa", s1_laxa)):
@@ -172,7 +174,7 @@ def validar_track(zona, tdir, s1):
             solo = n & ~s1_nueva & v
             fila[f"solo_nisar_s1_oscurece_{nombre}"] = float(((d - off) < -2)[solo].mean()) if solo.any() else np.nan
         filas.append(fila)
-        mapas.append((fila, hh[i], vv, detectar_nueva(hh[i], med, agua_base) & v, s1_nueva & v, agua_base | s1_agua_base))
+        mapas.append((fila, hh[i], vv, detectar_nueva(hh[i], med, agua_base, validado=val[i]) & v, s1_nueva & v, agua_base | s1_agua_base))
         print(f"   NISAR {f.date()} vs S1 {fe.date()} (Δ{dt:+d} d, órb {orb}): S1 {fila['pct_s1']:.1f} % · "
               f"NISAR cambio {fila['pct_nisar_cambio']:.1f} % F1={fila['f1_cambio']:.2f} (laxa {fila['f1_cambio_laxa']:.2f}) · "
               f"umbral {fila['pct_nisar_umbral']:.1f} % F1={fila['f1_umbral']:.2f}")

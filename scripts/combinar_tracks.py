@@ -26,7 +26,7 @@ import pandas as pd
 import rasterio
 from rasterio.warp import Resampling, reproject
 
-from metricas_evento import BASE, EVENTO, INICIO_LLUVIA, guardar, intervalos_persistencia
+from metricas_evento import BASE, Evento, guardar, intervalos_persistencia
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -60,11 +60,12 @@ def procesar(zona):
     M = np.stack([o[2] for o in obs])                          # 0 seco, 1 agua nueva, 255 sin dato
     ok = M != 255
     agua = M == 1
-    es_evento = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    ev = Evento(zona)
+    es_evento = ev.es_evento(fechas)
     doy = np.asarray(fechas.day_of_year)
 
     # agua previa: mojada en alguna observación del 10–14/8 (antes de la lluvia) → aparte, fuera del evento
-    es_previa = es_evento & np.asarray(fechas < INICIO_LLUVIA)
+    es_previa = ev.es_previa(fechas)
     agua_previa = (agua & es_previa[:, None, None]).any(axis=0)
     es_evento = es_evento & ~es_previa                          # desde acá, "evento" = tormenta (15/8–10/9)
     ext_max = (agua & es_evento[:, None, None]).any(axis=0) & ~agua_previa
@@ -97,7 +98,7 @@ def procesar(zona):
     primera = np.where(ext_max, doy[np.maximum(primera_i, 0)], 0)
     retiro = np.where(ext_max & ~sigue, doy[np.maximum(retiro_i, 0)], 0)
     retiro[sigue] = 999
-    pmin, pmax, persist = intervalos_persistencia(fechas, agua, ok, ext_max, es_evento, retiro_i, primera_i)
+    pmin, pmax, persist = intervalos_persistencia(fechas, agua, ok, ext_max, es_evento, retiro_i, primera_i, ev.inicio)
     n_obs = ok.sum(axis=0)
 
     out = BASE / zona / "combinado"
@@ -116,8 +117,8 @@ def procesar(zona):
     cubierto = ok.any(axis=0)
     nv = cubierto.sum()
     pv = persist[ext_max & ~sigue]
-    fila = dict(zona=zona, tracks=" ".join(datos), grilla_ref=ref, n_obs=len(obs),
-                obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if EVENTO[0] <= f <= EVENTO[1]),
+    fila = dict(zona=zona, evento=ev.clave, tracks=" ".join(datos), grilla_ref=ref, n_obs=len(obs),
+                obs_evento=" ".join(f"{f.strftime('%m-%d')}({t[1:5]})" for f, t, _ in obs if ev.ventana[0] <= f <= ev.ventana[1]),
                 pct_extension_max=100 * ext_max.sum() / nv,
                 ha_extension_max=ext_max.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
                 ha_agua_previa=agua_previa.sum() * abs(perfil["transform"].a * perfil["transform"].e) / 1e4,
@@ -148,7 +149,7 @@ def grafico(extra, path):
             ax1.plot(pd.to_datetime(g.fecha), g.pct_agua_nueva, "o", ms=4, label=t)
         g = pf.sort_values("fecha")
         ax1.plot(pd.to_datetime(g.fecha), g.pct_agua_nueva, "-", color="k", lw=0.6)
-        ax1.axvspan(pd.Timestamp("2026-08-15"), pd.Timestamp("2026-08-19"), color="tab:red", alpha=0.15)
+        ax1.axvspan(*Evento(zona).lluvia, color="tab:red", alpha=0.15)
         ax1.set_title(f"{zona}: % agua nueva por pasada (todos los tracks)", fontsize=9)
         ax1.legend(fontsize=7)
         ax2.bar(hist.index, 100 * hist.values / hist.sum(), width=1.5)

@@ -31,7 +31,7 @@ import pandas as pd
 import rasterio
 from scipy import ndimage as ndi
 
-from metricas_evento import BASE, EVENTO, FIN_BASE, cargar_track, guardar
+from metricas_evento import BASE, Evento, cargar_track, guardar
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -88,9 +88,9 @@ def dem_en_grilla(zona, perfil, destino):
 def procesar(zona, tdir):
     fechas, hh, hv, perfil = cargar_track(tdir)
     fechas = pd.DatetimeIndex(fechas)
-    fin_base = pd.Timestamp(ZONAS[zona].get("fin_base", FIN_BASE))
-    es_base = np.asarray(fechas < fin_base)
-    es_evento = np.asarray((fechas >= EVENTO[0]) & (fechas <= EVENTO[1]))
+    ev = Evento(zona)
+    es_base = ev.es_base(fechas, hh)
+    es_evento = ev.es_evento(fechas)
     valid = np.all(np.isfinite(hh), axis=0)
 
     ctx = tdir / "contexto"
@@ -162,7 +162,7 @@ def grafico(df, path):
         for c, gc in g.groupby("clase"):
             base = gc[gc.fase == "base"].hh_hv_db.mean()
             ax.plot(gc.fecha, gc.hh_hv_db - base, marker="o", ms=3, color=colores[c], label=c)
-        ax.axvspan(pd.Timestamp("2026-08-15"), pd.Timestamp("2026-08-19"), color="tab:red", alpha=0.15)
+        ax.axvspan(*Evento(z).lluvia, color="tab:red", alpha=0.15)
         ax.axhline(0, color="k", lw=0.5)
         ax.set_title(f"{z} {t}", fontsize=9)
         ax.tick_params(labelsize=7)

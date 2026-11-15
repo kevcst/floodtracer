@@ -33,8 +33,8 @@ treinta_y_tres,osm:352197625,Unnamed rural road,rural,2.18,0.04,10,1,19,False,-5
 treinta_y_tres,osm:241545506,Unnamed rural road,rural,2.63,0.02,10,1,19,False,-54.36,-33.3,7 km SE of Villa Sara
 treinta_y_tres,osm:798435507,Unnamed rural road,rural,2.58,0.02,10,1,19,False,-54.27,-33.34,17 km SE of Treinta y Tres
 treinta_y_tres,osm:800131112,Unnamed rural road,rural,1.88,0.02,10,1,19,False,-54.2,-33.36,22 km SE of Treinta y Tres
-merin_arrozales,osm:995146440,Unnamed rural road,rural,11.84,3.8,65,65,65,True,-53.66,-33.26,13 km E of Cebollatí
-merin_arrozales,osm:995209506,Unnamed rural road,rural,2.85,1.72,65,65,65,True,-53.73,-33.21,7 km E of La Charqueada
+merin_arrozales,osm:995146440,Unnamed rural road,rural,11.84,3.8,60,60,61,True,-53.66,-33.26,13 km E of Cebollatí
+merin_arrozales,osm:995209506,Unnamed rural road,rural,2.85,1.72,60,60,60,True,-53.73,-33.21,7 km E of La Charqueada
 merin_arrozales,osm:994881926,Unnamed rural road,rural,2.44,0.08,44,41,48,False,-53.62,-33.47,17 km NE of San Luis al Medio
 merin_arrozales,osm:994892314,Unnamed rural road,rural,8.53,0.7,42,37,48,False,-53.64,-33.37,19 km SE of Cebollatí
 merin_arrozales,osm:994884609,Unnamed rural road,rural,1.43,0.98,36,31,41,False,-53.61,-33.43,22 km NE of San Luis al Medio
@@ -192,9 +192,9 @@ merin_arrozales,osm:134629504,Unnamed rural road,rural,0.41,0.06,3,0,6,False,-53
 merin_arrozales,osm:956192254,Unnamed rural road,rural,2.64,0.04,3,0,6,False,-53.96,-33.39,12 km SW of Villa Passano
 merin_arrozales,osm:956192256,Unnamed rural road,rural,2.67,0.04,3,0,6,False,-53.97,-33.39,13 km SW of Villa Passano
 melo,Tropas,Tropas,rural,0.87,0.02,18,12,24,False,-54.19,-32.35,2 km NE of Barrio López Benítez
-rio_branco_jaguarao,osm:993678056,Unnamed rural road,rural,1.26,0.96,66,66,66,True,-53.31,-32.65,1 km E of Casarone
-rio_branco_jaguarao,osm:993834617,Unnamed rural road,rural,1.02,0.84,65,65,65,True,-53.3,-32.65,2 km E of Casarone
+rio_branco_jaguarao,osm:993678056,Unnamed rural road,rural,1.26,0.96,61,61,61,True,-53.31,-32.65,1 km E of Casarone
 rio_branco_jaguarao,osm:289907279,Unnamed rural road,rural,3.66,1.0,60,60,61,False,-53.43,-32.61,6 km SW of Río Branco
+rio_branco_jaguarao,osm:993834617,Unnamed rural road,rural,1.02,0.84,60,60,60,True,-53.3,-32.65,2 km E of Casarone
 rio_branco_jaguarao,Camino Vecinal a La Coronilla,Camino Vecinal a La Coronilla,rural,5.4,0.04,24,23,25,False,-53.36,-32.59,3 km SE of Río Branco
 rio_branco_jaguarao,osm:806825333,Unnamed rural road,rural,2.36,0.3,18,12,24,False,-53.42,-32.54,6 km NW of Río Branco
 rio_branco_jaguarao,osm:993889266,Unnamed rural road,rural,0.5,0.14,18,12,24,False,-53.42,-32.59,4 km W of Río Branco
@@ -207,3 +207,26 @@ durazno,osm:1271772257,Unnamed rural road,rural,1.04,0.26,12,0,24,False,-56.51,-
 durazno,osm:818880448,Unnamed rural road,rural,0.72,0.1,12,0,24,False,-56.5,-33.43,6 km S of Durazno
 mercedes,osm:553861546,Unnamed rural road,rural,1.53,0.08,8,4,12,False,-58.09,-33.3,8 km SW of Mercedes
 mercedes,Rambla Francisco Mario Ubillos,Rambla Francisco Mario Ubillos,rural,1.72,0.08,6,1,12,False,-58.05,-33.25,1 km SW of Los Arrayanes
+rocha_norte,osm:253595781,Unnamed rural road,rural,1.88,0.68,48,48,49,False,-53.54,-33.73,6 km S of 18 de Julio
+rocha_norte,osm:253758626,Unnamed rural road,rural,0.55,0.4,45,42,48,False,-53.59,-33.66,4 km NW of 18 de Julio
+rocha_norte,osm:993935548,Unnamed rural road,rural,5.06,0.84,40,37,43,False,-53.54,-33.79,8 km NW of Palmares de la Coronilla
+rocha_norte,osm:1327147864,Unnamed rural road,rural,5.43,0.56,24,24,25,False,-53.53,-33.77,9 km S of 18 de Julio
+rocha_norte,osm:993935545,Unnamed rural road,rural,1.66,0.22,24,18,30,False,-53.57,-33.79,10 km NW of Palmares de la Coronilla
+rocha_norte,osm:994869881,Unnamed rural road,rural,0.41,0.18,18,12,23,False,-53.58,-33.75,7 km S of 18 de Julio
+rocha_norte,osm:253592594,Unnamed rural road,rural,1.83,0.1,18,13,24,False,-53.57,-33.74,6 km S of 18 de Julio
+rocha_norte,osm:994869882,Unnamed rural road,rural,3.97,0.04,18,12,23,False,-53.59,-33.76,9 km S of 18 de Julio
+rocha_norte,osm:994881921,Unnamed rural road,rural,3.93,0.1,12,11,13,False,-53.59,-33.51,19 km N of 18 de Julio
+rocha_norte,osm:994869880,Unnamed rural road,rural,1.22,0.06,12,6,18,False,-53.57,-33.75,8 km S of 18 de Julio
+rocha_norte,osm:598618370,Unnamed rural road,rural,1.41,0.04,12,6,18,False,-53.49,-33.76,8 km S of Chuy
+rocha_norte,Camino Palmares de la Coronilla,Camino Palmares de la Coronilla,rural,3.65,0.02,12,6,18,False,-53.5,-33.85,2 km N of Santa Ana del Mar
+rocha_norte,osm:253760770,Unnamed rural road,rural,2.23,0.02,12,11,13,False,-53.57,-33.58,12 km N of 18 de Julio
+rocha_norte,osm:250585920,Unnamed rural road,rural,4.31,0.04,8,5,12,False,-53.51,-33.7,5 km SE of 18 de Julio
+rocha_norte,osm:253758623,Unnamed rural road,rural,1.91,0.02,8,5,12,False,-53.58,-33.66,4 km NW of 18 de Julio
+rocha_norte,osm:994840251,Unnamed rural road,rural,2.72,0.96,6,1,12,False,-53.56,-33.89,3 km W of Capacho
+rocha_norte,osm:249373797,Unnamed rural road,rural,7.41,0.04,6,1,12,False,-53.53,-33.73,5 km SE of 18 de Julio
+rocha_norte,osm:532708154,Unnamed rural road,rural,5.36,0.2,4,0,7,False,-53.48,-33.82,3 km N of Palmares de la Coronilla
+rocha_norte,osm:254899803,Unnamed rural road,rural,1.59,0.14,4,0,7,False,-53.5,-33.71,5 km SW of Chuy
+rocha_norte,Ruta 19,Ruta 19,departmental,14.98,0.04,4,0,7,False,-53.56,-33.67,1 km NE of 18 de Julio
+rocha_norte,osm:655784131,Unnamed rural road,rural,0.5,0.04,4,0,7,False,-53.53,-33.69,2 km E of 18 de Julio
+castillos,osm:200092307,Unnamed rural road,rural,3.66,0.24,16,12,19,False,-53.9,-34.22,4 km SW of Castillos
+paysandu,María Esther Mussio,María Esther Mussio,departmental,2.87,0.56,30,24,35,False,-58.09,-32.27,1 km SW of Nuevo Paysandú

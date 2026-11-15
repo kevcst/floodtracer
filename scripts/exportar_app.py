@@ -30,7 +30,7 @@ from rasterio.warp import Resampling, reproject
 from rasterio.warp import transform as warp_transform
 
 from exportar_poc import COUNTRIES, bajar_countries, contexto
-from metricas_evento import BASE, EVENTO, INICIO_LLUVIA, cargar_track, previa_en_grilla
+from metricas_evento import BASE, EVENTOS, Evento, cargar_track, previa_en_grilla
 from zonas import ZONAS
 
 warnings.filterwarnings("ignore")
@@ -46,25 +46,37 @@ DESCRIPCION = {
     "rio_branco_jaguarao": "Río Branco (Uruguay) and Jaguarão (Brazil) on the Yaguarón border river.",
     "durazno": "Durazno on the Río Yí, which crested at 9.75 m on 22 August.",
     "mercedes": "Mercedes on the lower Río Negro, downstream of the Yí, with wide gallery forest.",
+    "rocha_norte": "Low grazing land of northern Rocha around 18 de Julio and the San Miguel wetlands, where ~15,000 cattle were moved to higher ground.",
+    "castillos": "Castillos and the wetlands of the Laguna de Castillos, where a town bridge went under water on 19 August.",
+    "salto": "Salto on the Río Uruguay, just downstream of the Salto Grande dam, which reached the ~12 m evacuation level on 10–11 October.",
+    "paysandu": "Paysandú on the Río Uruguay, where the river peaked at 6.32 m in mid-October and 108 people left their homes.",
+    "artigas": "Artigas on the Río Cuareim, which rose above 11.5 m on 1 October with water arriving from Brazil.",
 }
 NOMBRES = {"treinta_y_tres": ("Treinta y Tres", "Olimar"), "merin_arrozales": ("Laguna Merín rice fields", "Cebollatí–Tacuarí"),
            "melo": ("Melo", "Arroyo Conventos"), "rio_branco_jaguarao": ("Río Branco / Jaguarão", "Yaguarón"),
-           "durazno": ("Durazno", "Yí"), "mercedes": ("Mercedes", "Río Negro")}
+           "durazno": ("Durazno", "Yí"), "mercedes": ("Mercedes", "Río Negro"),
+           "rocha_norte": ("Northern Rocha", "San Miguel wetlands"), "castillos": ("Castillos", "Laguna de Castillos"),
+           "salto": ("Salto", "Río Uruguay"), "paysandu": ("Paysandú", "Río Uruguay"), "artigas": ("Artigas", "Cuareim")}
 CUENCA = {"treinta_y_tres": "merin", "merin_arrozales": "merin", "melo": "merin", "rio_branco_jaguarao": "merin",
-          "durazno": "negro", "mercedes": "negro"}
+          "durazno": "negro", "mercedes": "negro", "rocha_norte": "merin", "castillos": "atlantica",
+          "salto": "uruguay", "paysandu": "uruguay", "artigas": "uruguay"}
 # crestas reportadas por prensa/SINAE (contexto y validación cualitativa, regla 1)
 CRESTAS = {"treinta_y_tres": ("2026-08-19", "Olimar ~8.6 m (19–20 Aug)"),
            "melo": ("2026-08-18", "Arroyo Conventos overflow (17–20 Aug)"),
            "rio_branco_jaguarao": ("2026-08-19", "Yaguarón: Jaguarão emergency, peak 18–19 Aug"),
            "durazno": ("2026-08-22", "Yí 9.75 m (22 Aug, 22 h)"),
-           "mercedes": ("2026-08-25", "Río Negro: evacuation alert ~21–25 Aug")}
+           "mercedes": ("2026-08-25", "Río Negro: evacuation alert ~21–25 Aug"),
+           "salto": ("2026-10-10", "Río Uruguay ~12 m, evacuation level (10–11 Oct)"),
+           "paysandu": ("2026-10-14", "Río Uruguay 6.32 m peak (~12–16 Oct)"),
+           "artigas": ("2026-10-01", "Cuareim > 11.5 m (1 Oct)")}
 NARANJA, AZUL = (235, 104, 52), (42, 120, 214)
 # persistencia (días, punto medio del intervalo): secuencial azul claro → oscuro; "sigue" el más oscuro
 PERS_BINS = [(0, 7, (198, 219, 245)), (8, 14, (138, 182, 238)), (15, 28, (74, 140, 222)), (29, 42, (36, 98, 176)),
              (43, 9999, (18, 64, 124))]
 SIGUE = (9, 38, 77)
 RETIRO_BINS = [("2026-08-10", "2026-08-31", (253, 219, 199)), ("2026-09-01", "2026-09-15", (247, 166, 122)),
-               ("2026-09-16", "2026-09-30", (230, 110, 60)), ("2026-10-01", "2026-10-20", (180, 66, 22))]
+               ("2026-09-16", "2026-09-30", (230, 110, 60)), ("2026-10-01", "2026-10-20", (180, 66, 22)),
+               ("2026-10-21", "2026-11-15", (122, 40, 12))]
 MONTE = (27, 175, 122)
 PREVIA = (138, 149, 161)          # ya mojado antes de la lluvia (10–14/8): gris, fuera de la tormenta
 MAX_LADO = 2200
@@ -131,7 +143,7 @@ def capas_zona(zona, out):
         o = rgba(m.shape)
         o[base[::f, ::f] == 1] = (*AZUL, 255)
         o[m == 1] = (*NARANJA, 255)
-        if fe >= EVENTO[0]:                                  # en la base no aplica
+        if fe >= Evento(zona).ventana[0]:                    # en la base no aplica
             o[(m == 1) & previa_s] = (*PREVIA, 255)
         png(out / f"agua_{d}.png", o)
         fechas_info.append(d)
@@ -201,6 +213,7 @@ def capas_zona(zona, out):
 def series_zona(zona):
     """% agua nueva por fecha (track de la serie) con banda de sensibilidad + 'remaining' y km de caminos."""
     t = ZONAS[zona]["serie"]
+    ev = Evento(zona)
     pf = pd.read_csv(BASE / "metricas_por_fecha.csv")
     pf = pf[(pf.zona == zona) & (pf.track == t)].set_index("fecha")
     sb = pd.read_csv(BASE / "sensibilidad_por_fecha.csv")
@@ -214,8 +227,8 @@ def series_zona(zona):
     out = []
     for fecha, r in pf.iterrows():
         m = pila[desc.index(fecha)]
-        rem = round(100 * float(((m == 1) & ext).sum()) / max(int(ext.sum()), 1), 1) if pd.Timestamp(fecha) >= INICIO_LLUVIA else None
-        out.append(dict(fecha=fecha, fase=r.fase, v=round(r.pct_agua_nueva, 2),
+        rem = round(100 * float(((m == 1) & ext).sum()) / max(int(ext.sum()), 1), 1) if pd.Timestamp(fecha) >= ev.inicio else None
+        out.append(dict(fecha=fecha, fase=r.fase, v=round(r.pct_agua_nueva, 2), dia=(pd.Timestamp(fecha) - ev.inicio).days,
                         lo=round(float(sb.loc[fecha, "min"]), 2) if fecha in sb.index else None,
                         hi=round(float(sb.loc[fecha, "max"]), 2) if fecha in sb.index else None,
                         remaining=rem,
@@ -272,7 +285,8 @@ def validacion():
     cron = []
     for zona, (cresta, txt) in CRESTAS.items():
         g = pf[(pf.zona == zona) & (pf.track == ZONAS[zona]["serie"]) & (pf.fase != "base")]
-        g = g[(g.fecha >= str(EVENTO[0].date())) & (g.fecha <= str(EVENTO[1].date()))]   # ventana del evento
+        ev = Evento(zona)
+        g = g[(g.fecha >= str(ev.ventana[0].date())) & (g.fecha <= str(ev.ventana[1].date()))]   # ventana del evento
         if g.empty:
             continue
         pk = g.loc[g.pct_agua_nueva.idxmax()]
@@ -335,8 +349,9 @@ def descargas():
         with rasterio.open(d / nombre, "w", **prof) as dst:
             dst.write(e.astype("uint8"), 1)
             dst.write(pers, 2)
-            dst.set_band_description(1, "flooded (1) 10 Aug - 10 Sep 2026")
-            dst.set_band_description(2, "days under water (midpoint); 255 = still wet on 20 Oct")
+            ev = Evento(zona)
+            dst.set_band_description(1, f"flooded (1) {ev.inicio.date()} - {ev.ventana[1].date()} ({ev.nombre})")
+            dst.set_band_description(2, "days under water (midpoint); 255 = still wet on the last pass")
         archivos.append(dict(archivo=f"data/descargas/{nombre}", desc=f"{NOMBRES[zona][0]}: GeoTIFF, band 1 flooded, band 2 days under water",
                              kb=round((d / nombre).stat().st_size / 1024)))
     return archivos
@@ -350,16 +365,71 @@ def impacto_geo():
             shutil.copy(IMP / f"{n}.geojson", d / f"{n}.geojson")
 
 
+def evento_json(zona):
+    ev = Evento(zona)
+    d = lambda t: str(t.date())
+    return dict(clave=ev.clave, nombre=ev.nombre, lluvia=[d(ev.lluvia[0]), d(ev.lluvia[1])], ventana=[d(ev.ventana[0]), d(ev.ventana[1])],
+                tormenta=[d(ev.inicio), d(ev.ventana[1])], hueco=["2026-07-27", "2026-08-10"])
+
+
+HEAT_M = 400.0      # celda del heatmap de secado
+
+
+def secado_heatmap(zonas):
+    """Puntos (centro de celda ~400 m) con días bajo agua, para el heatmap "dónde tarda más en secarse".
+    Peso = días medios bajo agua de los píxeles inundados × fracción inundada de la celda (≈ ha·día por ha).
+    Las celdas que siguen mojadas en la última pasada usan la cota (última pasada − primera detección).
+    Se escribe app/data/secado.geojson; el manifest guarda el máximo para normalizar en la app."""
+    from agregar_impacto import productos
+    feats, wmax = [], 0.0
+    for zona in zonas:
+        p = productos(zona)
+        ext, pers, perfil = p["ext"], p["pers"]["mid"], p["perfil"]
+        k = max(1, int(round(HEAT_M / abs(perfil["transform"].a))))
+        H, W = (ext.shape[0] // k) * k, (ext.shape[1] // k) * k
+        e = ext[:H, :W].reshape(H // k, k, W // k, k)
+        d = np.where(ext, pers, 0)[:H, :W].reshape(H // k, k, W // k, k).astype("float32")
+        s = p["sigue"][:H, :W].reshape(H // k, k, W // k, k)
+        n = e.sum(axis=(1, 3))
+        frac = n / (k * k)
+        dias = np.where(n > 0, d.sum(axis=(1, 3)) / np.maximum(n, 1), 0)
+        sig = s.sum(axis=(1, 3)) / np.maximum(n, 1)
+        ii, jj = np.where(frac >= 0.05)
+        t = perfil["transform"]
+        xs = t.c + (jj * k + k / 2) * t.a
+        ys = t.f + (ii * k + k / 2) * t.e
+        lon, lat = warp_transform(perfil["crs"], "EPSG:4326", list(xs), list(ys))
+        for a, b, i, j in zip(lon, lat, ii, jj):
+            w = float(dias[i, j] * frac[i, j])
+            wmax = max(wmax, w)
+            feats.append(dict(type="Feature", geometry=dict(type="Point", coordinates=[round(a, 5), round(b, 5)]),
+                              properties=dict(z=zona, d=int(round(dias[i, j])), f=round(float(frac[i, j]), 2),
+                                              w=round(w, 2), s=round(float(sig[i, j]), 2))))
+    (SAL / "secado.geojson").write_text(json.dumps(dict(type="FeatureCollection", features=feats), separators=(",", ":")))
+    print(f"   heatmap secado: {len(feats)} celdas")
+    return dict(archivo="data/secado.geojson", celda_m=HEAT_M, w_max=round(wmax, 2), n=len(feats))
+
+
 def cifras(zonas):
     """Cifras de portada, todas derivadas."""
     m = zonas["merin_arrozales"]
     rem = [s for s in m["fechas"] if s["remaining"] is not None]
     pico = max(rem, key=lambda s: s["remaining"])
     sep21 = next((s for s in rem if s["fecha"] >= "2026-09-20"), None)
-    total_ha = sum(z["resumen"]["ha_inundada"] for z in zonas.values())
-    total_km = sum(z["resumen"]["km_caminos"] for z in zonas.values())
-    total_previa = sum(z["resumen"]["ha_previa"] for z in zonas.values())
-    return dict(ha_total=total_ha, ha_previa=total_previa, km_total=round(total_km), merin_ha=m["resumen"]["ha_inundada"],
+    ago = [z for z in zonas.values() if z["evento"]["clave"] == "agosto"]
+    total_ha = sum(z["resumen"]["ha_inundada"] for z in ago)
+    total_km = sum(z["resumen"]["km_caminos"] for z in ago)
+    total_previa = sum(z["resumen"]["ha_previa"] for z in ago)
+    por_evento = {}
+    for clave in EVENTOS:
+        zs = [z for z in zonas.values() if z["evento"]["clave"] == clave]
+        por_evento[clave] = dict(n_zonas=len(zs), ha=sum(z["resumen"]["ha_inundada"] for z in zs),
+                                 ha_previa=sum(z["resumen"]["ha_previa"] for z in zs),
+                                 km=round(sum(z["resumen"]["km_caminos"] for z in zs)),
+                                 km_7d=round(sum(z["resumen"]["km_caminos_7d"] for z in zs)))
+    return dict(ha_total=total_ha, ha_previa=total_previa, km_total=round(total_km), n_zonas_agosto=len(ago),
+                por_evento=por_evento, km_todos=round(sum(z["resumen"]["km_caminos"] for z in zonas.values())),
+                km_7d_todos=round(sum(z["resumen"]["km_caminos_7d"] for z in zonas.values())), merin_ha=m["resumen"]["ha_inundada"],
                 merin_pico_fecha=pico["fecha"], merin_pico_pct=pico["remaining"],
                 merin_sep_fecha=sep21["fecha"] if sep21 else None, merin_sep_pct=sep21["remaining"] if sep21 else None,
                 merin_ha_lo=m["resumen"]["serie_ha_lo"], merin_ha_hi=m["resumen"]["serie_ha_hi"],
@@ -378,7 +448,7 @@ def main():
         out = SAL / zona
         out.mkdir()
         zonas[zona] = dict(
-            id=zona, nombre=NOMBRES[zona][0], rio=NOMBRES[zona][1], cuenca=CUENCA[zona],
+            id=zona, nombre=NOMBRES[zona][0], rio=NOMBRES[zona][1], cuenca=CUENCA[zona], evento=evento_json(zona),
             descripcion=DESCRIPCION[zona], capas=capas_zona(zona, out), fechas=series_zona(zona),
             resumen=resumen_zona(zona),
             caminos=tabla(IMP / "caminos.csv", zona, ["nombre", "donde", "clase", "km", "km_bajo_agua", "dias_mid",
@@ -393,9 +463,9 @@ def main():
             if isinstance(l.get("serie_500m"), str):
                 l["serie_500m"] = json.loads(l["serie_500m"].replace("'", '"'))
     impacto_geo()
-    manifest = dict(generado=str(date.today()), evento=dict(lluvia=["2026-08-15", "2026-08-19"], ventana=[str(EVENTO[0].date()), str(EVENTO[1].date())],
-                                                         tormenta=[str(INICIO_LLUVIA.date()), str(EVENTO[1].date())],
-                                                         hueco=["2026-07-27", "2026-08-10"]),
+    manifest = dict(generado=str(date.today()), evento=evento_json("treinta_y_tres"),
+                    eventos={k: evento_json(next(z for z in ZONAS if ZONAS[z].get("evento", "agosto") == k)) for k in EVENTOS},
+                    secado=secado_heatmap(zonas),
                     cifras=cifras(zonas), zonas=zonas, validacion=validacion(), monte_mercedes=monte_mercedes(),
                     contexto=contexto(COUNTRIES), descargas=descargas(),
                     leyendas=dict(persistencia=[dict(rango=f"{a}–{b}" if b < 9999 else f"{a}+", color="rgb(%d,%d,%d)" % c) for a, b, c in PERS_BINS],
