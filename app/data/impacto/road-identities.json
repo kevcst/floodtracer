@@ -1,0 +1,396 @@
+{
+  "format": 1,
+  "authority": "MTOP / OPP",
+  "retrieved_at": "2026-11-15T02:54:49.079462+00:00",
+  "source_roads_sha256": "64e936eacb5bb51a763dacef47e99992cb3dac1ac37452e0ff8282e57e060c38",
+  "source_manifest_sha256": "9aa21613c92ff9a730e1aaaa7a459b3c43351336935df069c22787d85c623176",
+  "source_road_count": 215,
+  "sources": [
+    {
+      "department": "treinta_y_tres",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "cb88a250351aa1bef7232fafd5fe56e344d2cd4ae9c281386af64656862fb91b",
+      "features": 929
+    },
+    {
+      "department": "rocha",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "e5c16f00a84e8c95703d9f9fe6d30d90a26eb56cbf0f5507dc6eeb0dca1cdefe",
+      "features": 331
+    },
+    {
+      "department": "cerro_largo",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_cerro_largo&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "41df6eb4823479a77a87734ffce98bd43c5c4d85d9a1b7a7ec77fa29e0a542e7",
+      "features": 1184
+    },
+    {
+      "department": "durazno",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_durazno&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "e7019ac5d9be381a4178ec019cf3376cbe7032240be3419f3c5b7093be3d0612",
+      "features": 1350
+    },
+    {
+      "department": "soriano",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_soriano&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "26e458901ecdb08057de757be8f33b1d69093992bdd7638b088d0e5dd28e8a8c",
+      "features": 1347
+    },
+    {
+      "department": "rio_negro",
+      "url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rio_negro&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=-58.14%2C-33.78%2C-53.28%2C-32.28%2CEPSG%3A4326",
+      "sha256": "f8f0fb092f18ca9a8e83a75f871f3797b20a74c6e2a970e995446d744dbd1566",
+      "features": 759
+    }
+  ],
+  "method": {
+    "crs": "EPSG:32721",
+    "buffer_m": 25,
+    "minimum_coverage_pct": 95,
+    "maximum_runner_up_pct": 10,
+    "maximum_p95_distance_m": 15,
+    "maximum_direction_difference_degrees": 30,
+    "minimum_direction_agreement_pct": 90,
+    "minimum_named_coverage_pct": 90
+  },
+  "summary": {
+    "enriched_segments": 16,
+    "segments_with_official_names": 9,
+    "segments_with_code_only": 7,
+    "linked_table_rows": 3
+  },
+  "segments": [
+    {
+      "index": 1,
+      "zone": "treinta_y_tres",
+      "original_name": "Unnamed rural road",
+      "display_name": "Cipa Cebollati - Arrayanes de Cebollati (UYTT0026)",
+      "official_name": "Cipa Cebollati - Arrayanes de Cebollati",
+      "official_code": "UYTT0026",
+      "source_gids": [
+        3352554
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283352554%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 4.99,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 20,
+      "zone": "treinta_y_tres",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYTT0038",
+      "official_name": "",
+      "official_code": "UYTT0038",
+      "source_gids": [
+        295193,
+        333702
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%28295193%2C333702%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.71,
+      "p95_distance_m": 8.1,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 25,
+      "zone": "treinta_y_tres",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYTT0038",
+      "official_name": "",
+      "official_code": "UYTT0038",
+      "source_gids": [
+        3352584
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283352584%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 5.63,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 82,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Punta Carretero (UYRO0167)",
+      "official_name": "Punta Carretero",
+      "official_code": "UYRO0167",
+      "source_gids": [
+        3344173
+      ],
+      "departments": [
+        "rocha"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283344173%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 1.71,
+      "p95_distance_m": 3.12,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 91,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Falucho (UYRO0261)",
+      "official_name": "Falucho",
+      "official_code": "UYRO0261",
+      "source_gids": [
+        3350157,
+        3350158,
+        3350166
+      ],
+      "departments": [
+        "rocha"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283350157%2C3350158%2C3350166%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 5.77,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 108,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "La Herradura (UYRO0328)",
+      "official_name": "La Herradura",
+      "official_code": "UYRO0328",
+      "source_gids": [
+        3349644,
+        3349646,
+        3349651
+      ],
+      "departments": [
+        "rocha"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283349644%2C3349646%2C3349651%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.22,
+      "p95_distance_m": 7.96,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 115,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYRO0330",
+      "official_name": "",
+      "official_code": "UYRO0330",
+      "source_gids": [
+        3350149
+      ],
+      "departments": [
+        "rocha"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283350149%29",
+      "coverage_pct": 99.83,
+      "runner_up_pct": 0.78,
+      "p95_distance_m": 9.85,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 133,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Escuela N°41 (UYTT0020)",
+      "official_name": "Escuela N°41",
+      "official_code": "UYTT0020",
+      "source_gids": [
+        3352560,
+        3352561,
+        3352562
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283352560%2C3352561%2C3352562%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 7.09,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 139,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYTT0131",
+      "official_name": "",
+      "official_code": "UYTT0131",
+      "source_gids": [
+        333357
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%28333357%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.57,
+      "p95_distance_m": 3.76,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 144,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Costa de Pelotas (UYRO0263)",
+      "official_name": "Costa de Pelotas",
+      "official_code": "UYRO0263",
+      "source_gids": [
+        3349462
+      ],
+      "departments": [
+        "rocha"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_rocha&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283349462%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.93,
+      "p95_distance_m": 3.18,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 157,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYTT0044",
+      "official_name": "",
+      "official_code": "UYTT0044",
+      "source_gids": [
+        3352566
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283352566%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.18,
+      "p95_distance_m": 3.83,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 181,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Camino a La Balsa (UYTT0147)",
+      "official_name": "Camino a La Balsa",
+      "official_code": "UYTT0147",
+      "source_gids": [
+        326652,
+        331922,
+        337587
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%28326652%2C331922%2C337587%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0.29,
+      "p95_distance_m": 10.1,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 193,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Camino Paso De Las Gallinas (UYTT0146)",
+      "official_name": "Camino Paso De Las Gallinas",
+      "official_code": "UYTT0146",
+      "source_gids": [
+        294913
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%28294913%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 4.34,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 194,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Camino Paso De Las Gallinas (UYTT0146)",
+      "official_name": "Camino Paso De Las Gallinas",
+      "official_code": "UYTT0146",
+      "source_gids": [
+        294913,
+        328281
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%28294913%2C328281%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 0,
+      "p95_distance_m": 3.13,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 195,
+      "zone": "merin_arrozales",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYTT0148",
+      "official_name": "",
+      "official_code": "UYTT0148",
+      "source_gids": [
+        3352749,
+        3352751
+      ],
+      "departments": [
+        "treinta_y_tres"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_treinta_y_tres&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283352749%2C3352751%29",
+      "coverage_pct": 99.08,
+      "runner_up_pct": 0,
+      "p95_distance_m": 4.65,
+      "direction_agreement_pct": 100.0
+    },
+    {
+      "index": 199,
+      "zone": "rio_branco_jaguarao",
+      "original_name": "Unnamed rural road",
+      "display_name": "Road UYCL0391",
+      "official_name": "",
+      "official_code": "UYCL0391",
+      "source_gids": [
+        3349528
+      ],
+      "departments": [
+        "cerro_largo"
+      ],
+      "source_url": "https://geoservicios.mtop.gub.uy/geoserver/caminerias_intendencias/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=caminerias_intendencias%3Av_camineria_cerro_largo&outputFormat=application%2Fjson&CQL_FILTER=gid+IN+%283349528%29",
+      "coverage_pct": 100.0,
+      "runner_up_pct": 4.45,
+      "p95_distance_m": 4.37,
+      "direction_agreement_pct": 96.77
+    }
+  ],
+  "manifest_rows": [
+    {
+      "zone": "treinta_y_tres",
+      "row_index": 3,
+      "segment_index": 25
+    },
+    {
+      "zone": "treinta_y_tres",
+      "row_index": 5,
+      "segment_index": 20
+    },
+    {
+      "zone": "rio_branco_jaguarao",
+      "row_index": 1,
+      "segment_index": 199
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How Long Does the Water Stay?</title>
+<title>After the Storm — NISAR Flood Explorer</title>
 <meta name="description" content="NISAR L-band radar reconstruction of Uruguay's August 2026 flood: where the water went, how long it stayed, and what it cut off.">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -171,10 +171,9 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 .compare-dates label {display:grid;gap:6px;font-size:.8rem;color:var(--fg2)}
 .compare-dates select {width:100%;min-width:0;background:var(--chip);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px;font:inherit}
 #provenance {border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.83rem;line-height:1.65}
-#provenance summary {cursor:pointer;font-weight:600;color:var(--fg)}
 #provenance-content {display:grid;gap:10px;margin-top:12px;color:var(--fg2)}
 #provenance-content p {margin:0}#provenance-content a {overflow-wrap:anywhere}
-#map > .maplibregl-control-container {position:relative;z-index:4}
+#map > .maplibregl-control-container {position:absolute;inset:0;z-index:4;pointer-events:none}
 .stamp {z-index:4}
 /* Guided exploration remains separate from scientific processing. */
 .tour-entry {display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -189,49 +188,52 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 #tour-title:focus-visible {outline:2px solid var(--flood);outline-offset:4px}
 @media(max-width:600px){#guided-tour{padding:14px}.tour-actions{align-items:flex-start;flex-direction:column}}
 </style>
+<link rel="stylesheet" href="map-layout.css?v=c63644936b58">
 </head>
-<body>
+<body data-layout="immersive">
 <nav class="top" aria-label="Sections"><div class="in">
   <span class="brand">How long does the water stay?</span>
-  <a href="#country">Country</a><a href="#drying">Drying</a><a href="#explore">Explore</a><a href="#impact">Impact</a><a href="#forest">Under the trees</a>
-  <a href="#why">Why</a><a href="#validation">Validation</a><a href="#method">Method</a><a href="#data">Data</a>
+  <a href="#country">Country</a><a href="#explore">Explore</a><a href="#impact">Impact</a><a href="#forest">Under the trees</a>
+  <a href="#why">Why</a><a href="#validation">Validation</a><a href="#method">Method</a>
 </div></nav>
 <div class="wrap">
   <div id="err" role="alert"></div>
-  <header class="hero">
+  <header class="hero" id="study-intro">
     <span class="badge">NASA Space Apps 2026 · Dancing with the SARs · Team Uruguay</span>
     <p class="eyebrow">NISAR L-band radar · Uruguay · floods of August and October 2026</p>
     <h1>How long does the <span class="flood">water</span> stay?</h1>
-    <p class="lede col">After a flood, the question that matters to farmers, road crews and emergency teams is how long the land stays under water. Clouds blinded optical satellites. NISAR's L-band radar did not. Pass after pass it mapped where new water appeared, what it cut off and when each field dried again, for two very different floods: the August storm in the east and centre, and the slow October rise of the Río Uruguay in the northwest.</p>
+
+    <p class="lede col">Where did possible flooding appear, and how long did it remain? We compare NISAR radar observations before and after the August storm in six areas of Uruguay. Radar can observe through clouds. Here you can read the results, compare them with other sources and understand their limits.</p>
   </header>
 
   <div class="figures" aria-label="Key figures">
-    <div class="fig"><span class="num" data-b="cifras.ha_total|ha"></span><span class="lbl">flooded by the August storm across <span data-b="cifras.n_zonas_agosto|int"></span> areas (seen on at least two passes), plus <span data-b="cifras.ha_previa|ha"></span> already wet before the rain</span><span class="src">NISAR, all tracks combined</span></div>
-    <div class="fig"><span class="num" data-b="cifras.por_evento.octubre.ha|ha"></span><span class="lbl">flooded by the October rise of the Río Uruguay and the Cuareim at Salto, Paysandú and Artigas</span><span class="src">NISAR, all tracks combined</span></div>
-    <div class="fig"><span class="num" data-b="cifras.merin_pico_pct|pct0"></span><span class="lbl">of the Laguna Merín flood was still under water on <span data-b="cifras.merin_pico_fecha|date"></span>, ten days after the rain</span><span class="src">NISAR track 53D</span></div>
-    <div class="fig"><span class="num" data-b="cifras.km_todos|km"></span><span class="lbl">of rural roads under water at some point, <span data-b="cifras.km_7d_todos|km"></span> of them for more than a week</span><span class="src">NISAR + OpenStreetMap roads</span></div>
+    <div class="fig"><span class="num" data-b="cifras.ha_total|ha"></span><span class="lbl">of detected flooding across the six study areas; land already wet before the storm is counted separately: <span data-b="cifras.ha_previa|ha"></span> already wet before the rain</span><span class="src">NISAR, all tracks combined</span></div>
+    <div class="fig"><span class="num" data-b="cifras.merin_pico_pct|pct0"></span><span class="lbl">of the mapped event footprint in the Laguna Merín study area was detected as water on <span data-b="cifras.merin_pico_fecha|date"></span>, ten days after the rain</span><span class="src">NISAR track 53D</span></div>
+    <div class="fig"><span class="num" data-b="cifras.km_total|km"></span><span class="lbl">of rural roads overlapping detected flooding at some point; this does not confirm road closures</span><span class="src">NISAR + OpenStreetMap roads</span></div>
     <div class="fig"><span class="num" data-b="cifras.desplazados|int"></span><span class="lbl">people displaced across Uruguay at the peak, <span data-b="cifras.desplazados_fecha|date"></span></span><span class="src">SINAE via press · preliminary · context only</span></div>
   </div>
 
   <section id="country" class="two" aria-labelledby="country-h">
     <div class="stack">
       <p class="eyebrow">The event</p>
-      <h2 id="country-h">Two floods, three river systems</h2>
-      <p class="soft">In August one storm fell on both sides of the Cuchilla Grande. Rain on the Atlantic side drained through the Olimar, Cebollatí and Yaguarón into the Laguna Merín, or flooded the low grazing land of Rocha. Rain on the other side ran down the Yí into the Río Negro, crests days apart. In October a different kind of flood arrived: the Río Uruguay and the Cuareim rose with rain that fell upstream in Brazil. Click an area to explore it.</p>
-      <svg class="ctxmap" id="ctxmap" viewBox="0 0 520 440" role="img" aria-label="Map of Uruguay with the study areas"></svg>
+
+      <h2 id="country-h">Where did the storm affect Uruguay?</h2>
+      <p class="soft">We study six areas in two river systems: the Laguna Merín basin in the east, and the Yí–Río Negro system farther west. River levels peaked on different days. The timeline gives context from public reports; the map shows where our study areas are.</p>
+      <svg class="ctxmap" id="ctxmap" viewBox="0 0 520 440" role="img" aria-label="Map of Uruguay with the six study areas"></svg>
+
     </div>
     <div class="stack">
       <p class="eyebrow">Timeline (press and SINAE reports, used only as context)</p>
       <ol class="timeline">
         <li><span class="d">~23 Jul</span><span class="t">Río Yí reaches 8.95 m in Durazno; 57 people leave their homes.</span></li>
-        <li><span class="d">27 Jul – 10 Aug</span><span class="t">Global NISAR data gap. June–July passes serve as the "normal" baseline.</span></li>
+        <li><span class="d">27 Jul – 10 Aug</span><span class="t">No NISAR observations during this gap. June–July observations provide the before-storm reference.</span></li>
         <li class="key"><span class="d">15–19 Aug</span><span class="t">INUMET warning: 70–100 mm/day, over 250 mm in five eastern departments; 317 mm at Laguna Merín.</span></li>
         <li class="key"><span class="d">19–20 Aug</span><span class="t">Olimar crests at ~8.6 m in Treinta y Tres; ~1,600 people displaced in the city.</span></li>
         <li class="key"><span class="d">22 Aug</span><span class="t">Yí crests at 9.75 m in Durazno, three days after the Olimar. National peak: 2,229 displaced.</span></li>
-        <li><span class="d">23 Aug</span><span class="t">Treinta y Tres drops to 418 displaced while Durazno rises to 416: the flood moves west.</span></li>
-        <li><span class="d">~21–25 Aug</span><span class="t">Soriano prepares for the Río Negro at Mercedes. In northern Rocha 5,000–6,000 ha of fields are under water and ~15,000 cattle are moved to higher ground. El Niño expected to last until at least May 2027.</span></li>
-        <li class="key"><span class="d">1 Oct</span><span class="t">The Cuareim passes 11.5 m at Artigas with water arriving from Brazil; ~120 people leave their homes.</span></li>
-        <li class="key"><span class="d">10–16 Oct</span><span class="t">The Río Uruguay reaches the ~12 m evacuation level at Salto with the Salto Grande spillway open, and peaks at 6.32 m in Paysandú (108 displaced).</span></li>
+
+        <li><span class="d">23 Aug</span><span class="t">Reported displacement falls to 418 people in Treinta y Tres and rises to 416 in Durazno.</span></li>
+        <li><span class="d">~21–25 Aug</span><span class="t">Soriano prepares for the Río Negro at Mercedes.</span></li>
+
       </ol>
     </div>
   </section>
@@ -239,10 +241,12 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
   <section class="stack-lg" aria-labelledby="pulse-h">
     <div class="stack col">
       <p class="eyebrow">Across the country</p>
-      <h2 id="pulse-h">The flood pulse, area by area</h2>
-      <p class="soft">Share of each area covered by new open water on every pass of one orbit track (same geometry every time). The shaded band is how much the number moves if the water detector were set reasonably stricter or looser. The red band is each area's rain or river rise; the vertical mark is the river crest reported in the press.</p>
+
+      <h2 id="pulse-h">How did detected flooding change over time?</h2>
+      <p class="soft">Each dot is one radar observation. A higher dot means more of the study area was classified as possible flooding. Each chart uses one repeated satellite path (a track), so observations can be compared. The shaded band shows how estimates change with stricter or looser detection settings; it is not a confidence interval. The vertical line marks the reported river peak. Gaps have no observations.</p>
+
     </div>
-    <div class="keyrow"><span><i style="background:var(--flood)"></i>New open water</span><span><i class="box" style="background:var(--flood);opacity:.25"></i>Range across detector settings</span><span><i style="background:var(--fg2)"></i>Reported crest</span><span><i class="box" style="background:var(--muted);opacity:.25"></i>NISAR data gap</span></div>
+    <div class="keyrow"><span><i style="background:var(--flood)"></i>Possible flooding</span><span><i class="box" style="background:var(--flood);opacity:.25"></i>Range with different settings</span><span><i style="background:var(--fg2)"></i>Reported river peak</span><span><i class="box" style="background:var(--muted);opacity:.25"></i>NISAR data gap</span></div>
     <div class="cards" id="pulse"></div>
   </section>
 
@@ -293,39 +297,40 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
         </div>
       </div>
       <div class="panel">
-        <div class="stack"><span class="ctrl-label">Area</span><div class="tabs" id="zone-tabs" role="group" aria-label="Area"></div><p class="readout" id="zone-title"></p></div>
-        <div class="stack"><span class="ctrl-label">Layer</span>
-          <div class="seg" id="layer-seg" role="group" aria-label="Layer">
+        <div class="stack"><span class="ctrl-label">Choose a place</span><div class="tabs" id="zone-tabs" role="group" aria-label="Choose a place"></div><p class="readout" id="zone-title"></p></div>
+        <div class="stack"><span class="ctrl-label">Map background</span>
+          <div class="seg" id="basemap-seg" role="group" aria-label="Map background">
+            <button type="button" data-basemap="street" aria-pressed="true">Street map</button>
+            <button type="button" data-basemap="satellite" aria-pressed="false">Satellite</button>
+          </div>
+          <p class="note" id="basemap-note">Satellite images provide background context. Their dates can differ from the selected radar observation. <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank" rel="noopener noreferrer">Esri World Imagery sources</a>.</p>
+        </div>
+        <div class="stack"><span class="ctrl-label">What to explore</span>
+          <div class="seg" id="layer-seg" role="group" aria-label="What to explore">
             <button type="button" data-layer="date" aria-pressed="true">Water by date</button>
             <button type="button" data-layer="extent" aria-pressed="false">Flood extent</button>
             <button type="button" data-layer="persist" aria-pressed="false">Days under water</button>
             <button type="button" data-layer="retreat" aria-pressed="false">Date it dried</button>
             <button type="button" data-layer="forest" aria-pressed="false">Under the trees</button>
-          </div></div>
+          </div><p class="note" id="date-layer-help" hidden>Look for orange to find possible flooding. Move the date slider to see what changes.</p></div>
         <div class="stack">
-          <label class="readout"><input type="checkbox" id="chk-compare"> Before / After</label>
+          <label class="readout"><input type="checkbox" id="chk-compare"> Compare two dates</label>
           <div id="compare-controls" class="stack" hidden>
             <div class="compare-dates"><label>Before<select id="compare-before" aria-label="Before date"></select></label><label>After<select id="compare-after" aria-label="After date"></select></label></div>
-            <p class="note">Compare two observed dates from the same orbit track. Pan and zoom either side together. The chart cursor follows the After date; no observations are interpolated. Roads show event-wide exposure on both sides, not conditions on each date.</p>
+            <p class="note">Pick an earlier and a later observation, then drag the divider to compare them. Roads show exposure across the whole event.</p>
           </div>
         </div>
         <div class="stack" id="date-ctrl"><span class="ctrl-label">Pass date · track <span id="trk"></span></span>
-          <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Pass date"></div>
+          <div class="row"><button type="button" class="btn" id="play">Play</button><input type="range" id="date-range" min="0" max="9" value="0" step="1" aria-label="Observation date"></div>
           <div class="ticks" id="ticks"></div></div>
         <div class="checks">
-          <label><input type="checkbox" id="chk-polygons" checked> Water polygons</label>
-          <label><input type="checkbox" id="chk-radar"> Radar image (optional)</label>
-          <label><input type="checkbox" id="chk-roads" checked> Flooded roads</label>
-          <label><input type="checkbox" id="chk-towns" checked> Towns</label>
+          <label><input type="checkbox" id="chk-polygons" checked> Show colored areas</label>
+          <label><input type="checkbox" id="chk-radar"> Show radar image</label>
+          <label><input type="checkbox" id="chk-roads" checked> Highlight roads</label>
         </div>
-        <label class="vector-opacity">Water polygon opacity <input type="range" id="water-opacity" min="10" max="90" value="50" aria-label="Water polygon opacity"></label>
-        <p class="note" id="vector-status" role="status">Water polygons use the existing published masks.</p>
-        <button type="button" class="btn" id="download-polygons" disabled>Download current polygons</button>
+        <label class="vector-opacity">Color strength <input type="range" id="water-opacity" min="10" max="100" value="50" aria-label="Color strength"></label>
+        <p class="note" id="vector-status" role="status">Preparing the map…</p>
         <div class="legend" id="legend"></div>
-        <details id="provenance" open><summary>Where does this result come from?</summary><div id="provenance-content" aria-live="polite"></div></details>
-        <div class="stats" id="stats"></div>
-        <div class="stack"><span class="ctrl-label">New water on each pass (% of area)</span><div style="position:relative"><svg class="chart" id="zchart" viewBox="0 0 420 160" role="img" aria-label="New water by pass"></svg></div></div>
-        <div class="stack"><span class="ctrl-label">This spot (~200 m cell)</span><div id="probe"><p class="probe-empty">Click the map.</p></div></div>
       </div>
     </div>
   </section>
@@ -333,89 +338,91 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
   <section id="impact" class="stack-lg" aria-labelledby="impact-h">
     <div class="stack col">
       <p class="eyebrow">Impact</p>
-      <h2 id="impact-h">What the water cut off, and for how long</h2>
-      <p class="soft">Radar pixels crossed with OpenStreetMap roads and towns, HydroBASINS sub-basins and ESA WorldCover land cover. "Days" is the midpoint of the interval the radar can bound: last wet pass to first dry pass. Roads usually run on embankments, so a 20 m pixel mixes the road with its flooded verge: read this as "road at risk of being cut".</p>
+      <h2 id="impact-h">Which land and roads overlap the detected flooding?</h2>
+      <p class="soft">Choose an area to see where detected flooding overlaps roads, towns and land types. A road overlap signals possible exposure, not a confirmed closure: radar may detect water beside the road. Days are estimated between satellite visits. Values in parentheses show the estimated range; ≥ means at least that long.</p>
       <div class="tabs" id="impact-tabs" role="group" aria-label="Area for impact tables"></div>
     </div>
+    <details class="box" id="area-extra"><summary>Additional area figures</summary><div id="area-extra-values"></div></details>
+    <details class="box" id="spot-details"><summary>Detections at the selected spot</summary><div id="probe"><p class="probe-empty">Click a point on the map to see its detections by date here.</p></div></details>
     <div class="grid2">
       <div class="box"><h3>Rural roads under water</h3><p class="note" id="roads-note"></p><div class="tbl"><table id="roads"></table></div></div>
-      <div class="box"><h3>Flooded land by cover type</h3><p class="note">Hectares newly flooded, and share of each cover type. In the Merín basin "cropland" is almost all rice.</p><div id="landcover" class="tbl"></div></div>
-      <div class="box"><h3>Towns</h3><p class="note">Radar under-counts flooding inside built-up areas (buildings also bounce the signal back). The ring within 500 m of town is the reliable number.</p><div class="tbl"><table id="towns"></table></div></div>
-      <div class="box"><h3>Sub-basins</h3><p class="note">Hectare-days = hectares × days under water: a single measure of how much land was out of use, and for how long.</p><div class="tbl"><table id="basins"></table></div></div>
+      <div class="box"><h3>Flooded land by cover type</h3><p class="note">Area of detected flooding for each land type. One hectare (ha) is 10,000 m². The percentage tells you how much of that land type was flagged. Land types come from ESA WorldCover.</p><div id="landcover" class="tbl"></div></div>
+      <div class="box"><h3>Towns</h3><p class="note">Buildings make flooding harder to detect. Compare the area flagged inside each town with the area flagged within 500 m of it. These figures do not count affected homes or people.</p><div class="tbl"><table id="towns"></table></div></div>
+      <div class="box"><h3>River drainage areas</h3><p class="note">A sub-basin is land that drains into the same part of a river. Hectare-days combines area and duration: 10 ha wet for 3 days = 30 hectare-days. It does not measure damage or lost production.</p><div class="tbl"><table id="basins"></table></div></div>
     </div>
-    <div class="box"><h3>All areas</h3><div class="tbl"><table id="allzones"></table></div></div>
+
+    <div class="box"><h3>Compare all six areas</h3><p class="note">Flood area combines the available satellite paths; single-track areas use one path. The one-track range uses different detection settings, so it can differ from the combined area. Typical days is the median duration, with its estimated range in parentheses. Still wet uses the 20 Oct reporting cutoff, which may differ from the last observation date.</p><div class="tbl"><table id="allzones"></table></div></div>
+
   </section>
 
   <section id="forest" class="stack-lg" aria-labelledby="forest-h">
     <div class="stack col">
       <p class="eyebrow">What L-band adds</p>
       <h2 id="forest-h">Water under the trees</h2>
-      <p class="soft">When a forest floor floods, the radar wave bounces between the water surface and the trunks and comes back stronger (HH rises over HV). L-band's 24 cm wave reaches the ground through the canopy; optical satellites and C-band radar mostly can't. Forest on higher ground also brightens a little when everything is wet, so we subtract it: what's left over riverside forest is the flood signal.</p>
+      <p class="soft">Water beneath trees is hard to see in ordinary satellite photos. NISAR's longer radar waves can interact with water and tree trunks, changing the returning signal. We compare riverside forest with forest on higher ground to look for this pattern. It is evidence of possible flooding beneath vegetation, not direct confirmation of water.</p>
     </div>
     <div class="keyrow"><span><i style="background:var(--still)"></i>Riverside forest (under 4 m above the nearest stream, within 1 km)</span><span><i style="background:var(--upland)"></i>Forest on higher ground (over 12 m)</span><span><i style="background:var(--openland)"></i>Open land</span></div>
     <div class="cards" id="forest-cards"></div>
-    <div class="box"><h3>Riverside excess, all areas</h3><p class="note">Mean extra HH−HV rise of riverside forest over upland forest during the flood window. Positive on every track = water under the trees.</p><div class="tbl"><table id="forest-tbl"></table></div></div>
+    <div class="box"><h3>How much stronger is the riverside signal?</h3><p class="note">These values compare changes in two radar channels, HH and HV. The extra rise is the riverside change minus the higher-ground change. A positive value supports the possible-flooding interpretation. Values are in decibels (dB), a measure of signal change, not water depth. The charts above show Mercedes; this table includes all study areas.</p><div class="tbl"><table id="forest-tbl"></table></div></div>
   </section>
 
   <section id="why" class="stack-lg" aria-labelledby="why-h">
-    <div class="stack col"><p class="eyebrow">Physical drivers</p><h2 id="why-h">Why the water behaved this way</h2></div>
+    <div class="stack col"><p class="eyebrow">Reading the results</p><h2 id="why-h">What can we learn from these observations?</h2></div>
     <div class="why" id="why-cards"></div>
   </section>
 
   <section id="validation" class="stack-lg" aria-labelledby="val-h">
     <div class="stack col">
       <p class="eyebrow">Can we trust it?</p>
-      <h2 id="val-h">Three independent checks</h2>
-      <p class="soft">None of these sources feed the NISAR maps. They only test them.</p>
+      <h2 id="val-h">How do we check the results?</h2>
+      <p class="soft">We use three comparisons: consistency between NISAR observations, a separate radar satellite and reported river peaks. The first checks our own results; the other two use external sources. Agreement builds confidence, but none of these checks proves every mapped area is flooded.</p>
     </div>
-    <div class="box"><span class="pill info">1 · NISAR vs NISAR</span><h3>Two orbits a day apart should see the same water</h3>
+    <div class="box"><span class="pill info">1 · Compare NISAR observations</span><h3>Do different satellite paths give similar results?</h3>
       <p class="soft" id="val-pairs-txt"></p>
       <div style="position:relative"><svg class="chart" id="val-pairs" viewBox="0 0 900 260" role="img" aria-label="Agreement between tracks one day apart"></svg></div>
-      <div class="keyrow"><span><i class="box" style="background:var(--openland)"></i>Old detector: fixed brightness threshold</span><span><i class="box" style="background:var(--still)"></i>Current detector: drop vs. the pixel's own June–July baseline</span></div>
+      <div class="keyrow"><span><i class="box" style="background:var(--openland)"></i>Earlier method: one brightness cutoff</span><span><i class="box" style="background:var(--still)"></i>Current method: change from the same spot before the storm</span></div>
     </div>
     <div class="grid2">
-      <div class="box"><span class="pill info">2 · Sentinel-1 (C-band)</span><h3>Same-day comparison with another radar</h3><p class="soft" id="val-s1-txt"></p><div class="tbl" style="max-height:520px;overflow-y:auto"><table id="val-s1"></table></div></div>
-      <div class="box"><span class="pill info">3 · River crests</span><h3>Does the radar peak follow the reported crest?</h3><p class="soft">NISAR revisits each track every 12 days, so it can't pin the crest. What it must do is light up on the first pass after it and fade afterwards, east before west. Peak = pass with most new open water between 10 Aug and 10 Sep; on the Yí and Río Negro open water is weak (the flood stays under the forest), so their peak is less meaningful.</p><div class="tbl"><table id="val-cron"></table></div></div>
+      <div class="box"><span class="pill info">2 · Compare with Sentinel-1</span><h3>Does another radar see similar water?</h3><p class="soft" id="val-s1-summary"></p><details class="study-detail"><summary>Read the comparison scores and table</summary><p class="soft" id="val-s1-txt"></p><div class="tbl" style="max-height:520px;overflow-y:auto"><table id="val-s1"></table></div></details></div>
+      <div class="box"><span class="pill info">3 · Compare with river reports</span><h3>Do the dates fit the reported river peaks?</h3><p class="soft">The table compares reported river peaks with the observation showing the most detected open-water flooding between 10 Aug and 10 Sep. Each NISAR path repeats every 12 days, so the true peak can fall between visits. A river-level peak and the largest flooded area need not occur on the same day. This comparison is less informative where little open water is detected, including the Yí and Río Negro areas.</p><div class="tbl"><table id="val-cron"></table></div></div>
     </div>
   </section>
 
   <section id="method" class="stack-lg" aria-labelledby="method-h">
-    <div class="stack col"><p class="eyebrow">Method</p><h2 id="method-h">How the maps are made</h2></div>
+    <div class="stack col"><p class="eyebrow">Method</p><h2 id="method-h">How does the analysis work?</h2></div>
+    <section id="provenance" class="box" aria-labelledby="provenance-title"><h3 id="provenance-title" tabindex="-1">Data behind the current map</h3><div id="provenance-content" aria-live="polite"></div></section>
     <div class="grid2">
-      <div class="box"><h3>Detecting new water</h3><ul class="clean">
-        <li>NISAR L2 GCOV, HH and HV gamma-naught, 20 m, June–November 2026. 5×5 speckle filter.</li>
-        <li>A pixel has <b>new water</b> when its HH drops more than 3 dB below its own baseline median, is darker than −14 dB, lies outside permanent water, and belongs to a patch of at least 10 pixels (0.4 ha). Each pass is first normalized by its scene-wide median change.</li>
-        <li>Comparing each pixel with itself cancels the geometry, incidence angle and calibration of each orbit track. That is what let us combine tracks.</li>
-        <li><b>Flood extent</b> = new water on at least two observations (any track) in the event window: 15 Aug–10 Sep for the August storm, 28 Sep–24 Oct for the October river flood.</li>
-        <li><b>Baseline:</b> June–July passes for the August storm. The Río Uruguay was already high in July, so the October areas use the four driest passes before 28 Sep instead (the ones with the least dark water).</li>
+
+      <details class="box study-detail"><summary>How we identify possible flooding · technical details</summary><ul class="clean">
+        <li>NISAR L2 GCOV, HH and HV gamma-naught, 20 m, PROVISIONAL products only (June–October 2026). 5×5 speckle filter. <a href="https://nisar-docs.asf.alaska.edu/" target="_blank" rel="noopener">NISAR data guide</a>.</li>
+        <li>A map cell is flagged as <b>possible flooding</b> when its HH drops more than 3 dB below its own June–July median, is darker than −14 dB, lies outside permanent water, and belongs to a patch of at least 10 pixels (0.4 ha). Each pass is first normalized by its scene-wide median change.</li>
+        <li>We compare each small map cell with earlier observations from the same satellite path. This reduces differences caused by viewing angle and signal calibration when combining paths.</li>
+        <li><b>Flood extent</b> combines detections from at least two observations between 15 Aug (start of the rain) and 10 Sep. Single-track areas use at least one detection.</li>
         <li><b>Already wet before the storm:</b> NISAR had a global data gap until 10 Aug. Land already wet on the 10–14 Aug passes (from July rains) cannot be attributed to this storm or dated, so it is reported separately and excluded from extent, duration and road figures.</li>
-      </ul></div>
-      <div class="box"><h3>Measuring how long it stayed</h3><ul class="clean">
-        <li>All passes from all tracks over an area are merged at mask level (2–3 tracks, every 1–6 days).</li>
-        <li>A pixel has <b>dried</b> at the first dry observation confirmed by the next one.</li>
-        <li>Days under water is an interval: from the last wet pass minus the first wet pass, up to the first dry pass minus the pass before the water arrived (never before the rain started on 15 Aug). Maps show the midpoint.</li>
-        <li>Pixels still wet on the last pass (20 Oct in the east, early November in the litoral) are counted with a lower bound.</li>
-      </ul></div>
-      <div class="box"><h3>Limits</h3><ul class="clean">
-        <li>12-day revisit per track: crests between passes are missed; persistence has days, not hours, of precision.</li>
+      </ul></details>
+      <details class="box study-detail"><summary>How we estimate duration · technical details</summary><ul class="clean">
+        <li>We combine the available water maps from different satellite paths. In areas with several paths, this gives observations closer together than the 12-day repeat of a single path.</li>
+        <li>For combined tracks, a pixel has <b>dried</b> at the first dry observation confirmed by the next one, except at the end of the series. Single-track results use the first later dry observation.</li>
+        <li>Satellite visits cannot tell us the exact hour water arrived or left. We calculate a shortest and longest duration from nearby wet and dry observations, starting no earlier than 15 Aug. Maps show the midpoint of that range.</li>
+        <li>If there is no later dry observation, we can only say the water lasted at least this long. The “20 Oct” label is a reporting cutoff; it may differ from the actual observation date.</li>
+      </ul></details>
+      <details class="box study-detail"><summary>Forest signal · technical details</summary><p class="soft">Candidate riverside forest is selected using baseline HH/HV and approximate height and distance to streams. The mask flags an HH−HV rise over 2 dB beyond the upland reference, with an HH rise over 1 dB on an event pass. This signal is compatible with possible inundation beneath vegetation; it is not independently confirmed water.</p></details>
+      <div class="box"><h3>What these results cannot tell us</h3><ul class="clean">
+        <li>Each satellite path repeats every 12 days. Events between visits can be missed. Duration estimates describe the first detected wet episode, in days rather than hours.</li>
+        <li>These layers estimate water presence and timing; they do not measure water depth, volume, damage or road closures.</li>
         <li>Cities are under-counted: buildings bounce the radar back like flooded forest does.</li>
         <li>Data arrives days after each pass: this is post-event assessment and planning, not early warning.</li>
-        <li>PROVISIONAL calibration until 20 Oct. The October areas also use VALIDATED passes (from 21 Oct) to see the water leave; those jump ~−1.7 dB, so each one is normalized by its scene-wide median change against the baseline, in both the drop and the −14 dB ceiling.</li>
-        <li>Extents include shallow and partly flooded land: compared with a Sentinel-1 open-water map they are an upper bound (see Validation).</li>
+        <li>We use one provisional product version throughout. Later validated products have different calibration and are kept separate.</li>
+        <li>NISAR flags more area than the strict Sentinel-1 open-water map. Some extra detections may be shallow or partly flooded land; disagreement can also include errors (see Checks).</li>
         <li>Press and SINAE figures are preliminary and used only as context.</li>
       </ul></div>
-      <div class="box"><h3>What this enables</h3><ul class="clean">
-        <li><b>SINAE / CECOED:</b> which rural roads and neighbourhoods stayed cut off longest, to prioritize repairs and assistance after the next flood.</li>
-        <li><b>Producers and insurers:</b> hectare-days of flooding per paddock, independent of cloud cover.</li>
-        <li><b>Planning for El Niño 2026-27:</b> the drying map is a map of where water lingers. That is where the next flood will hurt longest.</li>
-        <li><b>Beyond Uruguay:</b> the same pipeline runs on any NISAR GCOV scene. Only the area list changes.</li>
+      <div class="box"><h3>How could this help?</h3><ul class="clean">
+        <li><b>Emergency teams:</b> identify places and roads to investigate after a flood, alongside local reports.</li>
+        <li><b>Farmers and planners:</b> compare the area and estimated duration of detected flooding, even during cloudy weather.</li>
+        <li><b>Local planning:</b> use this event to identify places where water remained longer. This does not predict the next flood.</li>
+        <li><b>Other regions:</b> adapt the workflow to available NISAR data, then check it against local conditions and independent observations.</li>
       </ul></div>
     </div>
-  </section>
-
-  <section id="data" class="stack-lg" aria-labelledby="data-h">
-    <div class="stack col"><p class="eyebrow">Open data</p><h2 id="data-h">Download the results</h2><p class="soft">CSV tables and GeoTIFFs (band 1 = flooded, band 2 = days under water; 255 = still wet on the last pass). Code and full pipeline in the project repository.</p></div>
-    <div class="dl" id="downloads"></div>
   </section>
 
   <footer>
@@ -426,6 +433,10 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 </div>
 
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="road-identities.js?v=3100c1a0e9be"></script>
+<script src="vector-classes.js?v=f91d6eca3858"></script>
+<script src="vector-store.js?v=b4f2b327622b"></script>
+<script src="map-layout.js?v=e71ab513958c"></script>
 <script>
 "use strict";
 function showError(msg) { const e = document.getElementById("err"); e.textContent = msg; e.style.display = "block"; }
@@ -445,18 +456,16 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   const trk = (t) => { const m = /T(\d+)([AD])/.exec(t || ""); return m ? { n: m[1], dir: m[2] === "D" ? "descending" : "ascending", short: m[1] + m[2] } : { n: t, dir: "", short: t }; };
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-  let M;
-  try { M = await (await fetch("data/manifest.json")).json(); }
+  let M, manifestSource;
+  try { manifestSource = await (await fetch("data/manifest.json", {cache:"no-cache"})).text(); M = JSON.parse(manifestSource); }
   catch (e) { showError("The data did not load (" + e.message + "). Serve the app folder over http (python3 -m http.server -d app 8000)."); return; }
   document.querySelectorAll("[data-b]").forEach(n => { const [p, f] = n.dataset.b.split("|"); n.textContent = (FMT[f] || String)(get(M, p)); });
   $("#gen").textContent = `Results generated ${M.generado}.`;
   const Z = M.zonas, ZIDS = Object.keys(Z);
+  const roadDisplayName = road => road.display_name || road.nombre;
   const RAIN = M.evento.lluvia, GAP = M.evento.hueco;
-  // Each area belongs to one event (August storm in the east, October Uruguay-river flood in the litoral).
-  const EVZ = (z) => Z[z].evento || M.evento;
-  const LAST = (z) => { const f = Z[z].capas.serie.fechas; return f[f.length - 1]; };
-  const T0 = "2026-06-12", T1 = "2026-11-15", XT = ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01", "2026-11-01"];
-  const addDays = (s, n) => new Date(ms(s) + n * 864e5).toISOString().slice(0, 10);
+
+  let layout = null;
 
   /* ---------- tooltip ---------- */
   function tipOn(target, host, text) {
@@ -539,14 +548,16 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       const ev = ser.filter(p => p.fecha >= EVZ(z).ventana[0] && p.fecha <= addDays(EVZ(z).ventana[1], 12));
       const pk = (ev.length ? ev : ser).reduce((a, p) => p.v > a.v ? p : a, (ev.length ? ev : ser)[0]);
       const card = document.createElement("div"); card.className = "card click"; card.tabIndex = 0; card.setAttribute("role", "button");
-      card.innerHTML = `<h3>${esc(d.nombre)}</h3><span class="sub">${esc(d.rio)} · ${EVZ(z).clave === "octubre" ? "October river flood" : "August storm"} · track ${trk(d.resumen.serie_track).short}</span>`;
-      const box = document.createElement("div"); box.style.position = "relative"; const svg = el("svg", { class: "chart", viewBox: "0 0 320 170", role: "img", "aria-label": d.nombre + " new water by pass" }); box.appendChild(svg); card.appendChild(box);
-      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Peak ${nf(pk.v, 1)}% on ${fmtDate(pk.fecha)} · ${nf(d.resumen.ha_inundada)} ha flooded`; card.appendChild(p);
+
+      card.innerHTML = `<h3>${esc(d.nombre)}</h3><span class="sub">${esc(d.rio)} · track ${trk(d.resumen.serie_track).short}</span>`;
+      const box = document.createElement("div"); box.style.position = "relative"; const svg = el("svg", { class: "chart", viewBox: "0 0 320 170", role: "img", "aria-label": d.nombre + " possible flooding by observation" }); box.appendChild(svg); card.appendChild(box);
+      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Largest observed share: ${nf(pk.v, 1)}% on ${fmtDate(pk.fecha)} · event flood area: ${nf(d.resumen.ha_inundada)} ha`; card.appendChild(p);
       host.appendChild(card);
       const ymax = niceMax(Math.max(...ser.map(s => s.hi ?? s.v)) * 1.05);
-      timeChart(svg, { t0: T0, t1: T1, rain: EVZ(z).lluvia, ymin: 0, ymax, yticks: [0, ymax / 2, ymax], yfmt: v => nf(v, v < 2 && v > 0 ? 1 : 0) + "%",
-        xticks: XT, xfmt: d => fmtDate(d).split(" ")[1], crest: crests[z]?.cresta,
-        series: [{ name: "new water", color: css("--flood"), pts: ser, band: true }], vfmt: p => `${nf(p.v, 1)}% (range ${nf(p.lo, 1)}–${nf(p.hi, 1)})` });
+      timeChart(svg, { t0: "2026-06-12", t1: "2026-10-20", ymin: 0, ymax, yticks: [0, ymax / 2, ymax], yfmt: v => nf(v, v < 2 && v > 0 ? 1 : 0) + "%",
+        xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: d => fmtDate(d).split(" ")[1], crest: crests[z]?.cresta,
+        series: [{ name: "new water", color: css("--flood"), pts: ser, band: true }], vfmt: p => `${nf(p.v, 1)}% (range ${nf(p.lo, 1)}–${nf(p.hi, 1)})${p.remaining != null ? ` · ${nf(p.remaining)}% of the event footprint still flagged` : ""}` });
+
       const go = () => { setZone(z); document.getElementById("explore").scrollIntoView(); };
       card.addEventListener("click", go); card.addEventListener("keydown", (e) => { if (e.key === "Enter") go(); });
     }
@@ -556,17 +567,25 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   const dark = () => document.documentElement.dataset.theme === "dark" || (document.documentElement.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
   // Keep standard OpenStreetMap colors legible beneath translucent polygons, including in dark UI mode.
   const tiles = () => ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
+  let basemap = 'street';
+  const waterOpacityByStyle = { standard: 50, satellite: 95 };
+  const waterOpacityStyle = () => basemap === 'satellite' ? 'satellite' : 'standard';
+  const satelliteSource = {
+    type: 'raster', tileSize: 256, maxzoom: 19,
+    tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+    attribution: 'Source: <a href="https://goto.arcgisonline.com/maps/World_Imagery" target="_blank" rel="noopener noreferrer">Esri</a>, Vantor, Earthstar Geographics, and the GIS User Community'
+  };
   const basePaint = () => ({ "raster-saturation": 0, "raster-brightness-min": 0, "raster-brightness-max": 1, "raster-contrast": 0 });
   if (!window.maplibregl) { showError("The map library did not load (no internet?). Charts and tables still work."); }
   const map = window.maplibregl ? new maplibregl.Map({
     container: "map", attributionControl: { compact: true },
-    style: { version: 8, glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "base", type: "raster", source: "base", paint: basePaint(dark()) }] },
+    style: { version: 8, sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" }, satellite: satelliteSource }, layers: [{ id: "base", type: "raster", source: "base", paint: basePaint(dark()) }, { id: "satellite", type: "raster", source: "satellite", layout: { visibility: "none" }, paint: { "raster-fade-duration": 0 } }] },
     center: [-54.5, -33], zoom: 7, maxZoom: 16, cooperativeGestures: false,
   }) : null;
   if (map) { map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right"); map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left"); }
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (map && map.getLayer("base")) for (const [k, v] of Object.entries({ "raster-saturation": 0, "raster-brightness-max": 1, "raster-brightness-min": 0, "raster-contrast": 0, ...basePaint(dark()) })) map.setPaintProperty("base", k, v); });
 
-  let zid = "merin_arrozales", layer = "date", di = 0, timer = null, mapReady = false, probeData = {}, probeMarker = null;
+  let zid = "merin_arrozales", layer = "date", di = 0, timer = null, mapReady = false, probeData = {}, probeMarker = null, probeRequest = 0;
   const mapLoaded = map ? new Promise(r => map.on("load", r)) : Promise.resolve();
   let comparisonEnabled = false, beforeDi = 0, comparisonMap = null, comparisonReady = null;
   const img = (z, f) => `data/${z}/${f}`;
@@ -582,24 +601,28 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       const feature=event.features?.[0];if(!feature)return;
       const info=waterDisplayContext;
       const container=document.createElement('div'),title=document.createElement('strong'),detail=document.createElement('p');
-      title.textContent=feature.properties.label;
-      detail.textContent=`${Z[info.zone].nombre} · ${info.view==='date'?fmtDate(info.date)+' 2026':'Published event layer'}. Boundary traced from the existing display mask; no new area estimate is calculated from this polygon.`;
+      const copy=info.view==='date'?dateClassCopy(feature.properties.label):null;
+      title.textContent=copy?.title||feature.properties.label;
+      detail.textContent=copy?`${fmtDate(info.date)} 2026 · ${Z[info.zone].nombre}. ${copy.detail}`:`${Z[info.zone].nombre} · Published event layer. Boundary traced from the existing display mask; no new area estimate is calculated from this polygon.`;
       container.append(title,detail);new maplibregl.Popup({closeButton:true}).setLngLat(event.lngLat).setDOMContent(container).addTo(map);
     });
     map.on('mouseenter','water-fill',()=>map.getCanvas().style.cursor='pointer');
     map.on('mouseleave','water-fill',()=>map.getCanvas().style.cursor='');
     try {
-      const [roads, towns] = await Promise.all([fetch("data/impacto/caminos.geojson").then(r => r.json()), fetch("data/impacto/localidades.geojson").then(r => r.json())]);
-      map.addSource("towns", { type: "geojson", data: towns });
-      map.addLayer({ id: "towns", type: "line", source: "towns", paint: { "line-color": "#ffffff", "line-width": 1.2, "line-dasharray": [2, 1.5] } });
-      map.addLayer({ id: "towns-l", type: "symbol", source: "towns", layout: { "text-field": ["get", "nombre"], "text-size": 11, "text-font": ["Open Sans Semibold"] }, paint: { "text-color": "#ffffff", "text-halo-color": "#000", "text-halo-width": 1 } });
-      map.addSource("roads", { type: "geojson", data: roads });
-      map.addLayer({ id: "roads", type: "line", source: "roads", paint: { "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1.5, 13, 4],
-        "line-color": ["step", ["get", "dias_mid"], "#fdd6bf", 8, "#f7a67a", 15, "#e66e3c", 29, "#b44216", 43, "#6e2507"] } });
+      const roads = await window.loadIdentifiedRoads(M, manifestSource);
+      map.addSource("roads", { type: "geojson", data: roads, attribution: "© OpenStreetMap contributors" });
+      // A white outer halo and dark casing separate road exposure from every polygon palette.
+      map.addLayer({ id: 'roads-halo', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#ffffff', 'line-width': roadLineWidth(3) } });
+      map.addLayer({ id: 'roads-casing', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#171321', 'line-width': roadLineWidth(1.5) } });
+      map.addLayer({ id: 'roads', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-width': roadLineWidth(),
+          'line-color': ['step', ['get', 'dias_mid'], roadPalette()[0], 8, roadPalette()[1], 15, roadPalette()[2], 29, roadPalette()[3], 43, roadPalette()[4]] } });
       map.on("click", "roads", (e) => {
         if(comparisonEnabled)return;
         const p = e.features[0].properties;
-        new maplibregl.Popup({ closeButton: true }).setLngLat(e.lngLat).setHTML(`<b>${esc(p.nombre)}</b><br>${nf(+p.km_bajo_agua, 2)} km under water<br>~${p.dias_mid} days (${p.dias_min}–${p.dias_max})${p.sigue === "true" || p.sigue === true ? "<br>still wet on 20 Oct" : ""}`).addTo(map);
+        new maplibregl.Popup({ closeButton: true }).setLngLat(e.lngLat).setHTML(`<b>${esc(roadDisplayName(p))}</b><br>${nf(+p.km_bajo_agua, 2)} km under water<br>~${p.dias_mid} days (${p.dias_min}–${p.dias_max})${p.sigue === "true" || p.sigue === true ? "<br>still wet on 20 Oct" : ""}${p.identification_source ? `<p class="note">${p.official_name ? 'Name and code' : 'Road code; name unavailable'}: ${esc(p.identification_source)}<br><a href="${esc(p.identification_source_url)}" target="_blank" rel="noopener noreferrer">Official source record</a></p>` : p.nombre.startsWith('Unnamed') ? '<p class="note">Name not recorded in the published OpenStreetMap extract.</p>' : ''}`).addTo(map);
       });
       map.on("mouseenter", "roads", () => map.getCanvas().style.cursor = "pointer"); map.on("mouseleave", "roads", () => map.getCanvas().style.cursor = "");
     } catch (e) { console.warn("vector layers", e); }
@@ -613,7 +636,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
         const feature=target.queryRenderedFeatures(e.point,{layers:['water-fill']})[0];
         if(feature){
           const box=document.createElement('div');
-          box.textContent=`${left?'Before':'After'} · ${fmtDate(Z[zid].capas.serie.fechas[left?beforeDi:di])} 2026 · ${feature.properties.label}`;
+          box.textContent=`${left?'Before':'After'} · ${fmtDate(Z[zid].capas.serie.fechas[left?beforeDi:di])} 2026 · ${dateClassCopy(feature.properties.label)?.title||feature.properties.label}`;
           new maplibregl.Popup().setLngLat(e.lngLat).setDOMContent(box).addTo(map);
         }
         return;
@@ -625,20 +648,22 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   /* Vector presentation of the same published masks and corner coordinates. */
   const emptyWater = () => ({type:'FeatureCollection',features:[]});
   const vectorCache = new Map(), vectorJobs = new Map();
+  const vectorStore = window.createPublishedVectorStore({fallback:tracePublishedMask, manifestSource});
+  let vectorController = null, pendingVectorKey = null, pendingVectorRequest = 0;
+  let mainGeometryKey = null, beforeGeometryKey = null, completedVectorKey = null, dateRenderTimer = null;
   let vectorWorker = null, vectorJobId = 0, vectorRenderId = 0, visibleWater = null, waterDisplayContext = null, cancelMapReadyWait = null, mapIsLoading = true;
-  function setMapLoading(loading,detail='Preparing the map and water polygons.') {
+  function setMapLoading(loading,detail='Preparing the map and water polygons.',showOverlay=true) {
     mapIsLoading=loading;
-    const overlay=$('#map-loading');overlay.hidden=!loading;overlay.dataset.error='false';overlay.setAttribute('role','status');
+    const overlay=$('#map-loading');overlay.hidden=!loading||!showOverlay;overlay.dataset.error='false';overlay.setAttribute('role','status');
     $('#map').setAttribute('aria-busy',String(loading));
     $('#map-loading-title').textContent='Loading map…';$('#map-loading-detail').textContent=detail;$('#map-loading-retry').hidden=true;
-    $('#download-polygons').disabled=loading||!visibleWater;
     updateTourLoading();
   }
   function failMapLoading(error) {
     mapIsLoading=false;stop();
     const overlay=$('#map-loading');overlay.hidden=false;overlay.dataset.error='true';overlay.setAttribute('role','alert');
     $('#map').setAttribute('aria-busy','false');$('#map-loading-title').textContent='The map could not load';
-    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;$('#download-polygons').disabled=true;updateTourLoading();
+    $('#map-loading-detail').textContent=error.message;$('#map-loading-retry').hidden=false;updateTourLoading();
   }
   function finishAfterMapRender(request,onReady) {
     if(cancelMapReadyWait)cancelMapReadyWait();
@@ -666,17 +691,15 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     };
     return vectorWorker;
   }
-  function colorRGB(color) {
-    if(color.startsWith('#')){const value=parseInt(color.slice(1),16);return [value>>16&255,value>>8&255,value&255];}
-    return (color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+  function dateClassCopy(label) {
+    return {
+      'Candidate new water': {title:'Possible flooding', detail:'Radar changes suggest flooding compared with June–July.'},
+      'Baseline water': {title:'Existing water bodies', detail:'Water bodies detected in the June–July reference observations.'},
+      'Already wet before the storm (10–14 Aug)': {title:'Wet before the storm', detail:'Already wet on the 10–14 August observations. Excluded from storm flooding.'}
+    }[label];
   }
   function vectorClasses(view) {
-    const make=(color,label,rgb=colorRGB(color))=>({color,label,rgb});
-    if(view==='date')return [make(css('--flood'),'Candidate new water',[235,104,52]),make(css('--still'),'Baseline water',[42,120,214]),make(M.leyendas.previa||'rgb(138,149,161)','Already wet before the storm (10–14 Aug)',[138,149,161])];
-    if(view==='extent')return [make(css('--flood'),'Published flood-extent classification',[235,104,52]),make(M.leyendas.previa||'rgb(138,149,161)','Already wet before the storm (10–14 Aug)')];
-    if(view==='persist')return [...M.leyendas.persistencia.map(p=>make(p.color,`Observed duration: ${p.rango} days`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
-    if(view==='retreat')return [...M.leyendas.retiro.map(p=>make(p.color,`Published retreat interval: ${p.desde} to ${p.hasta}`)),make(M.leyendas.sigue,'No dry observation by the end of the published series')];
-    return [make('rgb(27,175,122)','Published riverside-forest signal classification')];
+    return window.nisarVectorClasses(view, M.leyendas, {flood:css('--flood'), still:css('--still')});
   }
   function tracePublishedMask(url,corners,classes) {
     const key=url+'|'+classes.map(c=>c.color).join(',');
@@ -699,27 +722,75 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     while(vectorCache.size>5)vectorCache.delete(vectorCache.keys().next().value);
     return promise;
   }
-  async function renderWaterVectors(url,corners,view,zone,date) {
-    const request=++vectorRenderId;
+  function prefetchVectorViews(zone, date, view, request) {
+    if (request !== vectorRenderId) return;
+    const views = [], seen = new Set();
+    const add = (z, v, f) => {
+      const file = v === 'date' ? `agua_${f}.png` : {extent:'extension.png',persist:'persistencia.png',retreat:'retiro.png',forest:'monte.png'}[v];
+      const url = img(z, file);
+      if (seen.has(url) || url === img(zone, view === 'date' ? `agua_${date}.png` : {extent:'extension.png',persist:'persistencia.png',retreat:'retiro.png',forest:'monte.png'}[view])) return;
+      seen.add(url); views.push({url, corners:Z[z].capas[v === 'date' ? 'serie' : 'evento'].esquinas, classes:vectorClasses(v)});
+    };
+    if (tourActive && tourSteps[tourStep + 1]) {
+      const next = tourSteps[tourStep + 1]; add(next.zone, next.view, next.date);
+    }
+    if (view === 'date') {
+      const dates = Z[zone].capas.serie.fechas, index = dates.indexOf(date);
+      for (const neighbor of [index + 1, index - 1]) if (dates[neighbor]) add(zone, 'date', dates[neighbor]);
+    } else {
+      const order = ['extent','persist','retreat','forest'];
+      const next = order[order.indexOf(view) + 1]; if (next) add(zone, next, date);
+    }
+    vectorStore.prefetch(views);
+  }
+  async function renderWaterVectors(url,corners,view,zone,date,playback=false) {
+    const compare = comparisonEnabled, earlier = Z[zone].capas.serie.fechas[beforeDi];
+    const beforeUrl = compare ? img(zone, `agua_${earlier}.png`) : null;
+    const key = `${url}|${beforeUrl || ''}`;
+    // Visibility, roads and town switches must not upload the same geometry again.
+    if (key === completedVectorKey && visibleWater && !mapIsLoading) {
+      if (compare) syncComparisonLayers(earlier);
+      return;
+    }
+    if (key === pendingVectorKey && pendingVectorRequest === vectorRenderId) {
+      if (!playback && mapIsLoading) setMapLoading(true, `Loading prepared polygons for ${Z[zone].nombre}.`);
+      return;
+    }
+    const request = ++vectorRenderId;
+    vectorController?.abort(); vectorStore.cancelPrefetch();
+    const controller = new AbortController(); vectorController = controller;
+    pendingVectorKey = key; pendingVectorRequest = request;
     if(cancelMapReadyWait)cancelMapReadyWait();
-    setMapLoading(true,`Preparing water polygons for ${Z[zone].nombre}.`);
-    const status=$('#vector-status');status.textContent='Drawing the selected water polygons…';
-    map.getSource('water-vectors').setData(emptyWater());visibleWater=null;
+    setMapLoading(true,`Loading prepared polygons for ${Z[zone].nombre}.`,!playback);
+    const status=$('#vector-status');status.textContent='Loading the selected map…';
+    visibleWater=null;
     try{
-      const compare=comparisonEnabled, earlier=Z[zone].capas.serie.fechas[beforeDi];
       const [data,before]=await Promise.all([
-        tracePublishedMask(url,corners,vectorClasses(view)),
-        compare?ensureComparisonMap().then(()=>tracePublishedMask(img(zone,`agua_${earlier}.png`),corners,vectorClasses('date'))):Promise.resolve(null)
+        vectorStore.load(url,corners,vectorClasses(view),{signal:controller.signal}),
+        compare?ensureComparisonMap().then(()=>vectorStore.load(beforeUrl,Z[zone].capas.serie.esquinas,vectorClasses('date'),{signal:controller.signal})):Promise.resolve(null)
       ]);
       if(request!==vectorRenderId)return;
       visibleWater=data;
       waterDisplayContext={zone,date,view};
       $('#map-loading-detail').textContent=`Rendering the selected view of ${Z[zone].nombre}.`;
-      finishAfterMapRender(request,()=>{status.textContent='Interactive polygons from the existing display masks. Published measurements are unchanged.';});
-      if(compare){syncComparisonLayers(earlier);comparisonMap.getSource('water-before').setData(before);comparisonMap.triggerRepaint();}
-      map.getSource('water-vectors').setData(data);
+      finishAfterMapRender(request,()=>{
+        completedVectorKey=key; pendingVectorKey=null;
+        status.textContent='Map ready.';
+        prefetchVectorViews(zone,date,view,request);
+      });
+      if(compare){
+        syncComparisonLayers(earlier);
+        if(beforeGeometryKey!==beforeUrl){comparisonMap.getSource('water-before').setData(before);beforeGeometryKey=beforeUrl;}
+        comparisonMap.triggerRepaint();
+      }
+      if(mainGeometryKey!==url){map.getSource('water-vectors').setData(data);mainGeometryKey=url;}
       map.triggerRepaint();
-    }catch(error){if(request===vectorRenderId){status.textContent=error.message;failMapLoading(error);}}
+    }catch(error){
+      if(request===vectorRenderId){
+        pendingVectorKey=null;
+        if(error.name!=='AbortError'){status.textContent=error.message;failMapLoading(error);}
+      }
+    }
   }
 
   /* The second map is clipped visually; the primary map handles all navigation. */
@@ -729,17 +800,17 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   function ensureComparisonMap() {
     if(comparisonReady)return comparisonReady;
-    const current=map.getStyle(),sources={base:current.sources.base};
-    for(const id of ['roads','towns'])if(current.sources[id])sources[id]=current.sources[id];
+    const current=map.getStyle(),sources={base:current.sources.base,satellite:current.sources.satellite};
+    if(current.sources.roads)sources.roads=current.sources.roads;
     comparisonMap=new maplibregl.Map({container:'map-before',interactive:false,attributionControl:false,
       center:map.getCenter(),zoom:map.getZoom(),bearing:map.getBearing(),pitch:map.getPitch(),maxZoom:16,
-      style:{version:8,glyphs:current.glyphs,sources,layers:current.layers.filter(l=>['base','roads','towns','towns-l'].includes(l.id))}});
+      style:{version:8,sources,layers:current.layers.filter(l=>['base','satellite','roads-halo','roads-casing','roads'].includes(l.id))}});
     comparisonReady=new Promise(resolve=>comparisonMap.once('load',()=>{
       comparisonMap.addSource('water-before',{type:'geojson',data:emptyWater()});
-      const below=comparisonMap.getLayer('roads')?'roads':comparisonMap.getLayer('towns')?'towns':undefined;
+      const below=comparisonMap.getLayer('roads-halo')?'roads-halo':undefined;
       comparisonMap.addLayer({id:'water-fill',type:'fill',source:'water-before',paint:{'fill-color':['get','color'],'fill-opacity':+$('#water-opacity').value/100}},below);
       comparisonMap.addLayer({id:'water-outline',type:'line',source:'water-before',paint:{'line-color':['get','color'],'line-width':.65,'line-opacity':.65}},below);
-      syncComparisonCamera();resolve();
+      applyBasemap();syncComparisonCamera();resolve();
     }));
     syncComparisonCamera();return comparisonReady;
   }
@@ -753,7 +824,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       }else comparisonMap.getSource('hh').updateImage({url:img(zid,`hh_${date}.webp`),coordinates:d.capas.serie.esquinas});
     }
     if(comparisonMap.getLayer('hh'))comparisonMap.setLayoutProperty('hh','visibility',radar?'visible':'none');
-    for(const [id,checked] of [['water-fill',$('#chk-polygons').checked],['water-outline',$('#chk-polygons').checked],['roads',$('#chk-roads').checked],['towns',$('#chk-towns').checked],['towns-l',$('#chk-towns').checked]]){
+    for(const [id,checked] of [['water-fill',$('#chk-polygons').checked],['water-outline',$('#chk-polygons').checked],['roads-halo',$('#chk-roads').checked],['roads-casing',$('#chk-roads').checked],['roads',$('#chk-roads').checked]]){
       if(comparisonMap.getLayer(id))comparisonMap.setLayoutProperty(id,'visibility',checked?'visible':'none');
     }
     comparisonMap.setPaintProperty('water-fill','fill-opacity',+$('#water-opacity').value/100);
@@ -782,7 +853,6 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     }
     for(const id of ['map-before','compare-controls','compare-overlay'])$('#'+id).hidden=!comparisonEnabled;
     $('#date-ctrl').hidden=comparisonEnabled;$('#stamp').hidden=comparisonEnabled;
-    $('#download-polygons').textContent=comparisonEnabled?'Download After polygons':'Download current polygons';
     updateComparisonSplit();
     if(comparisonEnabled&&comparisonMap){comparisonMap.resize();syncComparisonCamera();}
   }
@@ -812,30 +882,19 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const d=Z[zid],dates=d.capas.serie.fechas,base=d.fechas.filter(p=>p.fase==='base').map(p=>p.fecha);
     const track=t=>`${trk(t).short} (${trk(t).dir})`;
     const tracks=d.resumen.tracks.map(t=>track(t.track)).join(', ');
-    const win=EVZ(zid).tormenta||EVZ(zid).ventana,period=`${fmtDate(win[0])}–${fmtDate(win[1])} 2026`;
+
+    const win=M.evento.ventana,period=`${fmtDate(win[0])}–${fmtDate(win[1])} 2026`;
     const single=d.resumen.fuente==='single track';
     const baseline=base.length===1?`one observation, ${fmtDate(base[0])} 2026`:`${base.length} observations, ${base.map(fmtDate).join(', ')} 2026`;
-    const methods={
-      date:{name:'Water by date',method:'Published per-pass mask: candidate new water requires an HH drop greater than 3 dB against the pixel’s baseline after scene normalization, HH below −14 dB, and a patch of at least 10 pixels. Baseline water is excluded from new-water detection.',tells:'Where the detector classified baseline water and candidate new water on the selected pass.',cannot:'A water classification is not a measurement of water depth or volume. Dark surfaces and changes in water roughness can cause errors; the baseline-water mask may miss permanent water.'},
-      extent:{name:'Flood extent',method:single?'This area uses the union of detections from one track: water detected at least once in the event window. It does not apply the two-observation rule used by the combined areas.':'This area combines per-track masks and retains pixels detected as new water in at least two observations during the event window.'+' Pixels already wet on the passes before the rain (10–14 Aug, after the data gap) are shown in grey as “already wet before the storm” and are excluded from the flood extent, duration and road figures.',tells:'The published footprint of candidate new water during the event window, rather than the water extent on one date.',cannot:'Repeated radar detections do not independently confirm flooding. This footprint excludes the separate forest-signal layer and does not establish damage.'},
-      persist:{name:'Days under water',method:'The display uses the midpoint of an interval inferred from wet and dry radar observations. Combined tracks require a second dry observation to confirm retreat, except at the end of the sequence; the single-track product uses the first later dry observation.',tells:'An estimated duration of the first detected wet episode, with uncertainty between satellite passes.',cannot:'The midpoint is not an observed exact number of days. No dry observation means the end is unknown; the legacy “20 Oct” label is a reporting cutoff, not necessarily an acquisition date.'},
-      retreat:{name:'Date it dried',method:'Published retreat intervals group the first later dry classification. Combined tracks normally confirm it with a subsequent dry observation; single-track results do not use that confirmation.',tells:'When the radar first classified the location as dry after detecting water.',cannot:'It does not identify the exact day the ground dried or exclude later flooding. A dry classification is not confirmation that a road reopened.'},
-      forest:{name:'Under the trees',method:'Candidate forest pixels are selected using baseline HH/HV and approximate height and distance to mapped streams. The mask flags an HH−HV rise over 2 dB beyond the upland reference and an HH rise over 1 dB on any event pass.',tells:'Where radar changes are compatible with possible inundation under riverside vegetation.',cannot:'This is an indirect signal, not independently confirmed water under trees. HH−HV changes cannot be converted directly into water depth, volume or damage.'}
-    };
-    const info=methods[layer],temporal=layer==='date';
+    const names={date:'Water by date',extent:'Flood extent',persist:'Days under water',retreat:'Date it dried',forest:'Under the trees'};
+    const temporal=layer==='date';
     const selection=comparisonEnabled?`Before: ${fmtDate(dates[beforeDi])}; After: ${fmtDate(dates[di])} 2026. Both use ${track(d.resumen.serie_track)}.`:temporal?`${fmtDate(dates[di])} 2026 · ${track(d.resumen.serie_track)}.`:`Event window: ${period}. ${layer==='forest'?'Union of available track signals':single?'Single-track product':'Combined-track product'}: ${tracks}.`;
-    const pairs=M.validacion.s1.filter(r=>r.zona===zid&&r.pct_s1>=.5);
-    const validation=pairs.length?`${pairs.length} paired observations with Sentinel-1 water ≥0.5%; mean F1 against the strict reference is ${nf(pairs.reduce((a,r)=>a+r.f1_cambio,0)/pairs.length,2)} (1 means identical classifications). This measures agreement with another detector, not ground-truth accuracy.`:'No Sentinel-1 comparisons with water ≥0.5% are published for this area; independent accuracy is not established.';
     const files=temporal?[img(zid,`agua_${dates[di]}.png`),...(comparisonEnabled?[img(zid,`agua_${dates[beforeDi]}.png`)]:[])]:[img(zid,{extent:'extension.png',persist:'persistencia.png',retreat:'retiro.png',forest:'monte.png'}[layer])];
     const table=layer==='forest'?'data/manifest.json':temporal?'data/descargas/new_water_by_pass.csv':single?'data/descargas/flood_metrics_by_track.csv':'data/descargas/flood_metrics_combined.csv';
-    $('#provenance-content').innerHTML=`<p><b>${esc(info.name)} · ${esc(d.nombre)}</b><br>${esc(selection)}</p>
-      <p><b>Source</b><br>NASA/ISRO NISAR L2 GCOV, PROVISIONAL, L-band HH/HV, 20 m grid with a 5×5 filter. Classification masks are published analysis outputs; polygons trace those masks for display. <a href="https://nisar-docs.asf.alaska.edu/" target="_blank" rel="noopener">NISAR data guide</a>.</p>
-      <p><b>Baseline for the date series</b><br>${esc(baseline)}. Other orbit tracks use their own baseline. ${base.length===1?'A single baseline observation gives less evidence of normal conditions.':''}</p>
-      <p><b>How it was derived</b><br>${esc(info.method)}</p>
-      <p><b>What this tells us</b><br>${esc(info.tells)}</p>
-      <p><b>What this cannot tell us</b><br>${esc(info.cannot)} Roads and towns are OpenStreetMap context. Road exposure summarizes the event, not the selected date; proximity to detected water does not confirm a closure or isolation.</p>
-      <p><b>Independent comparison</b><br>${esc(validation)} This comparison assesses open-water masks, not duration, retreat or the forest-signal layer. <a href="data/descargas/validation_sentinel1.csv" download>Comparison table</a>.</p>
-      <p><b>Inspect the published inputs</b><br>${files.map((f,i)=>`<a href="${esc(f)}" target="_blank" rel="noopener">${comparisonEnabled?(i?'Before mask':'After mask'):'Display mask'}</a>`).join(' · ')} · <a href="${table}" download>Result data</a> · <a href="#method">Method and limits</a><br>Results generated ${esc(M.generado)}. Study dates available on this track: ${fmtDate(dates[0])}–${fmtDate(dates[dates.length-1])} 2026.</p>`;
+    $('#provenance-content').innerHTML=`<p><b>${esc(d.nombre)} · ${esc(names[layer])}</b><br>${esc(selection)}</p>
+      <p><b>Before-storm reference for this area</b><br>${esc(baseline)} · ${esc(track(d.resumen.serie_track))}.</p>
+      <p><b>Source files for this view</b><br>${files.map((f,i)=>`<a href="${esc(f)}" target="_blank" rel="noopener">${comparisonEnabled?(i?'Before mask':'After mask'):'Water classification image'}</a>`).join(' · ')} · <a href="${table}" download>Source table</a><br>Available observations: ${fmtDate(dates[0])}–${fmtDate(dates[dates.length-1])} 2026.</p>
+      <p>The method is explained below. See <a href="#validation">Checks</a> for the comparisons.</p>`;
   }
 
   /* A manual story over the published views; no new detections or metrics. */
@@ -843,11 +902,11 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   const tourRoad=Z.merin_arrozales.caminos.find(r=>!r.nombre.startsWith('Unnamed'))||Z.merin_arrozales.caminos[0];
   const tourSteps=[
     {zone:'merin_arrozales',view:'date',date:'2026-06-17',title:'Before the storm',
-      body:'Start with an earlier observation of the Laguna Merín study area. Blue marks water classified as already present in the June–July baseline. This is a reference view, not a guarantee that every permanent water body was recognized.',
-      action:'Look for the blue water areas. Pan and zoom to explore this reference pass.',
+      body:'Start before the August storm. Blue marks existing water bodies detected in June–July. This is our reference for comparison; some water bodies may be missed.',
+      action:'Look for the blue water bodies. Pan and zoom to explore this reference observation.',
       evidence:()=>{const n=Z.merin_arrozales.fechas.filter(r=>r.fase==='base').length;return `Published NISAR pass: 17 Jun 2026 · track 53D. The baseline uses ${n} observation${n===1?'':'s'}.`;}},
-    {zone:'merin_arrozales',view:'date',before:'2026-06-17',date:'2026-08-28',title:'New water appears',
-      body:'Compare an earlier pass with an observation after the August storm. Orange marks candidate new water; blue marks baseline water; grey marks land that was already wet before the rain and is not counted as storm flooding. The two sides use the same orbit track so the viewing geometry is consistent.',
+    {zone:'merin_arrozales',view:'date',before:'2026-06-17',date:'2026-08-28',title:'Possible flooding appears',
+      body:'Look for orange: possible flooding compared with June–July. Blue marks existing water bodies. Grey marks areas already wet before the storm, excluded from storm flooding. Drag the divider to compare dates. Radar estimates can include false detections.',
       action:'Drag the divider across the map. You can also focus it and use the arrow keys.',
       evidence:'Before: 17 Jun · After: 28 Aug 2026 · track 53D. These are two observed snapshots, not an animation of continuous measurements.'},
     {zone:'merin_arrozales',view:'date',before:'2026-08-28',date:'2026-09-21',title:'The water recedes',
@@ -857,9 +916,9 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       },
       action:'Move the divider and find areas that changed. Separate satellite passes cannot tell us the exact day each location dried.',
       evidence:'Published per-pass masks and remaining-water shares · track 53D. A later wet detection does not prove uninterrupted flooding between passes.'},
-    {zone:'merin_arrozales',view:'extent',date:'2026-08-28',roads:true,title:'What about roads?',
-      body:()=>tourRoad?`The event-wide results flag ${tourRoad.nombre} (${tourRoad.donde}) with ${nf(tourRoad.km_bajo_agua,2)} km intersecting the detected-water footprint. This suggests potential exposure, not a confirmed road closure.`:'Mapped roads can intersect the event-wide detected-water footprint. This suggests potential exposure, not a confirmed road closure.',
-      action:'Explore the roads around the flood footprint. The marker is a reference location for the selected road, not a verified flooded point. Road exposure summarizes the event as a whole.',
+    {zone:'merin_arrozales',view:'extent',date:'2026-08-28',roads:true,polygons:false,title:'What about roads?',
+      body:()=>tourRoad?`The event-wide results flag ${roadDisplayName(tourRoad)} (${tourRoad.donde}) with ${nf(tourRoad.km_bajo_agua,2)} km intersecting the detected-water footprint. This suggests potential exposure, not a confirmed road closure.`:'Mapped roads can intersect the event-wide detected-water footprint. This suggests potential exposure, not a confirmed road closure.',
+      action:'Explore the outlined roads. Water polygons are hidden in this step to keep the road network clear. The marker is a reference location for the selected road, not a verified flooded point. Road exposure summarizes the event as a whole.',
       evidence:()=>`OpenStreetMap roads crossed with the published storm footprint, ${fmtDate(M.evento.tormenta[0])}–${fmtDate(M.evento.tormenta[1])} ${M.evento.tormenta[1].slice(0,4)}. A radar pixel may mix the road and its flooded verge.`},
     {zone:'mercedes',view:'forest',date:'2026-08-25',title:'A different radar signal',
       body:'Now explore Mercedes on the Río Negro. In riverside vegetation, flooding can strengthen the radar return through interactions between water and tree trunks. Green marks a signal compatible with possible flooding beneath trees, rather than independently confirmed water.',
@@ -872,12 +931,22 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     $('#tour-next').disabled=mapIsLoading||failed;
     $('#tour-status').textContent=failed?'This view could not load. Retry the view or exit the tour.':mapIsLoading?'Preparing this step’s map…':'Map ready. Explore at your own pace, then continue.';
     $('#tour-retry').hidden=!failed;
+    layout?.update();
   }
   function exitTour(focusStart=false) {
     tourActive=false;tourExpected=null;
     if(tourMarker){tourMarker.remove();tourMarker=null;}
     $('#guided-tour').hidden=true;$('#tour-start').textContent='Take a guided tour';
+    layout?.setTour(false);layout?.update();
     if(focusStart)$('#tour-start').focus({preventScroll:true});
+  }
+  function finishTour() {
+    exitTour();
+    comparisonEnabled=false;$('#chk-compare').checked=false;
+    layer='date';
+    document.querySelectorAll('#layer-seg button').forEach(button=>button.setAttribute('aria-pressed',button.dataset.layer===layer));
+    setZone('treinta_y_tres');
+    layout?.openTools();
   }
   function tourViewMatches() {
     return tourExpected&&zid===tourExpected.zone&&layer===tourExpected.view&&di===tourExpected.dateIndex&&comparisonEnabled===tourExpected.compare&&(!comparisonEnabled||beforeDi===tourExpected.beforeIndex);
@@ -897,29 +966,31 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     // Configure one complete view before requesting its masks.
     comparisonEnabled=Boolean(step.before);$('#chk-compare').checked=comparisonEnabled;
     $('#compare-split').value=50;
-    $('#chk-polygons').checked=true;$('#chk-roads').checked=Boolean(step.roads);
-    $('#chk-towns').checked=true;$('#chk-radar').checked=false;
+    $('#chk-polygons').checked=step.polygons!==false;$('#chk-roads').checked=Boolean(step.roads);
+    $('#chk-radar').checked=false;
     setZone(step.zone,false);
     layer=step.view;di=dates.indexOf(step.date);beforeDi=step.before?dates.indexOf(step.before):0;
     document.querySelectorAll('#layer-seg button').forEach(button=>button.setAttribute('aria-pressed',button.dataset.layer===layer));
     tourExpected={zone:zid,view:layer,dateIndex:di,compare:comparisonEnabled,beforeIndex:beforeDi};
     render();
     if(step.roads&&tourRoad){
-      const label=document.createElement('div');label.textContent=`Road reference: ${tourRoad.nombre}. Event-wide potential exposure: ${nf(tourRoad.km_bajo_agua,2)} km; closure not verified.`;
+      const label=document.createElement('div');label.textContent=`Road reference: ${roadDisplayName(tourRoad)}. Event-wide potential exposure: ${nf(tourRoad.km_bajo_agua,2)} km; closure not verified.`;
       tourMarker=new maplibregl.Marker({color:'#eb6834'}).setLngLat([tourRoad.lon,tourRoad.lat]).setPopup(new maplibregl.Popup().setDOMContent(label)).addTo(map);
       map.flyTo({center:[tourRoad.lon,tourRoad.lat],zoom:11,duration:matchMedia('(prefers-reduced-motion: reduce)').matches?0:600});
     }
     tourApplying=false;updateTourLoading();
-    $('#guided-tour').scrollIntoView({block:'start',behavior:'instant'});
+    $('#tour-notes').open=false;
+    layout?.setTour(true);layout?.update();
     $('#tour-title').focus({preventScroll:true});
   }
   $('#tour-start').addEventListener('click',()=>showTourStep(0));
   $('#tour-prev').addEventListener('click',()=>showTourStep(tourStep-1));
-  $('#tour-next').addEventListener('click',()=>tourStep===tourSteps.length-1?exitTour(true):showTourStep(tourStep+1));
+  $('#tour-next').addEventListener('click',()=>tourStep===tourSteps.length-1?finishTour():showTourStep(tourStep+1));
   $('#tour-exit').addEventListener('click',()=>exitTour(true));
   $('#tour-retry').addEventListener('click',()=>render());
   $('#tour-sources').addEventListener('click',()=>{
-    $('#provenance').open=true;$('#provenance summary').focus({preventScroll:true});$('#provenance').scrollIntoView({block:'center',behavior:'instant'});
+    if(layout){layout.openSources();return;}
+    $('#provenance').scrollIntoView({block:'start',behavior:'instant'});$('#provenance-title').focus({preventScroll:true});
   });
 
   /* ---------- zone ---------- */
@@ -930,7 +1001,14 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   document.querySelectorAll("#layer-seg button").forEach(b => b.addEventListener("click", () => { setLayer(b.dataset.layer); }));
   const range = $("#date-range");
-  range.addEventListener("input", () => { di = +range.value; stop(); render(); });
+  range.addEventListener('input', () => {
+    stop(); vectorStore.cancelPrefetch();
+    dateRenderTimer = setTimeout(() => { dateRenderTimer=null; di=+range.value; render(); }, 120);
+  });
+  range.addEventListener('change', () => {
+    if (!dateRenderTimer) return;
+    clearTimeout(dateRenderTimer); dateRenderTimer=null; di=+range.value; render();
+  });
   $("#play").addEventListener("click", () => timer ? stop() : play());
   $("#chk-radar").addEventListener("change", render);
   function updatePolygonVisibility() {
@@ -943,23 +1021,120 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     }
     map.getCanvas().style.cursor = '';
   }
-  $('#chk-polygons').addEventListener('change', updatePolygonVisibility);
+  $('#chk-polygons').addEventListener('change',()=>{updatePolygonVisibility();legend();});
   $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
-  $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);if(comparisonMap?.getLayer('water-fill'))comparisonMap.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
-  $('#download-polygons').addEventListener('click',()=>{
-    if(!visibleWater)return;
-    const data={...visibleWater,metadata:{...waterDisplayContext,source:'Existing app display mask',note:'Display geometry only. All published measurements and validation results are unchanged.'}};
-    const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/geo+json'}));
-    const anchor=document.createElement('a');anchor.href=url;anchor.download=`${waterDisplayContext.zone}-${waterDisplayContext.view}-${waterDisplayContext.date}.geojson`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),5000);
+  $('#water-opacity').addEventListener('input', event => {
+    waterOpacityByStyle[waterOpacityStyle()] = +event.target.value;
+    for (const target of [map, comparisonMap]) {
+      if (target?.getLayer('water-fill')) target.setPaintProperty('water-fill', 'fill-opacity', +event.target.value / 100);
+    }
+  });
+  function roadPalette() { return ['#f1e7ff', '#dac2ff', '#b68aff', '#8e54ee', '#6430bd']; }
+  function roadLineWidth(extra = 0) {
+    return ['interpolate', ['linear'], ['zoom'], 8, 2 + extra, 13, 4.5 + extra];
+  }
+  function dateMapPalette() {
+    return basemap === 'satellite'
+      ? { newWater: '#ff9d24', baseline: '#00d9ff', preRain: '#edf2f7' }
+      : { newWater: css('--flood'), baseline: css('--still'), preRain: M.leyendas.previa };
+  }
+  function waterMapClasses(view) {
+    const classes = vectorClasses(view);
+    if (basemap !== 'satellite') return classes;
+    const dateColors = dateMapPalette();
+    // Ordered scales retain the published bins; the final magenta class means no dry observation.
+    const palettes = {
+      date: [dateColors.newWater, dateColors.baseline, dateColors.preRain],
+      extent: [dateColors.newWater, dateColors.preRain],
+      persist: ['#dbf6ff', '#93ddff', '#38bdf8', '#287ff0', '#5478ff', '#ff4fce'],
+      retreat: ['#fff0ba', '#ffcb63', '#ff9345', '#ff5b57', '#ff4fce'],
+      forest: ['#49ff9c']
+    };
+    return classes.map((entry, index) => ({ ...entry, color: palettes[view][index] }));
+  }
+  function applyWaterPalette() {
+    const enhanced = basemap === 'satellite';
+    const opacity = waterOpacityByStyle[waterOpacityStyle()];
+    $('#water-opacity').value = opacity;
+    // Recolor in the renderer without changing mask decoding, geometry or measured values.
+    const color = ['match', ['get', 'label'],
+      ...waterMapClasses(layer).flatMap(entry => [entry.label, entry.color]),
+      ['get', 'color']];
+    for (const target of [map, comparisonMap]) {
+      if (!target?.getLayer('water-fill')) continue;
+      target.setPaintProperty('water-fill', 'fill-color', color);
+      target.setPaintProperty('water-fill', 'fill-opacity', opacity / 100);
+      target.setPaintProperty('water-outline', 'line-color', color);
+      target.setPaintProperty('water-outline', 'line-width', enhanced ? 1 : .65);
+      target.setPaintProperty('water-outline', 'line-opacity', enhanced ? .95 : .65);
+    }
+  }
+  function applyBasemap() {
+    for (const target of [map, comparisonMap]) {
+      if (!target?.getLayer('satellite')) continue;
+      target.setLayoutProperty('base', 'visibility', basemap === 'street' ? 'visible' : 'none');
+      target.setLayoutProperty('satellite', 'visibility', basemap === 'satellite' ? 'visible' : 'none');
+    }
+    document.querySelectorAll('#basemap-seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.basemap === basemap));
+    $('#satellite-context').hidden = basemap !== 'satellite';
+    applyWaterPalette();
+    legend();
+  }
+  $('#basemap-seg').addEventListener('click', event => {
+    const button = event.target.closest('button[data-basemap]');
+    if (!button || !mapReady || button.dataset.basemap === basemap) return;
+    basemap = button.dataset.basemap;
+    // Swap only the background: keep polygons, dates, camera and the current tour step.
+    const wasLoading = mapIsLoading;
+    setMapLoading(true, `Loading the ${basemap === 'satellite' ? 'satellite imagery' : 'street map'} background.`);
+    applyBasemap();
+    if (!wasLoading) finishAfterMapRender(vectorRenderId, () => {});
+    map.triggerRepaint();
   });
   $("#chk-roads").addEventListener("change", render);
-  $("#chk-towns").addEventListener("change", render);
   function setLayer(l) { if(l!=='date'&&comparisonEnabled){comparisonEnabled=false;$('#chk-compare').checked=false;} layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
-  function play() { if(comparisonEnabled)return; if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
-  function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
+  function play() {
+    if(comparisonEnabled)return;
+    if(layer !== 'date')setLayer('date');
+    $('#play').textContent='Pause';
+    const n=Z[zid].capas.serie.fechas.length;
+    if(di>=n-1)di=0;
+    render({playback:true});
+    timer=setInterval(()=>{
+      // Keep the last frame visible and wait for the next one; do not queue or skip observations.
+      if(mapIsLoading)return;
+      di=(di+1)%n;render({playback:true});
+    },1200);
+  }
+  function stop() { clearTimeout(dateRenderTimer); dateRenderTimer=null; if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
+
+  // Keep the whole study footprint visible at the overview zoom, including on narrow screens.
+  // The navigation envelope adds only the context needed to fit the viewport's aspect ratio.
+  function constrainStudyArea(resetView = false) {
+    if (!map || !mapReady) return;
+    const corners = Object.values(Z[zid].capas).flatMap(c => c.esquinas || []);
+    const lons = corners.map(p => p[0]), lats = corners.map(p => p[1]);
+    const studyBounds = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
+    const sw = maplibregl.MercatorCoordinate.fromLngLat(studyBounds[0]);
+    const ne = maplibregl.MercatorCoordinate.fromLngLat(studyBounds[1]);
+    const { width, height } = map.getContainer().getBoundingClientRect();
+    if (!width || !height) return;
+    const padding = Math.min(20, width / 4, height / 4);
+    const unitsPerPixel = Math.max((ne.x - sw.x) / (width - 2 * padding), (sw.y - ne.y) / (height - 2 * padding));
+    const cx = (sw.x + ne.x) / 2, cy = (sw.y + ne.y) / 2;
+    const halfWidth = unitsPerPixel * width / 2, halfHeight = unitsPerPixel * height / 2;
+    const navigationBounds = [
+      new maplibregl.MercatorCoordinate(cx - halfWidth, cy + halfHeight).toLngLat(),
+      new maplibregl.MercatorCoordinate(cx + halfWidth, cy - halfHeight).toLngLat()
+    ];
+    map.stop();
+    map.setMaxBounds(navigationBounds);
+    if (resetView) map.fitBounds(studyBounds, { padding, duration: 0, bearing: 0, pitch: 0 });
+    syncComparisonCamera();
+  }
 
   function setZone(z, renderView=true) {
-    ++vectorRenderId;if(cancelMapReadyWait)cancelMapReadyWait();
+    ++vectorRenderId;vectorController?.abort();vectorStore.cancelPrefetch();if(cancelMapReadyWait)cancelMapReadyWait();
     setMapLoading(true,`Loading the selected area: ${Z[z].nombre}.`);
     zid = z; stop();
     const d = Z[z], fe = d.capas.serie.fechas;
@@ -971,15 +1146,12 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     di = pk; range.max = fe.length - 1; range.value = di;
     $("#ticks").innerHTML = ""; fe.forEach((f, i) => { if (i === 0 || i === fe.length - 1 || i === pk) { const s = document.createElement("span"); s.textContent = fmtDate(f); $("#ticks").appendChild(s); } });
     // The vector view requests only the selected published mask; radar images are optional.
-    stats(); zchart(); impact(); $("#probe").innerHTML = '<p class="probe-empty">Click the map.</p>'; if (probeMarker) { probeMarker.remove(); probeMarker = null; }
-    if (map && mapReady) {
-      const c = d.capas.serie.esquinas; const lons = c.map(p => p[0]), lats = c.map(p => p[1]);
-      map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 20, duration: 600 });
-    }
+    impact(); ++probeRequest; $("#probe").innerHTML = '<p class="probe-empty">Click a point on the map to see its detections by date here.</p>'; if (probeMarker) { probeMarker.remove(); probeMarker = null; }
+    constrainStudyArea(true);
     if(renderView)render();
   }
 
-  function render() {
+  function render({playback=false}={}) {
     if(tourActive&&!tourApplying&&!tourViewMatches())exitTour();
     const d = Z[zid], fe = d.capas.serie.fechas;
     updateComparisonControls();
@@ -1000,61 +1172,39 @@ if (location.protocol === "file:") showError("This page needs to be served over 
         }else map.getSource('hh').updateImage({url:img(zid,`hh_${f}.webp`),coordinates:d.capas.serie.esquinas});
       }
       updatePolygonVisibility();
+      applyWaterPalette();
       if(map.getLayer('hh'))map.setLayoutProperty('hh','visibility',$('#chk-radar').checked?'visible':'none');
       const selected={date:[`agua_${f}.png`,d.capas.serie.esquinas],extent:['extension.png',d.capas.evento.esquinas],persist:['persistencia.png',d.capas.evento.esquinas],retreat:['retiro.png',d.capas.evento.esquinas],forest:['monte.png',d.capas.evento.esquinas]}[layer];
-      renderWaterVectors(img(zid,selected[0]),selected[1],layer,zid,f);
-      for (const [id, chk] of [["roads", "#chk-roads"], ["towns", "#chk-towns"], ["towns-l", "#chk-towns"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
+      renderWaterVectors(img(zid,selected[0]),selected[1],layer,zid,f,playback);
+      for (const [id, chk] of [["roads-halo", "#chk-roads"], ["roads-casing", "#chk-roads"], ["roads", "#chk-roads"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
     }
-    const svg = $("#zchart"); svg.querySelectorAll(".dot").forEach(c => c.setAttribute("r", c.dataset.f === f && layer === "date" ? 6 : 3.5));
-    const cur = svg.querySelector(".cursor"); if (cur && svg._x) { const x = svg._x(f); cur.setAttribute("x1", x); cur.setAttribute("x2", x); cur.setAttribute("visibility", layer === "date" ? "visible" : "hidden"); }
     const p = d.fechas.find(p => p.fecha === f);
     const ro = $("#zone-readout"); if (ro && p) ro.innerHTML = p.remaining == null ? `Before the storm: <b>${nf(p.v, 1)}%</b> new water (noise and small ponds).` : `<b>${nf(p.v, 1)}%</b> of the area is new water${p.km != null ? `; <b>${nf(p.km, 1)} km</b> of road wet` : ""}.`;
+    layout?.update();
   }
 
   function legend() {
     const L = $("#legend"), lg = M.leyendas;
     const sw = (c, t) => `<div><span class="sw" style="background:${c}"></span>${t}</div>`;
     let h = "";
-    if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, "Already wet before the rain (10–14 Aug passes)") : "");
-    if (layer === "extent") h = sw(css("--flood"), Z[zid].resumen.fuente === "single track" ? "Flooded by the storm, detected on at least one observation (single track)" : "Flooded by the storm, detected on at least two observations") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, `Already wet before the rain (10–14 Aug passes): ${nf(Z[zid].resumen.ha_previa)} ha, not counted`) : "");
-    if (layer === "persist") h = lg.persistencia.map(p => sw(p.color, p.rango + " days")).join("") + sw(lg.sigue, `Still wet on ${fmtDate(LAST(zid))}`);
-    if (layer === "retreat") h = lg.retiro.map(p => sw(p.color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(lg.sigue, `Still wet on ${fmtDate(LAST(zid))}`);
-    if (layer === "forest") h = sw("rgb(27,175,122)", "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
-    if ($("#chk-roads").checked) h += `<div><span class="sw" style="background:linear-gradient(90deg,#fdd6bf,#f7a67a,#e66e3c,#b44216,#6e2507)"></span>Roads: days under water (light 1–7 · dark 43+)</div>`;
+
+    const dateColors = dateMapPalette();
+    const classes = waterMapClasses(layer);
+    if (layer === 'date') {
+      const row=(color,title,detail,primary=false)=>`<div class="date-key-row${primary?' date-key-primary':''}"><span class="sw" style="background:${color}"></span><div><strong>${title}</strong><small class="date-key-detail">${detail}</small></div></div>`;
+      h=row(dateColors.newWater,'Possible flooding','Compared with the June–July reference.',true)
+        +row(dateColors.baseline,'Existing water bodies','Detected in June–July.')
+        +(Z[zid].resumen.ha_previa?row(dateColors.preRain,'Wet before the storm','Already wet by 10–14 August; excluded from storm flooding.'):'');
+    }
+    if (layer === "extent") h = sw(classes[0].color, Z[zid].resumen.fuente === "single track" ? "Flooded by the storm, detected on at least one observation (single track)" : "Flooded by the storm, detected on at least two observations") + (Z[zid].resumen.ha_previa ? sw(classes[1].color, `Already wet before the rain (10–14 Aug passes): ${nf(Z[zid].resumen.ha_previa)} ha, not counted`) : "");
+    if (layer === "persist") h = lg.persistencia.map((p, i) => sw(classes[i].color, p.rango + " days")).join("") + sw(classes.at(-1).color, "Still wet on 20 Oct");
+    if (layer === "retreat") h = lg.retiro.map((p, i) => sw(classes[i].color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(classes.at(-1).color, "Still wet on 20 Oct");
+    if (layer === "forest") h = sw(classes[0].color, "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
+    if (!$("#chk-polygons").checked) h = "";
+    if ($("#chk-roads").checked) h += `<div><span class="sw" style="width:30px;height:6px;background:linear-gradient(90deg,${roadPalette().join(',')});border:1px solid #171321;box-shadow:0 0 0 1px #fff"></span>Roads: days under water (light to dark: 1–7 · 8–14 · 15–28 · 29–42 · 43+)</div>`;
     L.innerHTML = h + `<p class="readout" id="zone-readout"></p>`;
   }
 
-  function stats() {
-    const r = Z[zid].resumen;
-    const pers = r.persist_mid != null ? `${nf(r.persist_mid)} days` : `${nf((r.persist_min + r.persist_max) / 2)} days`;
-    $("#stats").innerHTML = `
-      <div><b>${nf(r.ha_inundada)} ha</b><span>${r.fuente === "single track" ? "detected (≥1 observation)" : "detected (≥2 observations)"}</span><small>${r.ha_max_una_obs ? nf(r.ha_max_una_obs) + " ha seen on any pass" : "single track"}</small></div>
-      <div><b>${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</b><span>ha, track ${trk(r.serie_track).short} across detector settings</span><small>central ${nf(r.serie_ha_ext)} ha</small></div>
-      <div><b>${pers}</b><span>typical time under water</span><small>median interval ${nf(r.persist_min)}–${nf(r.persist_max)} days</small></div>
-      <div><b>${nf(r.ha_dia)}</b><span>hectare-days of flooding</span><small>${nf(r.pct_sigue, 1)}% still wet on ${fmtDate(LAST(zid))}</small></div>
-      <div><b>${nf(r.km_caminos, 1)} km</b><span>rural roads under water</span><small>${nf(r.km_caminos_7d, 1)} km for more than a week</small></div>
-      <div><b>${r.tracks.length}</b><span>orbit track${r.tracks.length > 1 ? "s" : ""} combined</span><small>${r.tracks.map(t => trk(t.track).short).join(" · ")}</small></div>` + caveats(r);
-  }
-
-  // data-driven warnings: detector noise floor (leave-one-out on baseline passes) and missing permanent-water calibration
-  function caveats(r) {
-    const out = [];
-    if (r.motivo_no_concluyente === "una_base") out.push(`<strong>Not conclusive.</strong> Only one baseline pass before the event, so the detector's false-alarm rate cannot be estimated here.`);
-    if (r.motivo_no_concluyente === "bajo_ruido") out.push(`<strong>Not conclusive.</strong> ${nf(r.ha_inundada)} ha is less than ${nf(r.factor_ruido)}× the detector's noise floor here (${nf(r.ha_ruido)} ha flagged as new water on pre-event passes with no flood).`);
-    if (r.sin_agua_permanente) out.push(`<strong>Weaker evidence of absence.</strong> On this track no permanent water looked dark enough to calibrate the detector; the river itself is not dark on radar here, so rough or shallow water can be missed.`);
-    return out.map(t => `<p class="note" style="grid-column:1/-1;margin:0;padding:8px 12px;background:var(--surface)">⚠ ${t}</p>`).join("");
-  }
-
-  function zchart() {
-    const d = Z[zid], svg = $("#zchart");
-    const ymax = niceMax(Math.max(...d.fechas.map(s => s.hi ?? s.v)) * 1.05);
-    timeChart(svg, { t0: T0, t1: T1, rain: EVZ(zid).lluvia, ymin: 0, ymax, yticks: [0, ymax / 2, ymax], yfmt: v => nf(v, v < 2 && v > 0 ? 1 : 0) + "%",
-      xticks: XT, xfmt: s => fmtDate(s).split(" ")[1], crest: crests[zid]?.cresta,
-      series: [{ name: "new water", color: css("--flood"), pts: d.fechas, band: true }],
-      vfmt: p => `${nf(p.v, 1)}% (${nf(p.lo, 1)}–${nf(p.hi, 1)})${p.remaining != null ? ` · ${nf(p.remaining)}% of max extent` : ""}`,
-      onPick: p => { di = d.capas.serie.fechas.indexOf(p.fecha); setLayer("date"); } });
-    el("line", { class: "cursor", x1: 0, x2: 0, y1: svg._t, y2: svg._b, visibility: "hidden" }, svg);
-  }
 
   /* ---------- probe ---------- */
   async function loadProbe(z) {
@@ -1063,46 +1213,48 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     return (probeData[z] = new Uint8Array(buf));
   }
   async function probe(ll) {
-    const d = Z[zid], s = d.capas.sonda, c = s.esquinas;
+    const zone = zid, request = ++probeRequest;
+    const d = Z[zone], s = d.capas.sonda, c = s.esquinas;
     // affine inverse from TL, TR, BL corners (lon/lat)
     const [tl, tr, , bl] = c, ax = tr[0] - tl[0], ay = tr[1] - tl[1], bx = bl[0] - tl[0], by = bl[1] - tl[1];
     const px = ll.lng - tl[0], py = ll.lat - tl[1], det = ax * by - ay * bx;
     const u = (px * by - py * bx) / det, v = (ax * py - ay * px) / det;
     if (u < 0 || u >= 1 || v < 0 || v >= 1) { $("#probe").innerHTML = '<p class="probe-empty">Outside the radar scene for this area.</p>'; return; }
     const col = Math.floor(u * s.ancho), row = Math.floor(v * s.alto), N = s.ancho * s.alto;
-    const a = await loadProbe(zid), fe = d.capas.serie.fechas;
-    const rows = fe.map((f, i) => { const h = a[(2 * i) * N + row * s.ancho + col], w = a[(2 * i + 1) * N + row * s.ancho + col]; return { fecha: f, hh: h === 255 ? null : h / 5 - 30, wet: w === 255 ? null : w }; });
+    const a = await loadProbe(zone), fe = d.capas.serie.fechas;
+    if (zone !== zid || request !== probeRequest) return;
+    const rows = fe.map((fecha, i) => { const w = a[(2 * i + 1) * N + row * s.ancho + col]; return {fecha, wet: w === 255 ? null : w}; });
     if (map) { if (probeMarker) probeMarker.remove(); probeMarker = new maplibregl.Marker({ color: css("--still"), scale: 0.7 }).setLngLat(ll).addTo(map); }
-    const host = $("#probe"); host.innerHTML = `<p class="note">${ll.lat.toFixed(4)}, ${ll.lng.toFixed(4)} · radar brightness (HH) on each pass, and the share of the cell flagged as new water.</p><div style="position:relative"><svg class="chart" id="probe-svg" viewBox="0 0 420 150" role="img" aria-label="Radar history of this spot"></svg></div><div id="probe-strip" style="display:flex;gap:3px;margin-top:4px"></div>`;
-    const pts = rows.filter(r => r.hh != null).map(r => ({ fecha: r.fecha, v: r.hh }));
-    const lo = Math.floor(Math.min(...pts.map(p => p.v), -20) / 5) * 5, hi = Math.ceil(Math.max(...pts.map(p => p.v), -5) / 5) * 5;
-    timeChart($("#probe-svg"), { t0: T0, t1: T1, rain: EVZ(zid).lluvia, ymin: lo, ymax: hi, yticks: [lo, (lo + hi) / 2, hi].map(Math.round), yfmt: v => v + " dB",
-      xticks: XT, xfmt: s => fmtDate(s).split(" ")[1],
-      series: [{ name: "HH", color: css("--fg2"), pts }], vfmt: p => nf(p.v, 1) + " dB" });
+
+    const host = $("#probe"); host.innerHTML = `<p class="note">${ll.lat.toFixed(4)}, ${ll.lng.toFixed(4)} · share of this ~200 m cell flagged as possible flooding on each observation.</p><div id="probe-strip" style="display:flex;gap:3px;margin-top:8px"></div>`;
+
     const strip = $("#probe-strip");
-    strip.innerHTML = rows.map(r => `<div title="${fmtDate(r.fecha)}: ${r.wet == null ? "no data" : r.wet + "% new water"}" style="flex:1;height:14px;border-radius:3px;background:${r.wet == null ? "var(--grid)" : `color-mix(in srgb, var(--flood) ${Math.max(r.wet, 4)}%, var(--chip))`}"></div>`).join("");
-    strip.insertAdjacentHTML("afterend", `<div class="ticks"><span>${fmtDate(fe[0])}</span><span>new water per pass (darker = more of the cell)</span><span>${fmtDate(fe[fe.length - 1])}</span></div>`);
+    strip.innerHTML = rows.map(r => `<div title="${fmtDate(r.fecha)}: ${r.wet == null ? "no data" : r.wet + "% of the cell flagged"}" style="flex:1;height:14px;border-radius:3px;background:${r.wet == null ? "var(--grid)" : `color-mix(in srgb, var(--flood) ${Math.max(r.wet, 4)}%, var(--chip))`}"></div>`).join("");
+    strip.insertAdjacentHTML("afterend", `<div class="ticks"><span>${fmtDate(fe[0])}</span><span>Darker = more of this cell flagged</span><span>${fmtDate(fe[fe.length - 1])}</span></div>`);
   }
 
   /* ---------- impact ---------- */
   function impact() {
     const d = Z[zid];
+    const r = d.resumen;
+    $("#area-extra-values").innerHTML = `<p>${esc(d.nombre)}</p><ul>${r.ha_max_una_obs != null ? `<li>Largest area flagged in any one observation: ${nf(r.ha_max_una_obs)} ha</li>` : ""}<li>Single-path flood area using the standard settings (track ${trk(r.serie_track).short}): ${nf(r.serie_ha_ext)} ha</li><li>Roads exposed for more than a week: ${nf(r.km_caminos_7d, 1)} km</li></ul>`;
     const cl = { rural: "rural", departmental: "departmental", national: "national" };
-    $("#roads-note").textContent = d.caminos.length ? `Top ${d.caminos.length} roads by length under water. Click a row to find it on the map.` : "No mapped roads under water.";
-    $("#roads").innerHTML = `<thead><tr><th>Road</th><th>Type</th><th class="n">Km wet</th><th class="n">Days</th></tr></thead><tbody>` + d.caminos.map((r, i) =>
-      `<tr class="go" data-i="${i}" tabindex="0"><td>${esc(r.nombre)}${r.donde ? `<br><span class="note">${esc(r.donde)}</span>` : ""}</td><td>${cl[r.clase] || r.clase}</td><td class="n">${nf(r.km_bajo_agua, 2)}</td><td class="n">${r.sigue ? "≥" : ""}${nf(r.dias_mid)} <span class="note">(${nf(r.dias_min)}–${nf(r.dias_max)})</span></td></tr>`).join("") + "</tbody>";
-    $("#roads").querySelectorAll("tr.go").forEach(tr => { const go = () => { const r = d.caminos[+tr.dataset.i]; if (map) { map.flyTo({ center: [r.lon, r.lat], zoom: 13 }); document.getElementById("explore").scrollIntoView(); } }; tr.addEventListener("click", go); tr.addEventListener("keydown", e => { if (e.key === "Enter") go(); }); });
+    $("#roads-note").textContent = d.caminos.length ? `${d.caminos.length} roads with the longest sections overlapping detected flooding. Estimated days include a range in parentheses.` : "No road overlaps were found in the available mapped data.";
+    $("#roads").innerHTML = `<thead><tr><th>Road</th><th>Type</th><th class="n">Exposed road (km)</th><th class="n">Estimated days</th></tr></thead><tbody>` + d.caminos.map(r =>
+      `<tr><td>${esc(roadDisplayName(r))}${r.donde ? `<br><span class="note">${esc(r.donde)}</span>` : ""}</td><td>${cl[r.clase] || r.clase}</td><td class="n">${nf(r.km_bajo_agua, 2)}</td><td class="n">${r.sigue ? "≥" : ""}${nf(r.dias_mid)} <span class="note">(${nf(r.dias_min)}–${nf(r.dias_max)})</span></td></tr>`).join("") + "</tbody>";
     const lc = d.uso_suelo.filter(r => r.ha_inundada > 0).sort((a, b) => b.ha_inundada - a.ha_inundada);
     const mx = Math.max(...lc.map(r => r.ha_inundada), 1);
-    $("#landcover").innerHTML = `<table><thead><tr><th>Cover</th><th>Hectares flooded</th><th class="n">Share of cover</th></tr></thead><tbody>` + lc.map(r =>
+    $("#landcover").innerHTML = `<table><thead><tr><th>Land type</th><th>Hectares flooded</th><th class="n">% of this land type</th></tr></thead><tbody>` + lc.map(r =>
       `<tr><td>${esc(r.clase)}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="width:${(r.ha_inundada / mx * 100).toFixed(1)}%"></div><span>${nf(r.ha_inundada)}</span></div></td><td class="n">${nf(r.pct_clase_inundada, 1)}%</td></tr>`).join("") + "</tbody></table>";
     $("#towns").innerHTML = `<thead><tr><th>Town</th><th class="n">Built-up area (ha)</th><th class="n">Flooded inside</th><th class="n">Flooded within 500 m</th></tr></thead><tbody>` + d.localidades.map(r =>
       `<tr><td>${esc(r.nombre)}</td><td class="n">${nf(r.ha_area)}</td><td class="n">${nf(r.ha_inundada)} ha</td><td class="n">${nf(r.ha_inundada_500m)} ha</td></tr>`).join("") + "</tbody>";
-    $("#basins").innerHTML = `<thead><tr><th>Sub-basin</th><th class="n">Flooded</th><th class="n">Hectare-days</th><th>Median dry date</th></tr></thead><tbody>` + d.subcuencas.filter(r => r.ha_inundada > 0).map(r =>
+    $("#basins").innerHTML = `<thead><tr><th>Sub-basin</th><th class="n">Flooded</th><th class="n">Hectare-days</th><th>Typical drying date</th></tr></thead><tbody>` + d.subcuencas.filter(r => r.ha_inundada > 0).map(r =>
       `<tr><td>${esc(r.nombre)}</td><td class="n">${nf(r.ha_inundada)} ha · ${nf(r.pct_inundada, 1)}%</td><td class="n">${nf(r.ha_dia)} <span class="note">(${nf(r.ha_dia_min)}–${nf(r.ha_dia_max)})</span></td><td>${r.retiro_mediano ? fmtDate(r.retiro_mediano) : "–"}</td></tr>`).join("") + "</tbody>";
   }
-  $("#allzones").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded (ha)</th><th class="n">Range, one track</th><th class="n">Typical days</th><th class="n">Hectare-days</th><th class="n">Roads wet (km)</th><th class="n">Still wet on last pass</th></tr></thead><tbody>` +
-    ZIDS.map(z => { const r = Z[z].resumen; return `<tr class="go" data-z="${z}" tabindex="0"><td>${esc(Z[z].nombre)} <span class="note">${EVZ(z).clave === "octubre" ? "Oct" : "Aug"}</span></td><td class="n">${nf(r.ha_inundada)}${r.concluyente ? "" : ` <span class="note">not conclusive</span>`}</td><td class="n">${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</td><td class="n">${nf(r.persist_mid ?? (r.persist_min + r.persist_max) / 2)} <span class="note">(${nf(r.persist_min)}–${nf(r.persist_max)})</span></td><td class="n">${nf(r.ha_dia)}</td><td class="n">${nf(r.km_caminos, 1)}</td><td class="n">${nf(r.pct_sigue, 1)}% <span class="note">${fmtDate(LAST(z))}</span></td></tr>`; }).join("") + "</tbody>";
+
+  $("#allzones").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded (ha)</th><th class="n">One-path estimate (ha)</th><th class="n">Typical days</th><th class="n">Hectare-days</th><th class="n">Road exposure (km)</th><th class="n">Still wet 20 Oct</th></tr></thead><tbody>` +
+    ZIDS.map(z => { const r = Z[z].resumen; return `<tr class="go" data-z="${z}" tabindex="0"><td>${esc(Z[z].nombre)}</td><td class="n">${nf(r.ha_inundada)}</td><td class="n">${nf(r.serie_ha_lo)}–${nf(r.serie_ha_hi)}</td><td class="n">${nf(r.persist_mid ?? (r.persist_min + r.persist_max) / 2)} <span class="note">(${nf(r.persist_min)}–${nf(r.persist_max)})</span></td><td class="n">${nf(r.ha_dia)}</td><td class="n">${nf(r.km_caminos, 1)}</td><td class="n">${nf(r.pct_sigue, 1)}%</td></tr>`; }).join("") + "</tbody>";
+
   $("#allzones").querySelectorAll("tr.go").forEach(tr => tr.addEventListener("click", () => setZone(tr.dataset.z)));
 
   /* ---------- forest ---------- */
@@ -1113,40 +1265,27 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       card.innerHTML = `<h3>Mercedes · Río Negro</h3><span class="sub">${tn[m.track] || m.track}</span>`;
       const box = document.createElement("div"); box.style.position = "relative"; const svg = el("svg", { class: "chart", viewBox: "0 0 320 170", role: "img", "aria-label": "Mercedes forest HH minus HV" }); box.appendChild(svg); card.appendChild(box);
       const ev = (arr) => { const e = (arr || []).filter(p => p.fecha >= M.evento.ventana[0] && p.fecha <= M.evento.ventana[1]); return e.length ? e.reduce((a, p) => a + p.v, 0) / e.length : NaN; };
-      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Flood window: riverside ${ev(s.ribereno) >= 0 ? "+" : ""}${nf(ev(s.ribereno), 1)} dB · upland ${ev(s.altura) >= 0 ? "+" : ""}${nf(ev(s.altura), 1)} dB`; card.appendChild(p);
+      const p = document.createElement("span"); p.className = "peak"; p.textContent = `Average signal change during the event: riverside ${ev(s.ribereno) >= 0 ? "+" : ""}${nf(ev(s.ribereno), 1)} dB · higher ground ${ev(s.altura) >= 0 ? "+" : ""}${nf(ev(s.altura), 1)} dB`; card.appendChild(p);
       host.appendChild(card);
       timeChart(svg, { t0: "2026-06-12", t1: "2026-10-20", ymin: -1, ymax: 3, yticks: [-1, 0, 1, 2, 3], yfmt: v => (v > 0 ? "+" : "") + v + " dB", xticks: ["2026-07-01", "2026-08-01", "2026-09-01", "2026-10-01"], xfmt: d => fmtDate(d).split(" ")[1], labelRight: true,
         series: [{ name: "open land", label: "open", color: css("--openland"), dash: "4 3", r: 2.5, pts: s.no_monte || [] }, { name: "upland forest", label: "upland", color: css("--upland"), pts: s.altura || [] }, { name: "riverside forest", label: "riverside", color: css("--still"), pts: s.ribereno || [] }],
-        vfmt: p => (p.v >= 0 ? "+" : "") + nf(p.v, 2) + " dB vs baseline" });
+        vfmt: p => (p.v >= 0 ? "+" : "") + nf(p.v, 2) + " dB vs before-storm reference" });
     }
     const rows = ZIDS.flatMap(z => Z[z].resumen.monte.map(m => ({ ...m, nombre: Z[z].nombre })));
-    $("#forest-tbl").innerHTML = `<thead><tr><th>Area</th><th>Track</th><th class="n">Riverside rise</th><th class="n">Upland rise</th><th class="n">Excess</th><th class="n">Forest with flood signal</th></tr></thead><tbody>` + rows.map(r =>
+    $("#forest-tbl").innerHTML = `<thead><tr><th>Area</th><th>Satellite path</th><th class="n">Riverside change</th><th class="n">Higher-ground change</th><th class="n">Extra riverside rise</th><th class="n">Possible flooded forest</th></tr></thead><tbody>` + rows.map(r =>
       `<tr><td>${esc(r.nombre)}</td><td>${trk(r.track).short}</td><td class="n">${r.subida_ribereno_db >= 0 ? "+" : ""}${nf(r.subida_ribereno_db, 2)} dB</td><td class="n">${r.subida_altura_db >= 0 ? "+" : ""}${nf(r.subida_altura_db, 2)} dB</td><td class="n"><b>${r.exceso_ribereno_db >= 0 ? "+" : ""}${nf(r.exceso_ribereno_db, 2)} dB</b></td><td class="n">${nf(r.ha_veg_inundada)} ha</td></tr>`).join("") + "</tbody>";
   })();
 
   /* ---------- why ---------- */
   (function why() {
-    const c = Object.fromEntries(M.validacion.cronologia.map(r => [r.zona, r]));
-    const mer = Z.merin_arrozales, tyt = Z.treinta_y_tres;
-    const fallMer = mer.fechas.filter(p => p.remaining != null);
-    const pairs = M.validacion.pares.filter(p => p.fase !== "base" && Math.max(p.pct_a_cambio, p.pct_b_cambio) >= 0.5);
-    const asc = (t) => t.includes("A_");
-    const ratio = pairs.filter(p => asc(p.track_a) !== asc(p.track_b)).map(p => { const d = asc(p.track_a) ? p.pct_b_umbral : p.pct_a_umbral, a = asc(p.track_a) ? p.pct_a_umbral : p.pct_b_umbral; return a > 0.2 ? d / a : null; }).filter(v => v != null);
-    const med = ratio.length ? ratio.sort((a, b) => a - b)[Math.floor(ratio.length / 2)] : null;
+    const fallMer = Z.merin_arrozales.fechas.filter(p => p.remaining != null);
     const cards = [
-      ["Same storm, two clocks", `The Olimar, a short and steep river, crested around ${fmtDate(c.treinta_y_tres?.cresta || "2026-08-19")}; the Yí in Durazno three days later. NISAR shows the Atlantic-side areas lit up on the first passes after the rain, while the Río Negro side stayed almost dark in open water. The flood moved west through the river network, not through the sky.`],
-      ["The Laguna Merín backwater", `All eastern rivers drain into the Laguna Merín, which received the heaviest rain in the country. With the lagoon high, the Cebollatí and Tacuarí drained slowly: in the rice-field area ${nf(fallMer.find(p => p.fecha >= "2026-08-28")?.remaining)}% of the flood was still wet on ${fmtDate(fallMer.find(p => p.fecha >= "2026-08-28")?.fecha || "2026-08-28")} and ${nf(fallMer.find(p => p.fecha >= "2026-09-20")?.remaining)}% a month after the storm. Treinta y Tres, upstream, drained within about ${nf(tyt.resumen.persist_mid)} days.`],
-      ["Water under the trees", "Along the Río Negro and Yaguarón the flood spread inside gallery forest. L-band reaches the forest floor and bounces between water and trunks: HH rises relative to HV. Riverside forest at Mercedes brightened more than upland forest on all three tracks, which separates flooding from simply wet soil."],
-      ["Morning and evening passes disagree", `NISAR flies a dawn–dusk orbit: ascending passes cross Uruguay around 6:30 am and descending passes around 6:30 pm local time. With a fixed brightness threshold, evening (descending) passes saw ${med ? nf(med, 1) + "×" : "much"} more dark water than morning passes a day apart. The cause is still open: each track views the area from a different angle and direction, and morning dew on grass and crops may brighten shallow flooded fields. Comparing every pixel with its own baseline from the same track removes most of the gap without needing to know which cause dominates.`],
-      ["Rain on soaked ground", `The storm did not fall on dry land. On the first passes after the NISAR data gap (10–14 Aug), before the rain started, ${nf(M.cifras.ha_previa)} ha in the study areas were already wetter than in June–July, after a rainy July. Low fields that were already saturated had nowhere to drain, which helps explain why water lingered in the Merín basin. That land is shown in grey and is not counted as flooded by the storm.`],
-      ...(Z.paysandu ? [["A river flood that hides under trees", (() => {
-        const P = Z.paysandu.resumen, S = Z.salto?.resumen, A = Z.artigas?.resumen;
-        const ex = (P.monte || []).map(m => m.exceso_ribereno_db).filter(v => v != null);
-        const nuevo = (Z.paysandu.localidades || []).find(l => l.nombre === "Nuevo Paysandú");
-        return `The October flood was not local rain: the Río Uruguay and the Cuareim rose with rain that fell upstream in southern Brazil, and the Salto Grande dam passed it downstream. In open fields it left a small footprint. At Paysandú NISAR saw the river spread over its islands and the low shore${nuevo ? ` (${nf(nuevo.ha_inundada_500m)} ha within 500 m of Nuevo Paysandú, where families were displaced)` : ""}, ${nf(P.ha_inundada)} ha in total${ex.length ? `, and riverside forest brightened more than upland forest on ${ex.filter(v => v > 0).length} of ${ex.length} tracks: much of the water was under the trees` : ""}. ${S ? `Below the dam at Salto NISAR found almost no new water outside the river (${nf(S.ha_inundada)} ha). ` : ""}${A ? `At Artigas the Cuareim crested on 1 Oct, four days before the first pass, and its narrow valley left ${nf(A.ha_inundada)} ha of open water to see.` : ""} The water that displaced people in the litoral was a narrow urban fringe, not the wide sheets of the August storm.${[P, S, A].some(x => x?.sin_agua_permanente) ? " One caution: on these tracks the Río Uruguay itself is not dark on radar, so the detector had no calm open water to calibrate on. A small footprint here is weaker evidence than in the east." : ""}`;
-      })()]] : []),
-      ["HH vs HV", "Open water is dark in both polarizations, but HV hits the instrument noise floor and differs between tracks. HH carries the open-water signal; the HH−HV difference carries the flooded-forest signal. Using both lets one sensor map two kinds of flooding."],
-      ["Rice country", "Most of the flooded land in the Merín basin is grassland, wetland and rice paddies: flat, low and already engineered to hold water. The same paddies will be flooded on purpose for planting in November–December. NISAR can tell the two apart by timing alone."],
+
+      ["Water was still detected weeks later", `On track 53D, ${nf(fallMer.find(p => p.fecha >= "2026-08-28")?.remaining)}% of the mapped event footprint was flagged as water on ${fmtDate(fallMer.find(p => p.fecha >= "2026-08-28")?.fecha || "2026-08-28")}, and ${nf(fallMer.find(p => p.fecha >= "2026-09-20")?.remaining)}% on ${fmtDate(fallMer.find(p => p.fecha >= "2026-09-20")?.fecha || "2026-09-20")}. These are snapshots of the event footprint, not percentages of the lagoon or proof of continuous flooding between visits.`],
+      ["Open water is only part of the picture", "The forest comparison looks for a different radar response near rivers. At Mercedes, riverside forest shows a larger average change than forest on higher ground on all three paths. This supports possible flooding beneath trees, but the forest layer has not been independently confirmed as water."],
+      ["The reference date matters", `Before the storm, ${nf(M.cifras.ha_previa)} ha were already flagged as wetter than the June–July reference. This land is shown separately in grey and excluded from storm-flood area, duration and road figures. A change from a reference date does not by itself establish its cause.`],
+      ["Why use NISAR?", "Radar works through clouds, allowing repeated observations during cloudy periods. NISAR's L-band signal also offers clues beneath vegetation. The open-water comparison with Sentinel-1 and the forest analysis show complementary uses; NISAR does not replace local reports or observations from other satellites."]
+
     ];
     $("#why-cards").innerHTML = cards.map(([h, p]) => `<div class="box"><h3>${h}</h3><p>${p}</p></div>`).join("");
   })();
@@ -1157,7 +1296,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const pairs = M.validacion.pares.filter(p => p.fase !== "base" && Math.max(p.pct_a_cambio, p.pct_b_cambio) >= 0.5)
       .sort((a, b) => a.zona.localeCompare(b.zona) || a.fecha_a.localeCompare(b.fecha_a));
     const mean = (k) => pairs.length ? pairs.reduce((a, p) => a + p[k], 0) / pairs.length : NaN;
-    $("#val-pairs-txt").textContent = `Pairs of passes from different orbit tracks at most one day apart, during and after the flood (${pairs.length} pairs with water). Jaccard = overlap ÷ union of the two water masks (1 = identical). Mean agreement rose from ${nf(mean("jaccard_umbral"), 2)} with a fixed threshold to ${nf(mean("jaccard_cambio"), 2)} with the per-pixel detector. Disagreement left over comes mostly from water that really changed in a day and from shallow flooding at the edge of detection.`;
+    $("#val-pairs-txt").textContent = `We compare ${pairs.length} pairs of NISAR observations from different paths, taken at most one day apart during and after the event. The overlap score is shared detected water divided by all water detected in either observation: 0 means no overlap; 1 means identical maps. The average rose from ${nf(mean("jaccard_umbral"), 2)} with one brightness cutoff to ${nf(mean("jaccard_cambio"), 2)} when comparing each spot with its own pre-storm reference. Remaining differences may reflect changing water, different viewing angles or detection errors. This is a consistency check, not an independent water measurement.`;
     const svg = $("#val-pairs"), W = 900, H = 260, l = 34, r = 8, t = 10, b = 92, n = pairs.length, bw = (W - l - r) / Math.max(n, 1);
     const y = (v) => t + (1 - v) * (H - t - b);
     for (const v of [0, 0.5, 1]) { el("line", { class: v ? "grid" : "axis", x1: l, x2: W - r, y1: y(v), y2: y(v) }, svg); el("text", { x: l - 5, y: y(v) + 3, "text-anchor": "end" }, svg).textContent = v; }
@@ -1172,88 +1311,33 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       tx.textContent = `${nm(p.zona).slice(0, 11)} ${p.fecha_a.slice(5)}`;
     });
     const s1 = M.validacion.s1;
-    if (!s1.length) { $("#val-s1-txt").textContent = "Sentinel-1 comparison not available in this build."; }
+    if (!s1.length) { $("#val-s1-summary").textContent = "Sentinel-1 comparison not available in this build."; }
     else {
       const best = s1.filter(r => Math.abs(r.dt_dias) <= 1 && r.pct_s1 >= 0.5);
       const m = (k, arr = best) => arr.length ? arr.reduce((a, r) => a + r[k], 0) / arr.length : NaN;
       const all = s1.filter(r => r.pct_s1 >= 0.5);
-      $("#val-s1-txt").textContent = `Sentinel-1 is ESA's C-band radar. We compared ${all.length} NISAR passes with flooding against a Sentinel-1 pass 0–2 days apart (same-day for track 154D). NISAR found ${nf(m("recall_cambio", all) * 100)}% of the water Sentinel-1 found, but it maps more water overall: against Sentinel-1's strict open-water mask the agreement (F1) is ${nf(m("f1_cambio", all), 2)}; against a looser Sentinel-1 mask that also counts shallow, partly flooded pixels it is ${nf(m("f1_cambio_laxa", all), 2)}. ${nf(m("solo_nisar_s1_oscurece_cambio", all) * 100)}% of the pixels only NISAR flags also darken in Sentinel-1, just not past its threshold: shallow and vegetated water, where L-band sees through and C-band struggles. Weakest case: Durazno, where there is almost no open water and NISAR over-flags noise.`;
-      $("#val-s1").innerHTML = `<thead><tr><th>Area</th><th>NISAR / S1</th><th class="n">S1 water</th><th class="n">NISAR water</th><th class="n">Found by NISAR</th><th class="n">F1 strict</th><th class="n">F1 loose</th></tr></thead><tbody>` +
+      $("#val-s1-summary").textContent = `We compare ${all.length} observations with Sentinel-1, a separate European radar satellite. NISAR found ${nf(m("recall_cambio", all) * 100)}% of the water flagged by Sentinel-1, but also flagged extra areas. This means the maps overlap, while some detections remain uncertain. Open the details to see agreement scores and individual comparisons.`;
+      $("#val-s1-txt").textContent = `The observations were 0–2 days apart. The F1 agreement score is ${nf(m("f1_cambio", all), 2)} with a strict Sentinel-1 water rule and ${nf(m("f1_cambio_laxa", all), 2)} with a looser rule. F1 combines missed detections and extra detections: 1 is a perfect match, so a high found-water percentage alone does not mean high accuracy. Of the NISAR-only detections, ${nf(m("solo_nisar_s1_oscurece_cambio", all) * 100)}% also show a darker Sentinel-1 signal without meeting its water cutoff. This supports a signal change, but does not confirm those areas are water. Durazno has very little detected open water, making that comparison less reliable. The table shows individual comparisons. The two water-area columns are percentages of the comparison area; Found by NISAR is the percentage of Sentinel-1 water also detected by NISAR.`;
+      $("#val-s1").innerHTML = `<thead><tr><th>Area</th><th>Observation dates (NISAR / S1)</th><th class="n">Sentinel-1 water</th><th class="n">NISAR water</th><th class="n">Found by NISAR</th><th class="n">F1 strict</th><th class="n">F1 loose</th></tr></thead><tbody>` +
         s1.filter(r => r.pct_s1 >= 0.3).map(r => `<tr><td>${esc(nm(r.zona))} <span class="note">${trk(r.track).short}</span></td><td>${fmtDate(r.fecha_nisar)} / ${fmtDate(r.fecha_s1)}</td><td class="n">${nf(r.pct_s1, 1)}%</td><td class="n">${nf(r.pct_nisar_cambio, 1)}%</td><td class="n">${nf(r.recall_cambio * 100)}%</td><td class="n">${nf(r.f1_cambio, 2)}</td><td class="n">${nf(r.f1_cambio_laxa, 2)}</td></tr>`).join("") + "</tbody>";
     }
-    $("#val-cron").innerHTML = `<thead><tr><th>Area</th><th>Reported crest</th><th>NISAR peak pass</th><th class="n">New water</th></tr></thead><tbody>` +
+    $("#val-cron").innerHTML = `<thead><tr><th>Area</th><th>Reported river peak</th><th>Largest detected area: date</th><th class="n">Detected flooding</th></tr></thead><tbody>` +
       M.validacion.cronologia.map(r => `<tr><td>${esc(nm(r.zona))}</td><td>${esc(r.cresta_txt)}</td><td>${fmtDate(r.pico_nisar)} <span class="note">(${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5) >= 0 ? "+" : ""}${Math.round((ms(r.pico_nisar) - ms(r.cresta)) / 864e5)} d)</span></td><td class="n">${nf(r.pico_pct, 1)}%</td></tr>`).join("") + "</tbody>";
   })();
 
-  /* ---------- drying: national heat map + share still wet ---------- */
-  (function drying() {
-    const evColor = (z) => EVZ(z).clave === "octubre" ? css("--still") : css("--flood");
-    // curves: remaining share of the area's flood footprint, by days since its event started
-    const svg = $("#dry-chart"), host = svg.parentElement, W = 520, H = 300, l = 40, r = 12, t = 12, b = 30;
-    const curves = ZIDS.map(z => ({ z, pts: Z[z].fechas.filter(p => p.remaining != null && p.dia >= 0) })).filter(c => c.pts.length && Z[c.z].resumen.ha_inundada >= 100 && Z[c.z].resumen.concluyente);
-    const dmax = Math.max(60, ...curves.flatMap(c => c.pts.map(p => p.dia)));
-    const X = (d) => l + d / dmax * (W - l - r), Y = (v) => t + (100 - v) / 100 * (H - t - b);
-    for (const v of [0, 25, 50, 75, 100]) { el("line", { class: v ? "grid" : "axis", x1: l, x2: W - r, y1: Y(v), y2: Y(v) }, svg); el("text", { x: l - 5, y: Y(v) + 3, "text-anchor": "end" }, svg).textContent = v + "%"; }
-    for (let d = 0; d <= dmax; d += 14) el("text", { x: X(d), y: H - 12, "text-anchor": "middle" }, svg).textContent = d;
-    el("text", { x: (l + W - r) / 2, y: H - 1, "text-anchor": "middle" }, svg).textContent = "days since the rain / river rise began";
-    for (const c of curves) {
-      const g = el("g", { class: "dry-line" }, svg);
-      el("path", { class: "ln", stroke: evColor(c.z), d: c.pts.map((p, i) => (i ? "L" : "M") + X(p.dia).toFixed(1) + "," + Y(p.remaining).toFixed(1)).join("") }, g);
-      for (const p of c.pts) {
-        el("circle", { class: "dot", cx: X(p.dia), cy: Y(p.remaining), r: 3, fill: evColor(c.z) }, g);
-        const hit = el("circle", { cx: X(p.dia), cy: Y(p.remaining), r: 9, fill: "transparent", style: "cursor:pointer" }, g);
-        tipOn(hit, host, () => `${Z[c.z].nombre} · ${fmtDate(p.fecha)} (day ${p.dia}): ${nf(p.remaining)}% still wet`);
-        hit.addEventListener("click", () => { setZone(c.z); document.getElementById("explore").scrollIntoView(); });
-      }
-      g.addEventListener("pointerenter", () => { svg.querySelectorAll(".dry-line").forEach(n => n.style.opacity = n === g ? 1 : .18); });
-      g.addEventListener("pointerleave", () => { svg.querySelectorAll(".dry-line").forEach(n => n.style.opacity = 1); });
-    }
-    // table: time until half / 90 % of the footprint had dried (first pass at or below the share)
-    // after the wettest pass, first pass at or below the share (the footprint keeps growing until the peak)
-    const firstBelow = (pts, v) => { if (!pts.length) return null; const k = pts.reduce((a, p, i) => p.remaining > pts[a].remaining ? i : a, 0); return pts.slice(k + 1).find(p => p.remaining <= v) || null; };
-    const rows = ZIDS.map(z => { const pts = Z[z].fechas.filter(p => p.remaining != null && p.dia >= 0); const h = firstBelow(pts, 50), n = firstBelow(pts, 10); return { z, h, n, r: Z[z].resumen }; })
-      .sort((a, b) => b.r.ha_dia - a.r.ha_dia);
-    $("#dry-tbl").innerHTML = `<thead><tr><th>Area</th><th class="n">Flooded</th><th class="n">Half dry by</th><th class="n">90% dry by</th><th class="n">Hectare-days</th></tr></thead><tbody>` +
-      rows.map(({ z, h, n, r }) => { const lastDia = Z[z].fechas.filter(p => p.remaining != null).slice(-1)[0]?.dia; const few = r.ha_inundada < 100 || !r.concluyente;
-        return `<tr class="go" data-z="${z}" tabindex="0"><td><span class="sw" style="background:${evColor(z)}"></span> ${esc(Z[z].nombre)}</td><td class="n">${nf(r.ha_inundada)} ha</td>${few ? `<td class="n note" colspan="2">${r.concluyente ? "too little open water" : "not conclusive (detector noise)"}</td>` : `<td class="n">${h ? `day ${h.dia}` : `> day ${lastDia ?? "–"}`}</td><td class="n">${n ? `day ${n.dia}` : `> day ${lastDia ?? "–"}`}</td>`}<td class="n">${nf(r.ha_dia)}</td></tr>`; }).join("") + "</tbody>";
-    $("#dry-tbl").querySelectorAll("tr.go").forEach(tr => tr.addEventListener("click", () => { setZone(tr.dataset.z); document.getElementById("explore").scrollIntoView(); }));
-    $("#heat-note").textContent = `Each point is a ~${nf(M.secado.celda_m)} m cell with at least 5% of its land flooded; weight = days under water × flooded share. Cells still wet on the last pass use a lower bound. Click an area outline to explore it.`;
 
-    if (!window.maplibregl) return;
-    const hm = new maplibregl.Map({ container: "heatmap", attributionControl: { compact: true }, cooperativeGestures: true,
-      style: { version: 8, sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "base", type: "raster", source: "base", paint: { "raster-saturation": -0.6, "raster-opacity": 0.75 } }] },
-      bounds: [[-58.4, -34.6], [-53.1, -30.1]], fitBoundsOptions: { padding: 16 }, maxZoom: 14 });
-    hm.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-    window.__hm = hm;
-    hm.on("load", () => {
-      hm.addSource("secado", { type: "geojson", data: M.secado.archivo });
-      const wmax = Math.max(1, M.secado.w_max);
-      hm.addLayer({ id: "heat", type: "heatmap", source: "secado", maxzoom: 13, paint: {
-        "heatmap-weight": ["min", 1, ["/", ["get", "w"], wmax]],
-        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 6, 0.22, 8, 0.4, 10, 0.8, 12, 1.5],
-        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 8, 9, 10, 16, 12, 32],
-        "heatmap-opacity": ["interpolate", ["linear"], ["zoom"], 11, 0.9, 13, 0.5],
-        "heatmap-color": ["interpolate", ["linear"], ["heatmap-density"], 0, "rgba(255,237,160,0)", 0.15, "rgba(255,237,160,0.6)", 0.35, "#fdae61", 0.55, "#f46d43", 0.75, "#d73027", 1, "#67001f"] } });
-      hm.addLayer({ id: "cells", type: "circle", source: "secado", minzoom: 11, paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 3, 14, 9],
-        "circle-color": ["interpolate", ["linear"], ["get", "d"], 0, "#fee090", 7, "#fdae61", 14, "#f46d43", 28, "#d73027", 42, "#67001f"],
-        "circle-opacity": 0.85, "circle-stroke-width": 0.5, "circle-stroke-color": "#fff" } });
-      const fc = { type: "FeatureCollection", features: Object.entries(M.contexto.zonas).map(([z, bb]) => ({ type: "Feature", properties: { z, n: Z[z].nombre, e: EVZ(z).clave }, geometry: { type: "Polygon", coordinates: [[[bb[0], bb[1]], [bb[2], bb[1]], [bb[2], bb[3]], [bb[0], bb[3]], [bb[0], bb[1]]]] } })) };
-      hm.addSource("areas", { type: "geojson", data: fc });
-      hm.addLayer({ id: "areas-fill", type: "fill", source: "areas", paint: { "fill-color": "#000", "fill-opacity": 0 } });
-      hm.addLayer({ id: "areas", type: "line", source: "areas", paint: { "line-color": ["match", ["get", "e"], "octubre", css("--still"), css("--flood")], "line-width": 1.5, "line-dasharray": [2, 1.5] } });
-      hm.on("click", "cells", (e) => { const p = e.features[0].properties; new maplibregl.Popup().setLngLat(e.lngLat).setHTML(`<b>${esc(Z[p.z].nombre)}</b><br>${nf(p.d)} days under water${p.s > 0.5 ? " (still wet on the last pass)" : ""}<br>${nf(100 * p.f)}% of the cell flooded`).addTo(hm); });
-      hm.on("click", "areas-fill", (e) => { if (hm.getZoom() >= 11) return; const z = e.features[0].properties.z; setZone(z); document.getElementById("explore").scrollIntoView(); });
-      for (const id of ["areas-fill", "cells"]) { hm.on("mouseenter", id, () => hm.getCanvas().style.cursor = "pointer"); hm.on("mouseleave", id, () => hm.getCanvas().style.cursor = ""); }
-    });
-  })();
-
-  /* ---------- downloads ---------- */
-  $("#downloads").innerHTML = M.descargas.map(d => `<div><a href="${esc(d.archivo)}" download>${esc(d.archivo.split("/").pop())}</a><span>${esc(d.desc)} · ${nf(d.kb)} KB</span></div>`).join("");
+  layout=window.mountMapLayout({
+    getState:()=>({zoneName:Z[zid].nombre,layer,di,beforeDi,comparing:comparisonEnabled,dates:Z[zid].capas.serie.fechas,tourActive,tourStep,mapReady}),
+    onStep:index=>showTourStep(index),onExit:()=>exitTour(),
+    onResize:()=>{if(map){map.resize();if(comparisonMap)comparisonMap.resize();constrainStudyArea();}}
+  });
 
   await initMap();
-  setZone(zid);
+  if(mapReady)showTourStep(0);else setZone(zid);
   $("#tour-start").disabled=!mapReady;
+  layout.update();
+  const initialSection=location.hash.slice(1);
+  if(initialSection&&initialSection!=='explore'&&document.getElementById(initialSection))layout.openResearch(initialSection);
 })().catch((e) => showError("Something broke while drawing the page: " + e.message));
 </script>
 </body>

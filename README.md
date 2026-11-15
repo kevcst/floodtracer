@@ -1,5 +1,7 @@
 # Dancing with the SARs — NASA Space Apps 2026 (equipo Uruguay)
 
+> Layout preview: **Immersive map**. This branch opens directly in the map and guided tour. All original study results remain available through **Study & results**. See [layout notes](docs/MAP_LAYOUT.md).
+
 **Idea: "How long does the water stay?" / "¿Cuánto tiempo se queda el agua?"**
 
 Con el radar **NISAR** (banda L, NASA/ISRO), que ve a través de las nubes cada 12 días, reconstruimos la crecida del **15–19 de agosto de 2026** en Uruguay y medimos dónde apareció agua nueva, hasta dónde llegó, cuánto tardó en irse y dónde quedó agua bajo el monte. Comparamos la cuenca de la Laguna Merín (Olimar, Cebollatí, Yaguarón) con la del río Negro (Yí, Mercedes).
@@ -269,3 +271,14 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 - Discusión SAR/NISAR de Space Apps: https://github.com/nasa/spaceapps/discussions/1324
 
 **Si usan Claude Code:** `CLAUDE.md` tiene todo el contexto, las decisiones y el historial del proyecto, y se carga solo en cada sesión. Cuando tomen decisiones nuevas, actualícenlo.
+
+## Prepared polygons for the immersive explorer
+
+The interactive map can load prebuilt, compressed display polygons instead of tracing PNG masks in each visitor's browser. After exporting updated app/data inputs, run:
+
+```bash
+PYTHON=.venv/bin/python node scripts/build_map_vectors.mjs
+python3 -m http.server 8003 --bind 127.0.0.1 --directory app
+```
+
+Node.js and Python with Pillow are required only for generation. GitHub Pages publishes app/ and prepares these assets automatically. The website remains entirely static. See [docs/MAP_PERFORMANCE.md](docs/MAP_PERFORMANCE.md) for cache limits, fallback behavior and data provenance.

@@ -1,0 +1,4295 @@
+{
+  "format": 1,
+  "sourceManifestSha256": "9aa21613c92ff9a730e1aaaa7a459b3c43351336935df069c22787d85c623176",
+  "entries": {
+    "treinta_y_tres/agua_2026-06-24.png": {
+      "file": "treinta_y_tres-agua_2026-06-24-85c2536532e2ff2d8396.geojson.gz",
+      "sha256": "e72f0afd845bb491d277e4cabfc900e2597697f3b5dadc49a32c3882c192572c",
+      "compressedBytes": 133953,
+      "jsonBytes": 548048,
+      "features": 2,
+      "vertices": 22842,
+      "maskSha256": "88f88286343a27075ae611a6af0493de875ed726d68b494a49c22ada54f3a2b4",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-07-06.png": {
+      "file": "treinta_y_tres-agua_2026-07-06-b587bde4afc0cbbf1d99.geojson.gz",
+      "sha256": "8d5f754fdd723213c687c0412df5b2a648d70554bd2f0d7c971829b9a642cd24",
+      "compressedBytes": 133963,
+      "jsonBytes": 548048,
+      "features": 2,
+      "vertices": 22842,
+      "maskSha256": "0d28d2d9732744d28b582d2793faac545f3b941d9ddefcecc3d680a73eccc894",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-07-18.png": {
+      "file": "treinta_y_tres-agua_2026-07-18-84e885615390d6170917.geojson.gz",
+      "sha256": "a633701b925a3b0254dfe6667e0770ceafcf88a66b9f3beeb214745a97a22279",
+      "compressedBytes": 265036,
+      "jsonBytes": 1086445,
+      "features": 2,
+      "vertices": 45401,
+      "maskSha256": "9fae2b3cf2787aae87f7ff26e09796187a421ac54903f9ec06e4ca7e63c3dd36",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-08-11.png": {
+      "file": "treinta_y_tres-agua_2026-08-11-4a8010cfd4b3692021f8.geojson.gz",
+      "sha256": "d69a192024d77f39dbc79cfef0b17747179e97f3bd566287e33d39a8ae933b81",
+      "compressedBytes": 283581,
+      "jsonBytes": 1157887,
+      "features": 2,
+      "vertices": 48421,
+      "maskSha256": "8ee2d83537b57f24b3143dc642b951b17e938db4d3c3ead4e56c3b1c79d120c7",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-08-23.png": {
+      "file": "treinta_y_tres-agua_2026-08-23-0fe736d3b7aa75f91eaf.geojson.gz",
+      "sha256": "3805db11cd081e0743dfa4d69a524c373160d371b1588e0a3a1f8a52e178460c",
+      "compressedBytes": 832014,
+      "jsonBytes": 3430774,
+      "features": 3,
+      "vertices": 143547,
+      "maskSha256": "8265e58015224c2af232f22a691e60a28c66b59e3710c844b6b0d64193946f08",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-09-04.png": {
+      "file": "treinta_y_tres-agua_2026-09-04-75a64c9d647d61b701cd.geojson.gz",
+      "sha256": "91041552f8352afc452662c8391190659aea58161cfa7feab5ba9494ec151eac",
+      "compressedBytes": 351695,
+      "jsonBytes": 1441550,
+      "features": 3,
+      "vertices": 60137,
+      "maskSha256": "3c6862166c68270d189fe82d2f5f5885d730117c0fc935fc6e0c8ce061f3917c",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-09-16.png": {
+      "file": "treinta_y_tres-agua_2026-09-16-23ca694f49556f7fa795.geojson.gz",
+      "sha256": "1138a3e4094199a3a59c8fa2bcefc9da6af473b626d44c7cdd3d208fef586131",
+      "compressedBytes": 222219,
+      "jsonBytes": 902200,
+      "features": 3,
+      "vertices": 37644,
+      "maskSha256": "8b03fbfa54eaa37ae5fc37dbc0f3b9e13fd21c2745a4b18b0e52a524e0ef1403",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-09-28.png": {
+      "file": "treinta_y_tres-agua_2026-09-28-28ac5fc837febdb60924.geojson.gz",
+      "sha256": "aa39eb3a8f5272d268b386f8e71e3bd2d2711d1865d9d154e564dcad5e40ba9b",
+      "compressedBytes": 197012,
+      "jsonBytes": 800660,
+      "features": 3,
+      "vertices": 33407,
+      "maskSha256": "4260a826e845fb5dd384f463623ae1761a4eb621e11b26d98bf9248fdf6f47fc",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/agua_2026-10-10.png": {
+      "file": "treinta_y_tres-agua_2026-10-10-31900b5dafbd9e187d22.geojson.gz",
+      "sha256": "e27a078f60123aef20e4ebdde08418f480c6f72f446b497c1ff45261d936320b",
+      "compressedBytes": 227433,
+      "jsonBytes": 924791,
+      "features": 3,
+      "vertices": 38598,
+      "maskSha256": "938a089c8ae75c0e8e23c28bbc1cf91dc617cc5fed7ea7e8ee1ab95eed717b31",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/extension.png": {
+      "file": "treinta_y_tres-extension-81d49cc83919e5262412.geojson.gz",
+      "sha256": "44260d2fac6ac00bf7a71bb5f964f2a8bc24203f00df8f21ade2ee8f0e334d26",
+      "compressedBytes": 675637,
+      "jsonBytes": 2791609,
+      "features": 2,
+      "vertices": 116847,
+      "maskSha256": "5eac391cb6ce5f348dec12eccd27416e8e4f6403855810b4d0d60ea56aa8ec82",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/persistencia.png": {
+      "file": "treinta_y_tres-persistencia-c43dfe1598ac5313050c.geojson.gz",
+      "sha256": "009e47c8ebc31c93435110e6b29230924b0610f03fcac0913182df41e51d6ff4",
+      "compressedBytes": 562974,
+      "jsonBytes": 2332774,
+      "features": 6,
+      "vertices": 97367,
+      "maskSha256": "71f321ffe3ec54a59df7984af41268e419d2c09cc6662be676ad32be8a59ef43",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/retiro.png": {
+      "file": "treinta_y_tres-retiro-5022a981a85524c26544.geojson.gz",
+      "sha256": "91f1a8f484f1c679a4ca58bf2cbb28ba2a3922ff098097746c5294609f9ef89a",
+      "compressedBytes": 514093,
+      "jsonBytes": 2130585,
+      "features": 5,
+      "vertices": 89017,
+      "maskSha256": "18d2c60c68c3b2fdf88795364fc96ed443217354068f53c23c9a3291467fdebb",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "treinta_y_tres/monte.png": {
+      "file": "treinta_y_tres-monte-34cbb5d2a285551d4235.geojson.gz",
+      "sha256": "e129f26ce0ae0d3af6c703a8e5796ebbfb04524bf02464bc2e4b271456ca2a9d",
+      "compressedBytes": 100885,
+      "jsonBytes": 419960,
+      "features": 1,
+      "vertices": 17383,
+      "maskSha256": "9e289f41879d36dc4e0651339bd566129ddf9872f4a68c5ecf08a7bdb83f6df2",
+      "corners": [
+        [
+          -54.558332,
+          -33.100312
+        ],
+        [
+          -54.150473,
+          -33.09165
+        ],
+        [
+          -54.14045,
+          -33.39975
+        ],
+        [
+          -54.54974,
+          -33.408514
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-06-17.png": {
+      "file": "merin_arrozales-agua_2026-06-17-5e22b74e8154ab98c82e.geojson.gz",
+      "sha256": "7d88de2abdc7ab6fe68e3b3f2ce43b67452c531d81ca1e513721cad3ac805743",
+      "compressedBytes": 181417,
+      "jsonBytes": 711677,
+      "features": 2,
+      "vertices": 29625,
+      "maskSha256": "19961747e9065bc632bae2f26c874dea6fe5bf3bcb4b7e513dc6095c43bd506c",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-06-29.png": {
+      "file": "merin_arrozales-agua_2026-06-29-37917495694630665574.geojson.gz",
+      "sha256": "42dbb0b36b47fa5206ae83df73c05aca2b34a65ad1904302c6048df9d540fab2",
+      "compressedBytes": 185983,
+      "jsonBytes": 731435,
+      "features": 2,
+      "vertices": 30451,
+      "maskSha256": "4c03836db3ca0f57671027ee3bd9585f83fdc59abc93b1fbd4335713bb086561",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-07-11.png": {
+      "file": "merin_arrozales-agua_2026-07-11-88d4fa2f8f26bf04348c.geojson.gz",
+      "sha256": "fbf6923fb1b1a78aa3fa3f289112694fce337ba6ca0a8486a18211d6ed21d74f",
+      "compressedBytes": 236623,
+      "jsonBytes": 935008,
+      "features": 2,
+      "vertices": 38960,
+      "maskSha256": "3c4a5117c7c3aa5c677249e867530ac04c703dc0222eef0c2afdbc3705e446f6",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-07-23.png": {
+      "file": "merin_arrozales-agua_2026-07-23-14c9099081e7f5b84946.geojson.gz",
+      "sha256": "ed2e0f402d1d3e1f985d0cf0ce8750d4533f037e9c4bcd266704743683db30b6",
+      "compressedBytes": 931814,
+      "jsonBytes": 3695696,
+      "features": 2,
+      "vertices": 154395,
+      "maskSha256": "cb96f59b4ce0c41810b89199aeb9bc860a69611f03f70a9f2c9c905b67e57047",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-08-16.png": {
+      "file": "merin_arrozales-agua_2026-08-16-8b126e8161d69328792f.geojson.gz",
+      "sha256": "c439eeb6f5ecef225764c29bdb5ca7f0d2e2a9e5cd22436f3dd56c7da12dd5e7",
+      "compressedBytes": 1982550,
+      "jsonBytes": 7989314,
+      "features": 3,
+      "vertices": 332717,
+      "maskSha256": "395a76cb552da0fcf0b1d71d2a190083e59af299654c0eaeaa7692bc1ea02cdd",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-08-28.png": {
+      "file": "merin_arrozales-agua_2026-08-28-348aebcabce8df76586f.geojson.gz",
+      "sha256": "d8d8b6a6bf2fa3c135b5dd49408d28755c8c28a46ab82e4bf88174096754f11d",
+      "compressedBytes": 2218737,
+      "jsonBytes": 8921387,
+      "features": 3,
+      "vertices": 371624,
+      "maskSha256": "723a6f57a50129a81f127314baf2ab2e897b69918277c4155f43369ba0bd4083",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-09-09.png": {
+      "file": "merin_arrozales-agua_2026-09-09-875d2f62ec02db8ef5b2.geojson.gz",
+      "sha256": "8ee72f6c348820134fdc08d90e79b02f4300c093397a7698a21f52ae4230016d",
+      "compressedBytes": 1005959,
+      "jsonBytes": 4011695,
+      "features": 3,
+      "vertices": 167041,
+      "maskSha256": "613c409c9180f16367f5849f2654738d373379ce295986e31b87232db4e7d3f4",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-09-21.png": {
+      "file": "merin_arrozales-agua_2026-09-21-dd8ebe3e8a2390e4cd15.geojson.gz",
+      "sha256": "fec34509dfa14a1bee45e1a7bc3841684dee79901de12f95960374a4ba43bfa1",
+      "compressedBytes": 775018,
+      "jsonBytes": 3075309,
+      "features": 3,
+      "vertices": 128089,
+      "maskSha256": "e0d11db5f00d2b08385429597bd86fbc2e64fd497db10e79858c144b7f486d1e",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-10-03.png": {
+      "file": "merin_arrozales-agua_2026-10-03-c937765d62ad75646451.geojson.gz",
+      "sha256": "b05b8b646fe884603145e494e58fbd121fc4e7b16708e19d83315eb6cce3caa6",
+      "compressedBytes": 619471,
+      "jsonBytes": 2437585,
+      "features": 3,
+      "vertices": 101605,
+      "maskSha256": "31f03db33f0cf61038cb38d437471d3e1f35bc5a462ff6c38624e49a46753aab",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/agua_2026-10-15.png": {
+      "file": "merin_arrozales-agua_2026-10-15-6ef046181fba8ce5e937.geojson.gz",
+      "sha256": "659bb772276cc8f169487bd80261d2eb4e482316c404cc0e88963b319ded0af0",
+      "compressedBytes": 590594,
+      "jsonBytes": 2325556,
+      "features": 3,
+      "vertices": 96912,
+      "maskSha256": "7c5369b9bd25df402423071ae3bcec10d264032e9dd770fb7d1ed605ec0ec278",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/extension.png": {
+      "file": "merin_arrozales-extension-1046b7af3659736aecfe.geojson.gz",
+      "sha256": "d173807804997e826ded8b1acb7fe25c56dc84afce672e5aae64368499da61cd",
+      "compressedBytes": 2577276,
+      "jsonBytes": 10354213,
+      "features": 2,
+      "vertices": 431510,
+      "maskSha256": "88cfe3c9a86aae7b6d782f9fe34c9912d59252090007a61eb46cb14a4a7c5fbd",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/persistencia.png": {
+      "file": "merin_arrozales-persistencia-f61600023aa9d9e05529.geojson.gz",
+      "sha256": "423f72f010d14b4e77d46f8278135e0a43d6b4ffe8ab2aa9d60989de785b9b3f",
+      "compressedBytes": 3154072,
+      "jsonBytes": 12905010,
+      "features": 6,
+      "vertices": 533710,
+      "maskSha256": "3d7b9aeade3d6fc18d98fcdad37309d2e31afe3a8b9a154c9c0b35e40740d738",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/retiro.png": {
+      "file": "merin_arrozales-retiro-d3022734d4f06f06baed.geojson.gz",
+      "sha256": "cf5399f34820cbbcca037cacbef366f6e3f4270c2ee04eafd179ad6df2e3de44",
+      "compressedBytes": 2721177,
+      "jsonBytes": 11099284,
+      "features": 5,
+      "vertices": 459781,
+      "maskSha256": "017ff0e596234a69ab8335a91bffee3796783fa88dabd74cbd2663a784a72a21",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "merin_arrozales/monte.png": {
+      "file": "merin_arrozales-monte-43ed61087f62ad82160f.geojson.gz",
+      "sha256": "2311e188fc67b1b8ea58e8ab3740dde6ef0b0b9137f1c7117f9b8e0d3d2e4d11",
+      "compressedBytes": 313680,
+      "jsonBytes": 1283349,
+      "features": 1,
+      "vertices": 53203,
+      "maskSha256": "713379fd4f3e79be633643ec99dcf1f092ee5bde4062e86d5a8f92d2e65073b1",
+      "corners": [
+        [
+          -54.099529,
+          -32.988679
+        ],
+        [
+          -53.577809,
+          -33.000551
+        ],
+        [
+          -53.600373,
+          -33.761405
+        ],
+        [
+          -54.126643,
+          -33.749187
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-06-28.png": {
+      "file": "melo-agua_2026-06-28-f0daefa9d4b512657a1f.geojson.gz",
+      "sha256": "080fb9f98e7dbdf579a4a6db551b4afdaf47b3f58bda543d5877cfc68f86e3b4",
+      "compressedBytes": 15678,
+      "jsonBytes": 62338,
+      "features": 1,
+      "vertices": 2589,
+      "maskSha256": "d1fff4673bb1bd7a6c44310ef016ed7c212f8c6fcf6d746b320e9860708bb796",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-07-10.png": {
+      "file": "melo-agua_2026-07-10-f0daefa9d4b512657a1f.geojson.gz",
+      "sha256": "080fb9f98e7dbdf579a4a6db551b4afdaf47b3f58bda543d5877cfc68f86e3b4",
+      "compressedBytes": 15678,
+      "jsonBytes": 62338,
+      "features": 1,
+      "vertices": 2589,
+      "maskSha256": "d1fff4673bb1bd7a6c44310ef016ed7c212f8c6fcf6d746b320e9860708bb796",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-07-22.png": {
+      "file": "melo-agua_2026-07-22-a6dfe93cf6a496c16126.geojson.gz",
+      "sha256": "34e8141c51dc170f9e26eb221d4f7af9eb9222c81fee55744a39f2e3c36405fe",
+      "compressedBytes": 22111,
+      "jsonBytes": 87086,
+      "features": 2,
+      "vertices": 3619,
+      "maskSha256": "10c058d9b4f732a66ce6d53cb403ad376ec526370136ae6565343ace2a075301",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-08-15.png": {
+      "file": "melo-agua_2026-08-15-e96fb63ccb11cb705a32.geojson.gz",
+      "sha256": "a077cd99f2164ef4330a03beafae11ee95e6520f3dd2881059c403196fb8bf2a",
+      "compressedBytes": 21527,
+      "jsonBytes": 84457,
+      "features": 3,
+      "vertices": 3497,
+      "maskSha256": "79cbbc2108c5b5fa3104664bca3d63621442796675852b8acc34ed7ce26fabcd",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-08-27.png": {
+      "file": "melo-agua_2026-08-27-ed233070b99563e08962.geojson.gz",
+      "sha256": "7a804391efa95ecfbf803826295c5b644f11cdcf438d4c721a2eac5228d1e39d",
+      "compressedBytes": 22093,
+      "jsonBytes": 86990,
+      "features": 3,
+      "vertices": 3603,
+      "maskSha256": "bbcedfd66670e2b6a00b89b993e167000c84f414a3e3d363757b0c6b8f6731e3",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-09-08.png": {
+      "file": "melo-agua_2026-09-08-bec4c6a10e80f9f0f436.geojson.gz",
+      "sha256": "6eb90e2da8de05838c00d0765d2edfaee68c0575877d41cbdcc50c73b27a26f0",
+      "compressedBytes": 21293,
+      "jsonBytes": 83938,
+      "features": 3,
+      "vertices": 3475,
+      "maskSha256": "edb2df11b618c952cd82912cc6ee6c4555d91ab631377490ec8ad2ba14262d61",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-09-20.png": {
+      "file": "melo-agua_2026-09-20-e2f87da97deccd217cee.geojson.gz",
+      "sha256": "19a13fb87575860ebee555902c31af01602b2bd303b4d519bbebe616fd2c7b1a",
+      "compressedBytes": 19170,
+      "jsonBytes": 75560,
+      "features": 3,
+      "vertices": 3128,
+      "maskSha256": "3a69de75ca03c2d3d40223cb3535941773c6ec0a6da26faedc4c5196550d370e",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-10-02.png": {
+      "file": "melo-agua_2026-10-02-b20863393ba599d7d68b.geojson.gz",
+      "sha256": "22ec2e1ad1d09ad4ed53da0bcbbab922d48374f4cf45001ec659a55857147c98",
+      "compressedBytes": 21366,
+      "jsonBytes": 84190,
+      "features": 3,
+      "vertices": 3488,
+      "maskSha256": "ba40a68429e859ad5e5ab7cdea14f21713e811ec134b97fc2eacc237c9c4714b",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/agua_2026-10-14.png": {
+      "file": "melo-agua_2026-10-14-b87ed52f24a6698240b3.geojson.gz",
+      "sha256": "0f54a5679f368f3f081b0112802f5547398e1bae1466b880e5869aee75f52f25",
+      "compressedBytes": 20291,
+      "jsonBytes": 80074,
+      "features": 3,
+      "vertices": 3318,
+      "maskSha256": "adede1f979ea2d6ceee2950e985a4b141b0b6e52b72aa680c0cd9e2bf727b004",
+      "corners": [
+        [
+          -54.259742,
+          -32.295507
+        ],
+        [
+          -54.075635,
+          -32.300132
+        ],
+        [
+          -54.080188,
+          -32.434354
+        ],
+        [
+          -54.264566,
+          -32.429706
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/extension.png": {
+      "file": "melo-extension-7851e2dadc6c9825b8fa.geojson.gz",
+      "sha256": "c8ca25ed7b574564becfe6dadc36f51fad55b9996bc66923cd16da915b40acd9",
+      "compressedBytes": 10089,
+      "jsonBytes": 42458,
+      "features": 2,
+      "vertices": 1752,
+      "maskSha256": "f06aec0cf14c582210c816bbd6132f2bd690c54faf76d92fd2fb9afb2aaf9cd4",
+      "corners": [
+        [
+          -54.263858,
+          -32.300199
+        ],
+        [
+          -54.08033,
+          -32.296084
+        ],
+        [
+          -54.076026,
+          -32.429786
+        ],
+        [
+          -54.259823,
+          -32.433921
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "melo/persistencia.png": {
+      "file": "melo-persistencia-018fd7db3380988921ad.geojson.gz",
+      "sha256": "056d3c4b96f782bcc542ab8c89e2b5a3738a83b36239646d5140334d49286f38",
+      "compressedBytes": 9263,
+      "jsonBytes": 39213,
+      "features": 6,
+      "vertices": 1579,
+      "maskSha256": "f8478b787dd103891f69c159fcdedbd7b9ebc7658da74b895a4fe7608a16a8d5",
+      "corners": [
+        [
+          -54.263858,
+          -32.300199
+        ],
+        [
+          -54.08033,
+          -32.296084
+        ],
+        [
+          -54.076026,
+          -32.429786
+        ],
+        [
+          -54.259823,
+          -32.433921
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "melo/retiro.png": {
+      "file": "melo-retiro-a0ac1f3de53f429ca87c.geojson.gz",
+      "sha256": "2e01200805c7b56745e3aa02579dd6587f414b1299f11531d8fb5d31c961a241",
+      "compressedBytes": 9185,
+      "jsonBytes": 39146,
+      "features": 5,
+      "vertices": 1579,
+      "maskSha256": "d6d72c51d4afe052864fc66eea51fef39da9147551a4754bce00329cc6fdf92b",
+      "corners": [
+        [
+          -54.263858,
+          -32.300199
+        ],
+        [
+          -54.08033,
+          -32.296084
+        ],
+        [
+          -54.076026,
+          -32.429786
+        ],
+        [
+          -54.259823,
+          -32.433921
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "melo/monte.png": {
+      "file": "melo-monte-8307fa7ecf1a9850b11c.geojson.gz",
+      "sha256": "fb29dd66a63c4ff92f652c9dde13ec073bc135bfdc928ea37a5cac35f88e4643",
+      "compressedBytes": 19844,
+      "jsonBytes": 81453,
+      "features": 1,
+      "vertices": 3364,
+      "maskSha256": "7036bb129d798823188a5f246dfbe3dfb544c14a18860050b253187b35d9ebdb",
+      "corners": [
+        [
+          -54.263858,
+          -32.300199
+        ],
+        [
+          -54.08033,
+          -32.296084
+        ],
+        [
+          -54.076026,
+          -32.429786
+        ],
+        [
+          -54.259823,
+          -32.433921
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-06-17.png": {
+      "file": "rio_branco_jaguarao-agua_2026-06-17-c7e4fa67e73eba01239b.geojson.gz",
+      "sha256": "e221076c0864baf8fea0cc739fd1d1a73902f1e5bf0a228ebbe301a6f9f6c417",
+      "compressedBytes": 27390,
+      "jsonBytes": 106418,
+      "features": 2,
+      "vertices": 4453,
+      "maskSha256": "e9147081ad81a517933efc83398aaa268d6f7e96fe98b4754ffa574e641b6f5b",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-06-29.png": {
+      "file": "rio_branco_jaguarao-agua_2026-06-29-f3442a4b183f18636421.geojson.gz",
+      "sha256": "b5af677bcd733605d1df1d48258b841a3f66ea52b2cfc7372f2ffa8f66594e9f",
+      "compressedBytes": 24832,
+      "jsonBytes": 96085,
+      "features": 1,
+      "vertices": 4025,
+      "maskSha256": "bbf9900938ce606b55cc005ccd4da9982070fa8150397c4d79433a76ba111ea1",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-07-11.png": {
+      "file": "rio_branco_jaguarao-agua_2026-07-11-f3442a4b183f18636421.geojson.gz",
+      "sha256": "b5af677bcd733605d1df1d48258b841a3f66ea52b2cfc7372f2ffa8f66594e9f",
+      "compressedBytes": 24832,
+      "jsonBytes": 96085,
+      "features": 1,
+      "vertices": 4025,
+      "maskSha256": "bbf9900938ce606b55cc005ccd4da9982070fa8150397c4d79433a76ba111ea1",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-07-23.png": {
+      "file": "rio_branco_jaguarao-agua_2026-07-23-abc3dac91ad986b53304.geojson.gz",
+      "sha256": "9e540dccd5fda01a2489ccf583ff0a19858aeeb6e9b98d9ccc96672729b08ca0",
+      "compressedBytes": 57215,
+      "jsonBytes": 225904,
+      "features": 2,
+      "vertices": 9459,
+      "maskSha256": "2f973669c41d66ac8af9ec0903f22be9eddc29a953af0bc63a3a797a4caf4561",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-08-16.png": {
+      "file": "rio_branco_jaguarao-agua_2026-08-16-10b2211c0c20725c72e3.geojson.gz",
+      "sha256": "2bbf647d48ff7926632567c3bc0b54beae5270cea702f67f25f980381d6748af",
+      "compressedBytes": 161224,
+      "jsonBytes": 657838,
+      "features": 2,
+      "vertices": 27575,
+      "maskSha256": "c02b561ccf2f647d6809be935090921cab90023a88494dc8d1c4efe83f5b5217",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-08-28.png": {
+      "file": "rio_branco_jaguarao-agua_2026-08-28-0aeeecd1140511143093.geojson.gz",
+      "sha256": "abd749b360dc6e03e8d56a7b3f5016bee3f62cce933f4f6c1eab96fb477c8bc5",
+      "compressedBytes": 214305,
+      "jsonBytes": 880266,
+      "features": 2,
+      "vertices": 36927,
+      "maskSha256": "30c570085edba66fa21be15e3ad36fefd5d47dcef5b85c1b37427f9b89ea3cfb",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-09-09.png": {
+      "file": "rio_branco_jaguarao-agua_2026-09-09-e47858662f737b025914.geojson.gz",
+      "sha256": "ba70f8675f9984726361ffd9fb589f37a7be788da247dcab8b78bb8562d843da",
+      "compressedBytes": 73079,
+      "jsonBytes": 291828,
+      "features": 2,
+      "vertices": 12236,
+      "maskSha256": "7f71d93c21db08d59cfd9223b0789e87d5b3adbc713f9c0931ba987215f5052f",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-09-21.png": {
+      "file": "rio_branco_jaguarao-agua_2026-09-21-e80b24cbefc5dde6009f.geojson.gz",
+      "sha256": "bc999c5748149097d1e96bd81cab2dfa8efbb9ded5e2349f162862a6414d7ee0",
+      "compressedBytes": 121502,
+      "jsonBytes": 492715,
+      "features": 2,
+      "vertices": 20652,
+      "maskSha256": "ebe62f9e11c11d7f0a68d248165a6e46bc94fceaffcb1b19287fb813876865d3",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-10-03.png": {
+      "file": "rio_branco_jaguarao-agua_2026-10-03-ebc14d10848f7af5037a.geojson.gz",
+      "sha256": "61dbaf2edb68af52935e14f59c8ead008d96accbe575efc5c6103a32e557f9b7",
+      "compressedBytes": 68846,
+      "jsonBytes": 273639,
+      "features": 2,
+      "vertices": 11471,
+      "maskSha256": "93d05b3ff8fd471742019ad51372e19b2e627f9f6a406369ced346a7b39f5130",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/agua_2026-10-15.png": {
+      "file": "rio_branco_jaguarao-agua_2026-10-15-f8688c0568b82282c260.geojson.gz",
+      "sha256": "ba715bf2e428106369df5bf063dd59bcdb637d04843e3807e3b04d57d6ce85b2",
+      "compressedBytes": 61570,
+      "jsonBytes": 243801,
+      "features": 2,
+      "vertices": 10217,
+      "maskSha256": "ce0a93818485ed4831434cdacb60c3f02a8a024e2f11ddaf3a8e95da4f247132",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/extension.png": {
+      "file": "rio_branco_jaguarao-extension-da476a7e8b29362e6cc5.geojson.gz",
+      "sha256": "db25976d6c6b796b2a18f42c8159c4a2a2d0983e9f4b9b644aab7049bad88a6b",
+      "compressedBytes": 143432,
+      "jsonBytes": 591945,
+      "features": 1,
+      "vertices": 24819,
+      "maskSha256": "c13f6d62a3951e0c5bea28a118df8c41ae71ea2b9834df6072d7ad7d895857ef",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/persistencia.png": {
+      "file": "rio_branco_jaguarao-persistencia-03c627bc50fec6e67c5e.geojson.gz",
+      "sha256": "27b420d7a1efde65159995c67efdddc59150859a054edf2dc01746d5e5335ee3",
+      "compressedBytes": 291822,
+      "jsonBytes": 1217278,
+      "features": 6,
+      "vertices": 50619,
+      "maskSha256": "2c8844967147989854137c2b2fabf16d3a420d995406c66d5a9b2f67745f65f0",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/retiro.png": {
+      "file": "rio_branco_jaguarao-retiro-c49d00ba05c6c1b32a97.geojson.gz",
+      "sha256": "5576ffa1434e42992b4713d1f7205428e58647dad8036415571ba77006fecd73",
+      "compressedBytes": 267623,
+      "jsonBytes": 1115146,
+      "features": 5,
+      "vertices": 46446,
+      "maskSha256": "e5f8e712dcb0e9560aa3ed2487b35204e3390b4a996dce0fe529fffd12ae3e12",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "rio_branco_jaguarao/monte.png": {
+      "file": "rio_branco_jaguarao-monte-3ae2c8fdcf1134577869.geojson.gz",
+      "sha256": "07ced99e5e28b0dbe586cb1dd0b03e61ad8680c00d63be79119e52960a92a570",
+      "compressedBytes": 36968,
+      "jsonBytes": 153538,
+      "features": 1,
+      "vertices": 6362,
+      "maskSha256": "577474fe4a46b71c8988efc020ae6d99827e0fe2a8c57a957cb328b8b6a7882f",
+      "corners": [
+        [
+          -53.459914,
+          -32.497062
+        ],
+        [
+          -53.296122,
+          -32.500159
+        ],
+        [
+          -53.300277,
+          -32.662947
+        ],
+        [
+          -53.464365,
+          -32.65983
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-07-12.png": {
+      "file": "durazno-agua_2026-07-12-6b8367ad79e15c61328d.geojson.gz",
+      "sha256": "a5f228029203ea4683d528f88c0691d63111c91db3a6bd02f50742f86027ed1f",
+      "compressedBytes": 157123,
+      "jsonBytes": 689795,
+      "features": 1,
+      "vertices": 28807,
+      "maskSha256": "9a260551a184a463623dcec7aeaf8ed6d84f125273f0edccaa45268f3a9a422d",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-07-24.png": {
+      "file": "durazno-agua_2026-07-24-d4c48a1e720b5663ddf6.geojson.gz",
+      "sha256": "bf550bc748bfb0642180bb76df23b23f148d32afd9f39582d65b3ca4d7001e5c",
+      "compressedBytes": 211215,
+      "jsonBytes": 924265,
+      "features": 2,
+      "vertices": 38631,
+      "maskSha256": "3733f5ac1b81ac5518d703fecc269a1167bcd20b97fd340096da59cefb6e9a9b",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-08-17.png": {
+      "file": "durazno-agua_2026-08-17-63b56955d32fd1b2ae00.geojson.gz",
+      "sha256": "6397de5ba785a9bce8c4c75e9231634a121e4cf27d711809b5cabadf0d40a231",
+      "compressedBytes": 175445,
+      "jsonBytes": 767596,
+      "features": 2,
+      "vertices": 32060,
+      "maskSha256": "25aeee3a0ff1aefd0c6a6f577d9dde1cc33ceb81a94143548577196ab9ff8e52",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-08-29.png": {
+      "file": "durazno-agua_2026-08-29-5bfafb4a499a3ab5cd13.geojson.gz",
+      "sha256": "60b497523449d2951a1347dace681ab8f20f9182075e2e84b01475d1770bb0b3",
+      "compressedBytes": 176261,
+      "jsonBytes": 770752,
+      "features": 2,
+      "vertices": 32192,
+      "maskSha256": "45a97db81ae125c8a7ed897790f20e58c85f64bfef0bfbe9033aa282fb711b78",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-09-10.png": {
+      "file": "durazno-agua_2026-09-10-62c8bfd7bf780748bcb8.geojson.gz",
+      "sha256": "7547aa73cc04e4f9101ea3a801b33a51b64686819da3828ccb898dbd6051b9b0",
+      "compressedBytes": 181426,
+      "jsonBytes": 792912,
+      "features": 2,
+      "vertices": 33121,
+      "maskSha256": "331ab7b53e81f0e29633552ff1fbf03ecb201193cdbe38b6193c5b9dc928dd99",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-09-22.png": {
+      "file": "durazno-agua_2026-09-22-d0617631f93f0c9929df.geojson.gz",
+      "sha256": "c56b87400e8d9e3eb8f99fb560d411a9b9ab26c7f8c4306b1897e09cd05453cc",
+      "compressedBytes": 189058,
+      "jsonBytes": 825199,
+      "features": 2,
+      "vertices": 34481,
+      "maskSha256": "f1bb8bc841d57c19c77dd0c7dd7857e2c15b82e74741d4b3a6be39304eb60af1",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-10-04.png": {
+      "file": "durazno-agua_2026-10-04-dea7086cf776ceb89f8c.geojson.gz",
+      "sha256": "0d2c1bc4b3ec101c851edf7130fc3ba979e5d6d69a8c032c42562618a2b78526",
+      "compressedBytes": 173242,
+      "jsonBytes": 757589,
+      "features": 2,
+      "vertices": 31641,
+      "maskSha256": "648d84bf5d16c3060c84fd3e67f1e4560ef45a70b6e286913ec13c416c1d0521",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/agua_2026-10-16.png": {
+      "file": "durazno-agua_2026-10-16-f002199e369ac6b12038.geojson.gz",
+      "sha256": "8c760e638cbe53c3ea82c4eb4c2589b778765e992cb131430e177397c7be2c94",
+      "compressedBytes": 189781,
+      "jsonBytes": 827921,
+      "features": 2,
+      "vertices": 34594,
+      "maskSha256": "fb6c73c2fd5e2ac9e9c9bf8e442f94ab44ac2a8cfe121d940c5f9024235204eb",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/extension.png": {
+      "file": "durazno-extension-13e55584f5beacf49cce.geojson.gz",
+      "sha256": "a690360adca71db88f7e6f1b5a722e0c218839de3b09f700c1ee7437f49ccd47",
+      "compressedBytes": 37438,
+      "jsonBytes": 160798,
+      "features": 1,
+      "vertices": 6726,
+      "maskSha256": "ac8780c3512bdb6029ec596b922b188c7897f77b6d9bb0067dfbcc3a07da428b",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "durazno/persistencia.png": {
+      "file": "durazno-persistencia-f469b7ab7c2ffd6d9682.geojson.gz",
+      "sha256": "9a1aa8f0023a31dc30ef8b4b96387117e33cccb697fb05b2893283d79401399a",
+      "compressedBytes": 67165,
+      "jsonBytes": 292223,
+      "features": 6,
+      "vertices": 12100,
+      "maskSha256": "7ff83f1abd290527fc1dcef18f0efdfa37158be78020b62e46e4f70db178a842",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "durazno/retiro.png": {
+      "file": "durazno-retiro-f8aa770875ecba665620.geojson.gz",
+      "sha256": "2e523ffb7b74032537a4f98b359405be26a477bd73be5b44678b4f6c95585d98",
+      "compressedBytes": 59349,
+      "jsonBytes": 253773,
+      "features": 5,
+      "vertices": 10526,
+      "maskSha256": "3f9bc70db0fdc632f059c8341f3bde5586780418a2fb872eb7f991f2d8a97a77",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "durazno/monte.png": {
+      "file": "durazno-monte-2bd5145e534be36552dd.geojson.gz",
+      "sha256": "a69a3e1d54af73c710d164d60f4e0d853efaebfabc1777255c3c4e780f1dfc13",
+      "compressedBytes": 16219,
+      "jsonBytes": 70883,
+      "features": 1,
+      "vertices": 2917,
+      "maskSha256": "cbe31ae08deb384166dc6c4199d423499a533031c79d81805f62f87082c516a6",
+      "corners": [
+        [
+          -56.620617,
+          -33.30009
+        ],
+        [
+          -56.400214,
+          -33.299222
+        ],
+        [
+          -56.39918,
+          -33.449845
+        ],
+        [
+          -56.619963,
+          -33.450718
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-06-26.png": {
+      "file": "mercedes-agua_2026-06-26-8c5c4286ded8f4d4dc9d.geojson.gz",
+      "sha256": "2db38d6a901d2268dfaa246431e510dd5533f99aece996f1c17f3dd48e2b16c3",
+      "compressedBytes": 85202,
+      "jsonBytes": 355728,
+      "features": 2,
+      "vertices": 14857,
+      "maskSha256": "fbd40c80f8fef49d9bf1da7d3922faa158b451768f7152b663753bb102cc2b43",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-07-08.png": {
+      "file": "mercedes-agua_2026-07-08-a745db4495e4e3c0f850.geojson.gz",
+      "sha256": "3e5680c39d67cb360db3916dee08f67264b1bba0326c0a245a37c295c66422cf",
+      "compressedBytes": 85184,
+      "jsonBytes": 355834,
+      "features": 2,
+      "vertices": 14863,
+      "maskSha256": "947ef42ecaace0652d7fd98ddd5c6792d21628b3b4a4e066721ceba7fc762e51",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-07-20.png": {
+      "file": "mercedes-agua_2026-07-20-3f219e3f8786c8947d55.geojson.gz",
+      "sha256": "4c01061cf01df02feaffa79e3e7eedb6203efa5bf8a222cdf4f6cabf97448b64",
+      "compressedBytes": 84603,
+      "jsonBytes": 353208,
+      "features": 2,
+      "vertices": 14752,
+      "maskSha256": "e095d2c5103590c9d9496ae2c21a6a0ad9fbc3413fc76d9f6022440ec16ce09c",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-08-13.png": {
+      "file": "mercedes-agua_2026-08-13-de843a618e292a619fbf.geojson.gz",
+      "sha256": "43d7d32f2d37e4bf33a7072a37f3ba519d2bae2202d96b6daa907674b331aed9",
+      "compressedBytes": 102373,
+      "jsonBytes": 424727,
+      "features": 2,
+      "vertices": 17748,
+      "maskSha256": "16090461f5dd49ca39964d5c645677f309d698d0cc578471213fe249fdb7f543",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-08-25.png": {
+      "file": "mercedes-agua_2026-08-25-2b0f72af034799ea3e67.geojson.gz",
+      "sha256": "82eff777b2491d847fdecd8c6026f251e192e8523bf454c8aee5a781fb0c6f51",
+      "compressedBytes": 133531,
+      "jsonBytes": 555894,
+      "features": 3,
+      "vertices": 23205,
+      "maskSha256": "da32b16cae788955c1262a939ecf5b91c365c4fc3ce82ba25603c3a9c924d9cf",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-09-06.png": {
+      "file": "mercedes-agua_2026-09-06-cba5789250e35aa7a5d6.geojson.gz",
+      "sha256": "9ee5f3d35b079845939ab62592d80fb1bb6175746a9a259e0921db2458065a9f",
+      "compressedBytes": 132550,
+      "jsonBytes": 551267,
+      "features": 3,
+      "vertices": 23015,
+      "maskSha256": "4fab705e173b895a916a24dab65a2518f8df76a9b0da62cd70c93a3fa951447e",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-09-18.png": {
+      "file": "mercedes-agua_2026-09-18-34656fbcebffb6be5abb.geojson.gz",
+      "sha256": "974d804b0fc6eb4039c5238469e32eba4bc002b779872ed5aada0b005fc06c42",
+      "compressedBytes": 130773,
+      "jsonBytes": 544143,
+      "features": 3,
+      "vertices": 22722,
+      "maskSha256": "fa74374db01e0aaec98adc3b1999be24d064d72c18825a3e0e7a680f994c8a2f",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-09-30.png": {
+      "file": "mercedes-agua_2026-09-30-4b100ee329fb08f4c5f3.geojson.gz",
+      "sha256": "a6bc7ebc65356e75f6bf233d2abc16940a3ea31e7973116b91751641f5b783d1",
+      "compressedBytes": 111853,
+      "jsonBytes": 465032,
+      "features": 3,
+      "vertices": 19416,
+      "maskSha256": "24704b77d92e9ffb222489fa38c7a359260b06158887a22cc4b9648c0d0fe0b3",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/agua_2026-10-12.png": {
+      "file": "mercedes-agua_2026-10-12-3679cd8949c1ff0ff267.geojson.gz",
+      "sha256": "7a9b1c328036104af24c6bc1e2f88c5c1ecd05bdae1b987a0360bf65129bc7d3",
+      "compressedBytes": 134633,
+      "jsonBytes": 560563,
+      "features": 3,
+      "vertices": 23416,
+      "maskSha256": "37f8a687af8eb1aeb1f0d21980f8a5ba5744fd5f43b51ff5f00cb9cf9ae6d4fd",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Candidate new water",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Baseline water",
+          "rgb": [
+            42,
+            120,
+            214
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/extension.png": {
+      "file": "mercedes-extension-7240dc87e0b462b9e135.geojson.gz",
+      "sha256": "aba617a3f044f7941f0f59a3b39d0eaa2513996dadf537dbac46b65998c586c5",
+      "compressedBytes": 48563,
+      "jsonBytes": 200515,
+      "features": 2,
+      "vertices": 8355,
+      "maskSha256": "377919e619c52862ca263078e05ccdf87db3efa1becacc798e0461c563430037",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published flood-extent classification",
+          "rgb": [
+            235,
+            104,
+            52
+          ]
+        },
+        {
+          "label": "Already wet before the storm (10–14 Aug)",
+          "rgb": [
+            138,
+            149,
+            161
+          ]
+        }
+      ]
+    },
+    "mercedes/persistencia.png": {
+      "file": "mercedes-persistencia-505620e46ff78276f01d.geojson.gz",
+      "sha256": "54f67d9c06cd25392afdfe4856fd2c4ad425d1d655642a1b3a9e146f52199868",
+      "compressedBytes": 46138,
+      "jsonBytes": 194661,
+      "features": 6,
+      "vertices": 8015,
+      "maskSha256": "e8a3682938a58ee1b849a1a5777dbbf847f60d4bd50141e4468dd32d506d5ef7",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Observed duration: 0–7 days",
+          "rgb": [
+            198,
+            219,
+            245
+          ]
+        },
+        {
+          "label": "Observed duration: 8–14 days",
+          "rgb": [
+            138,
+            182,
+            238
+          ]
+        },
+        {
+          "label": "Observed duration: 15–28 days",
+          "rgb": [
+            74,
+            140,
+            222
+          ]
+        },
+        {
+          "label": "Observed duration: 29–42 days",
+          "rgb": [
+            36,
+            98,
+            176
+          ]
+        },
+        {
+          "label": "Observed duration: 43+ days",
+          "rgb": [
+            18,
+            64,
+            124
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "mercedes/retiro.png": {
+      "file": "mercedes-retiro-20c2bc0878d7f1876705.geojson.gz",
+      "sha256": "dc8c24a4421c8427c5ef6ec0c535a749d24346c5bf2c61181b283b283a3d0d51",
+      "compressedBytes": 44714,
+      "jsonBytes": 187649,
+      "features": 5,
+      "vertices": 7735,
+      "maskSha256": "9f5d4cf87be59f7778dcafb24585ab8bd694810de1e19f7918c510f47cfbf85e",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published retreat interval: 2026-08-10 to 2026-08-31",
+          "rgb": [
+            253,
+            219,
+            199
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-01 to 2026-09-15",
+          "rgb": [
+            247,
+            166,
+            122
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-09-16 to 2026-09-30",
+          "rgb": [
+            230,
+            110,
+            60
+          ]
+        },
+        {
+          "label": "Published retreat interval: 2026-10-01 to 2026-10-20",
+          "rgb": [
+            180,
+            66,
+            22
+          ]
+        },
+        {
+          "label": "No dry observation by the end of the published series",
+          "rgb": [
+            9,
+            38,
+            77
+          ]
+        }
+      ]
+    },
+    "mercedes/monte.png": {
+      "file": "mercedes-monte-43df94a96beae1a2751e.geojson.gz",
+      "sha256": "bebe64b48bece8b67c9b1b757fb14d5ff6ec7a1b222695666f71827fa3a44ba0",
+      "compressedBytes": 109978,
+      "jsonBytes": 471575,
+      "features": 1,
+      "vertices": 19671,
+      "maskSha256": "2a173be3e373f043ffb4cc7d1128792eef9975650c31dff314c93b083344a2ba",
+      "corners": [
+        [
+          -58.119856,
+          -33.198576
+        ],
+        [
+          -57.92891,
+          -33.200148
+        ],
+        [
+          -57.930196,
+          -33.321541
+        ],
+        [
+          -58.121406,
+          -33.319962
+        ]
+      ],
+      "classes": [
+        {
+          "label": "Published riverside-forest signal classification",
+          "rgb": [
+            27,
+            175,
+            122
+          ]
+        }
+      ]
+    }
+  },
+  "revision": "634ee47ad6f7c676deb941470499067a1a9b597cb8dd61dfe6be65005902b87e",
+  "totals": {
+    "files": 79,
+    "jsonBytes": 108698078,
+    "compressedBytes": 26680911
+  }
+}
