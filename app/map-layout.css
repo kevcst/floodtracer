@@ -1,0 +1,101 @@
+/* Reuses the site's existing light/dark palette and IBM Plex typography. */
+html,body {height:100%;overflow:hidden;scroll-behavior:auto}
+body {padding:0;display:flex;flex-direction:column}
+[hidden] {display:none!important}
+nav.top {position:relative;margin:0;padding:10px 20px;flex:none;z-index:30;background:var(--surface)}
+nav.top .in {max-width:none;display:flex;flex-wrap:nowrap;gap:20px;min-height:44px;overflow:visible}
+.app-brand {display:flex;align-items:center;gap:10px;flex:none}
+.brand-mark {font-size:44px;line-height:.7;color:var(--flood);font-weight:700}
+.app-brand strong {display:block;font-family:var(--f-display);font-size:23px;line-height:1.1}
+.app-brand span:not(.brand-mark) {font-family:var(--f-mono);font-size:10px;color:var(--muted);letter-spacing:.08em}
+.app-actions {display:flex;gap:8px;align-items:center;margin-left:auto;flex:none}
+#active-selection {font-size:13px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#explorer-open,#tour-next {background:var(--flood);border-color:var(--flood);color:#fff}
+body[data-touring=true] #research-open {display:none}
+.wrap {max-width:none;margin:0;display:block;width:100%;flex:1;min-height:0}
+#explore,#workspace {position:relative;width:100%;height:100%;min-height:0;display:block;overflow:hidden;background:var(--img-bg)}
+#map {position:absolute;inset:0;min-height:0;height:auto;width:auto;transition:none}
+#err {position:fixed;top:70px;left:20px;right:20px;z-index:100}
+#map-loading {z-index:10}
+.map-loading-card {max-width:300px}
+#guided-tour {margin:0;z-index:15;scroll-margin:0;border-radius:12px;background:var(--surface);padding:20px;gap:12px;box-shadow:0 10px 35px #0002}
+.tour-question {font-size:11px;font-family:var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tour-header {align-items:flex-start;flex-wrap:nowrap}
+.tour-header h3 {font-size:25px;line-height:1.12;margin-top:5px}
+#tour-count {color:var(--flood)}
+#tour-exit {white-space:nowrap;font-size:11px;padding:5px 8px;background:transparent}
+.tour-copy {font-size:14px;line-height:1.65}
+.tour-copy p {margin:0}
+#tour-notes {font-size:12px;line-height:1.6;color:var(--muted)}
+#tour-notes summary {cursor:pointer;color:var(--fg2)}
+#tour-notes p {margin-top:8px;font-size:12px}
+#tour-status {font-size:11px;line-height:1.45}
+.tour-actions {display:grid;gap:12px}
+.tour-actions .buttons {display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#tour-sources {grid-column:1/-1;background:transparent;border:0;text-align:left;padding:0;font-size:12px;color:var(--still)}
+#tour-waypoints {display:flex;gap:9px;padding-top:3px}
+.waypoint {cursor:pointer;border:0;background:transparent;color:var(--muted);padding:0;font:inherit;text-align:left}
+.waypoint b {display:grid;place-items:center;width:27px;height:27px;border:1px solid var(--line);border-radius:50%;font:11px var(--f-mono)}
+.waypoint[aria-current=step] {color:var(--fg)}
+.waypoint[aria-current=step] b {background:var(--flood);border-color:var(--flood);color:white}
+.waypoint[data-complete=true] b {border-color:var(--flood);color:var(--flood)}
+#explorer-drawer {position:absolute;z-index:22;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 35px #0003;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.drawer-header {position:sticky;top:0;z-index:2;background:var(--surface);padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}
+.drawer-header h2 {font-size:22px;margin-top:4px}
+#drawer-close {font-size:24px;line-height:1}
+#explorer-drawer .panel {padding:16px;max-height:none;overflow:visible;gap:18px;display:grid}
+#explorer-drawer .panel>.stack:first-child {gap:10px}
+#provenance {scroll-margin-top:94px}
+.measurements {font-size:13px;border-top:1px solid var(--line);padding-top:12px}
+.measurements summary {cursor:pointer;font-weight:500}
+.measurement-body {padding-top:15px}
+#map-legend {position:absolute;z-index:5;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:10px 12px;max-width:360px;box-shadow:0 3px 12px #0001;pointer-events:none}
+#map-legend>.ctrl-label {font-size:9px}
+#legend {display:flex;gap:6px 12px;flex-wrap:wrap;font-size:11px;line-height:1.5;margin-top:4px}
+#legend .sw {width:10px;height:10px;margin-right:5px}
+#legend #zone-readout {display:none}
+#free-timeline {position:absolute;z-index:8;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);box-shadow:0 4px 20px #0002}
+.timeline-heading {display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:8px}
+.timeline-heading>.ctrl-label {font-size:9px}
+#timeline-configure {font-size:11px;padding:4px 6px}
+#date-ctrl {display:grid;gap:7px}
+#date-ctrl>.ctrl-label {display:none}
+#drawer-scrim {display:none!important}
+#research-dialog {border:1px solid var(--line);background:var(--bg);color:var(--fg);width:min(1160px,94vw);height:90dvh;max-height:90dvh;padding:0;border-radius:14px;overflow:hidden}
+#research-dialog[open] {display:flex;flex-direction:column}
+#research-dialog::backdrop {background:#080a0dc9;backdrop-filter:blur(3px)}
+.research-header {display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;border-bottom:1px solid var(--line);background:var(--surface);flex:none}
+.research-header h2 {font-size:26px;margin-top:4px}
+.research-nav {display:flex;gap:8px;padding:12px 24px;overflow-x:auto;flex:none;border-bottom:1px solid var(--line)}
+.research-nav button {white-space:nowrap}
+.research-body {overflow:auto;overscroll-behavior:contain;padding:24px;display:grid;gap:48px;scroll-behavior:auto}
+.research-body>section {scroll-margin-top:12px}
+.research-body .hero {padding-top:0}
+.research-body footer {padding-bottom:20px}
+@media(max-width:900px){nav.top{padding:8px 12px}nav.top .in{gap:8px}.app-brand strong{font-size:19px}.app-brand span:not(.brand-mark){font-size:9px}.brand-mark{font-size:32px}#active-selection{display:none}.app-actions{gap:5px}.app-actions .btn{font-size:11px;padding:6px 8px}.replay-button{display:none}}
+@media(max-width:600px){nav.top .in{min-height:42px}.app-brand strong{font-size:17px}.app-actions #sources-open{display:none}.app-actions .btn{font-size:10px;padding:6px}#research-open{max-width:72px}.tour-header h3{font-size:21px}#guided-tour{padding:14px;gap:9px}.tour-copy{font-size:12px;line-height:1.5}.tour-question{font-size:9px}.tour-header{gap:8px}#tour-progress{height:4px}.tour-actions{gap:7px}.tour-actions .btn{font-size:12px;padding:5px 8px}#tour-status{font-size:10px}#tour-notes{font-size:11px}#tour-notes p{font-size:11px}#map-legend{max-width:calc(100% - 28px);padding:6px 8px}#legend{font-size:10px;gap:3px 9px}#explorer-drawer{inset:0!important;width:100%!important;border-radius:0;box-shadow:none}.drawer-header{padding:12px 16px}.research-header{padding:14px}.research-body{padding:16px}.research-nav{padding:10px 14px}#research-dialog{width:100%;height:100dvh;max-height:100dvh;border-radius:0;border:0}#free-timeline{padding:9px 12px}.timeline-heading>.ctrl-label{display:none}.stamp{max-width:calc(100% - 64px);font-size:10px}.compare-label{font-size:10px}.compare-split{font-size:10px;padding:7px 10px}}
+
+/* The accessible divider handle replaces the redundant second split slider. */
+#compare-overlay .compare-split {display:none}
+
+@media(max-width:600px){nav.top .in{flex-wrap:wrap;gap:5px 8px}#active-selection{display:block;order:3;flex-basis:100%;margin:0;font-size:10px;line-height:16px;color:var(--muted)}}
+
+/* Concept 01: an uninterrupted map with a floating story companion. */
+#guided-tour {position:absolute;left:22px;top:58px;width:340px;max-height:calc(100% - 178px);overflow:auto}
+#tour-waypoints {justify-content:center;border-top:1px solid var(--line);padding-top:12px}
+.waypoint span {display:none}
+.waypoint b {font-size:0;width:10px;height:10px}
+#explorer-drawer {right:18px;top:18px;bottom:18px;width:360px}
+#map-legend {left:22px;bottom:40px}
+#free-timeline {bottom:32px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,calc(100% - 44px))}
+#workspace[data-touring=true] #map-legend {bottom:38px;max-width:340px}
+#workspace[data-touring=true] #compare-overlay .compare-split {left:385px;right:70px;bottom:40px}
+@media(max-width:1000px){#guided-tour{width:310px;left:14px;top:52px}#free-timeline{left:50%;right:auto;width:calc(100% - 28px);bottom:28px}#workspace[data-touring=false] #map-legend{bottom:145px;left:14px}#workspace[data-touring=true] #compare-overlay .compare-split{left:350px}}
+@media(max-width:600px){#guided-tour{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:48%;border-radius:12px}#workspace[data-touring=true] #map-legend{top:12px;bottom:auto;left:12px;right:60px;max-width:none}#workspace[data-touring=true] .stamp,#workspace[data-touring=true] .compare-label{top:84px}#workspace[data-touring=true] #compare-overlay .compare-split{display:none}#tour-waypoints{padding-top:7px}#tour-sources{grid-column:auto;text-align:left}#tour-next{grid-column:2}#tour-prev{grid-column:1}#workspace[data-touring=true][data-drawer=true] #guided-tour{visibility:hidden}#workspace[data-touring=true][data-drawer=true] #map-legend{visibility:hidden}}
+
+#satellite-context {margin-top:6px;font-size:10px;line-height:1.45}
+
+/* Keep the centered date controls clear of the map key. Event-wide layers need no timeline. */
+#workspace[data-timeline-visible=true] #map-legend {bottom:160px}
+#workspace[data-touring=false][data-timeline-visible=false] #map-legend {bottom:40px}
+@media(max-width:600px){#workspace[data-touring=false][data-timeline-visible=false] #map-legend{bottom:28px}}

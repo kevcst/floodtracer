@@ -1,5 +1,7 @@
 # Dancing with the SARs — NASA Space Apps 2026 (equipo Uruguay)
 
+> Layout preview: **Immersive map**. This branch opens directly in the map and guided tour. All original study results remain available through **Study & results**. See [layout notes](docs/MAP_LAYOUT.md).
+
 **Idea: "How long does the water stay?" / "¿Cuánto tiempo se queda el agua?"**
 
 Con el radar **NISAR** (banda L, NASA/ISRO), que ve a través de las nubes cada 12 días, reconstruimos la crecida del **15–19 de agosto de 2026** en Uruguay y medimos dónde apareció agua nueva, hasta dónde llegó, cuánto tardó en irse y dónde quedó agua bajo el monte. Comparamos la cuenca de la Laguna Merín (Olimar, Cebollatí, Yaguarón) con la del río Negro (Yí, Mercedes).
