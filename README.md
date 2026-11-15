@@ -206,7 +206,7 @@ Definidas en `scripts/zonas.py`. Track = `{número}{A=ascendente | D=descendente
 
 ## 7. Reglas del equipo
 
-1. **NISAR es la fuente principal, no necesariamente la única.** Otras fuentes pueden **mejorar la detección** cuando la mejora se mide: el viento de ERA5 elige qué pasadas base sirven para el agua permanente (ver la guía, §32). Las fuentes de **validación** (Sentinel-1, JRC Global Surface Water) nunca entran al cálculo, para que la validación siga siendo independiente. Nunca se usan para entrenar. El resto (Sentinel-2, INUMET, DINAGUA, SINAE, DIEA, MapBiomas, DEM, OSM) es contexto.
+1. **NISAR es la fuente principal, no necesariamente la única.** Otras fuentes pueden **mejorar la detección** cuando la mejora se mide: el viento de ERA5 elige qué pasadas base sirven para el agua permanente (ver la guía, §31.9). Las fuentes de **validación** (Sentinel-1, JRC Global Surface Water) nunca entran al cálculo, para que la validación siga siendo independiente. Nunca se usan para entrenar. El resto (Sentinel-2, INUMET, DINAGUA, SINAE, DIEA, MapBiomas, DEM, OSM) es contexto.
 2. **Un track por serie temporal** (misma geometría). Los tracks se combinan sólo a nivel de máscara de agua, con umbral calibrado por track.
 3. **No mezclar PROVISIONAL y VALIDATED** sin normalizar: hay un salto de calibración de ~−1,7 dB en HH y ~−2,2 dB en HV en tierra.
 4. Las cifras de prensa son preliminares: confirmarlas con SINAE/CECOED antes de publicarlas.

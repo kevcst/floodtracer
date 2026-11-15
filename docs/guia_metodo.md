@@ -250,7 +250,7 @@ El producto GCOV guarda la **matriz de covarianza** de las polarizaciones. Los t
 | Monte **inundado** | **Sube** (doble rebote) | Sube poco | **Sube** |
 | Ciudad | Muy alto (> 0) | Alto | Muy alto |
 
-**HH−HV en dB es el cociente HH/HV en lineal.** Es útil porque cancela parte de los efectos que afectan a ambos canales por igual (calibración, humedad general) y resalta el **doble rebote**, que aumenta HH mucho más que HV. Es la métrica que usa `monte_ribereno.py`.
+**HH−HV en dB es el cociente HH/HV en lineal.** Es útil porque cancela parte de los efectos que afectan a ambos canales por igual (calibración, humedad general) y resalta el **doble rebote**, que aumenta HH mucho más que HV. Es la métrica que usa `monte_ribereno.py` para el agua bajo el monte. **El detector de agua abierta usa sólo HH:** en agua abierta HH y HV caen juntos y el cociente cancela esa caída; además, sobre el agua HV queda en el piso de ruido del sensor (§31.11).
 
 ![polarizaciones](figs/guia_04_polarizaciones.png)
 *Mercedes (track 10D), 26/6, antes del evento. El río Negro es negro en HH y en HV. La ciudad es blanca en HH y tiene el HH−HV más alto (doble rebote de calles y paredes). Los campos son grises en HH y oscuros en HV. El monte de galería junto al río es claro en ambos canales.*
@@ -533,7 +533,7 @@ hh_db = 10 * log10( media_5x5_ignorando_NaN( hh_lineal ) )
    - Si hay al menos 200 píxeles de cada una: `umbral = agua + 0,3 × (tierra − agua)`, recortado a [−20, −17,5] dB.
    - Ejemplo 53D: agua −22,8 dB, tierra −9,2 dB → −22,8 + 0,3 × 13,6 = **−18,7 dB**.
    - Si no hay suficientes píxeles (zonas chicas sin lagunas), usa −18 dB.
-3. **Agua base:** HH < umbral en **más de la mitad** de las fechas base.
+3. **Agua base:** HH < umbral en **más de la mitad** de las fechas base **de calma** (viento ERA5 < 3 m/s a la hora de la pasada, `clima.py`; si el track no tiene ninguna, todas). Con viento el agua abierta se riza y sube por encima del umbral (§31.9).
 4. **Mediana base por píxel:** `mediana(HH en fechas base)` para cada píxel. Es el **"valor normal"** de ese píxel en ese track.
 
 ## 19. Paso 2d — El detector de agua nueva
@@ -689,7 +689,7 @@ Son 15 combinaciones. El mínimo, el central (−3/−14) y el máximo forman la
 
 ## 24. Pasos 6 y 8 — Contexto e impacto (`capas_contexto.py`, `agregar_impacto.py`)
 
-### 24.1 Capas de contexto (regla 1: contexto; el viento ERA5 sí entra a la detección, ver §32)
+### 24.1 Capas de contexto (regla 1: contexto; el viento ERA5 sí entra a la detección, ver §31.9)
 
 | Capa | Fuente | Cómo se procesa |
 |---|---|---|
@@ -982,6 +982,44 @@ Bajar recortes de Sentinel-1 para Merín (la grilla más grande) llevó 1–2 ho
 ### 31.8 Zonas con poca agua abierta (límite)
 
 Mercedes, Durazno y Melo tienen menos del 2 % de agua abierta. Ahí la coincidencia entre tracks y contra Sentinel-1 es baja y el resultado es poco robusto. Para el río Negro lo informativo es el agua bajo el monte (§22).
+
+### 31.9 La laguna Merín no figuraba como agua permanente: ángulo, viento y pasadas de calma (resuelto, 15/11)
+
+**Síntoma.** En el track 53D la laguna Merín (esquina noreste del recorte) no salía como agua base: sólo el 6–11 % de la laguna. En los días calmos del evento aparecía como "agua nueva" (unas 250 ha dentro de la laguna en la extensión confirmada de Merín).
+
+**Por qué.** El agua base era "HH < umbral del track en la mayoría de las pasadas base". En 53D, dos de las cuatro pasadas base fueron casi sin viento y la laguna se vio a −20/−22 dB; en las otras dos, con viento, a −17,6/−16,5 dB, por encima del umbral (−18,6). No llegaba a la mayoría. Además, cada track ve la laguna distinto: 93 % de agua base en 154D, 10 % en 53D y 3 % en 132A.
+
+**Diagnóstico** (scripts `angulo_incidencia.py`, `diagnostico_tracks.py`, `clima_pasadas.py`, `comparar_global.py`; resultados en `data_nisar/zonas/diagnostico_tracks/` y `comparacion_global/`):
+
+1. **Ángulo de incidencia** (cubo `radarGrid/incidenceAngle` de GCOV, nivel 0 m; idéntico entre pasadas de un track, |Δ| ≤ 0,001°). Dentro de una zona varía 1–4°; entre tracks de la misma zona, hasta ~12° (34° vs 47°). Mismos píxeles vistos por distintos tracks: la base de pradera/cultivo baja 0,10–0,15 dB por grado, el monte ~0 y el agua abierta grande ~0,3 dB/°. La laguna se ve a −15,8 dB a 35° (132A) y a −19,4 dB a 46° (154D): por eso 154D la marcaba y los otros no.
+2. **Viento** (ERA5 vía Open-Meteo, a la hora UTC de cada escena). Restando la mediana del propio track (ángulo cancelado), el agua de las lagunas queda en promedio 1,4 dB más oscura con viento < 2 m/s (hasta 4–6 dB) y estable desde ~3 m/s. El 46 % de las pasadas tienen < 3 m/s. En la tierra el viento no pesa; la lluvia de las 72 h previas explica algo (R² 0,36).
+3. **HV sobre el agua no es señal de la superficie:** sube con el ángulo (+0,2 dB/°), al revés que cualquier superficie: es el piso de ruido del sensor, que crece hacia el borde lejano. No sirve para reconocer agua permanente.
+
+**Qué se probó** (agua base contra JRC Global Surface Water, ocurrencia ≥ 75 %, sólo como validación; agua nueva contra Sentinel-1 y entre tracks):
+
+| Variante | F1 agua base vs JRC | Jaccard agua base entre tracks | F1 agua nueva vs S1 |
+|---|---|---|---|
+| Umbral por track, todas las pasadas base (antes) | 0,37 | 0,30 | 0,31 |
+| **Umbral por track, sólo pasadas base de calma (adoptada)** | **0,50** | **0,40** | 0,31 |
+| Umbral global + normalización por ángulo (pendiente de la tierra) | 0,41 | 0,32 | 0,31 |
+| Umbral global + ángulo (tierra) + calma | 0,51 | 0,39 | 0,31 |
+| Umbral global + dos pendientes (agua/tierra) + calma | 0,47 | 0,28 | 0,31 |
+
+- Lo que más mejora es **elegir las pasadas de calma**; normalizar por ángulo agrega poco y con dos pendientes sobrecorrige los tracks de ángulo alto (Merín 154D: 92 % → 37 %).
+- La detección de **agua nueva no cambia** con ninguna variante: la detección por cambio compara cada píxel con su propia base en el mismo track, así que el ángulo ya se cancela.
+- Laguna Merín en los tracks de ~36°: 5–11 % → ~90 % de agua base.
+
+**Solución adoptada.** `clima.py` (etapa nueva del pipeline) guarda el viento ERA5 a la hora de cada pasada. `metricas_evento.agua_permanente` decide el agua base con las pasadas base de **viento < 3 m/s**; si un track no tiene ninguna, usa todas. Lo usan también `armonizar_tracks`, `sensibilidad` y `validar_s1`. Regla 1 actualizada: NISAR es la fuente principal, no la única; ERA5 sólo elige pasadas, no corrige valores.
+
+**Abierto.** El viento también puede hacer que un campo inundado se vea brillante y no se detecte como agua nueva; no está medido. Se podría marcar como "baja confianza" cada pasada del evento con viento alto.
+
+### 31.10 Pasadas con calibración rota que entraban en la base (resuelto, 15/11)
+
+Algunas pasadas tienen todo el recorte corrido decenas de dB: T60A_F162 del 18/6 (+19 dB en Salto, +23 dB en Artigas), Artigas 12/7 y 5/7 (−15 dB). En las zonas de octubre la base son las 4 pasadas "más secas", y una escena con brillo absurdo parecía la más seca: entraba en la base de Salto y Artigas T60A. `cargar_track` ahora descarta las pasadas cuya mediana del recorte se aleja más de 5 dB de la del track (ni una crecida ni el salto VALIDATED mueven tanto un recorte entero). Artigas T60A: falsa alarma en la base 0,81 % → 0,02 %, extensión de la tormenta 169 → 15 ha.
+
+### 31.11 HV como condición extra del detector de agua nueva (probado, descartado, 15/11)
+
+`comparar_hv.py` exigió además que HV caiga (−1,5 o −3 dB) o quede oscuro (< −22 dB). La precisión contra Sentinel-1 sube (0,28 → 0,33) pero se pierde agua real somera o con pasto (exhaustividad 0,45 → 0,35): F1 0,31 en todas las variantes. El cociente HH/HV (§6.3) tampoco sirve para el agua abierta: HH y HV caen juntos y el cociente cancela justo esa caída. Sólo se usa para el monte inundado (§22). Sólo el 5 % de las pasadas no trae HV (modo SHSH), ninguna en la ventana del evento.
 
 ---
 
