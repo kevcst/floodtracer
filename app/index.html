@@ -168,7 +168,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
 #provenance summary {cursor:pointer;font-weight:600;color:var(--fg)}
 #provenance-content {display:grid;gap:10px;margin-top:12px;color:var(--fg2)}
 #provenance-content p {margin:0}#provenance-content a {overflow-wrap:anywhere}
-#map > .maplibregl-control-container {position:relative;z-index:4}
+#map > .maplibregl-control-container {position:absolute;inset:0;z-index:4;pointer-events:none}
 .stamp {z-index:4}
 /* Guided exploration remains separate from scientific processing. */
 .tour-entry {display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -268,6 +268,13 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
       </div>
       <div class="panel">
         <div class="stack"><span class="ctrl-label">Area</span><div class="tabs" id="zone-tabs" role="group" aria-label="Area"></div><p class="readout" id="zone-title"></p></div>
+        <div class="stack"><span class="ctrl-label">Basemap</span>
+          <div class="seg" id="basemap-seg" role="group" aria-label="Basemap">
+            <button type="button" data-basemap="street" aria-pressed="true">Street map</button>
+            <button type="button" data-basemap="satellite" aria-pressed="false">Satellite</button>
+          </div>
+          <p class="note">Satellite imagery is geographic context, not a NISAR observation. Image dates vary and do not follow the selected pass date. <a href="https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer" target="_blank" rel="noopener noreferrer">Esri World Imagery sources</a>.</p>
+        </div>
         <div class="stack"><span class="ctrl-label">Layer</span>
           <div class="seg" id="layer-seg" role="group" aria-label="Layer">
             <button type="button" data-layer="date" aria-pressed="true">Water by date</button>
@@ -292,7 +299,7 @@ footer { font-size: 0.82rem; color: var(--muted); display: grid; gap: 8px; borde
           <label><input type="checkbox" id="chk-roads" checked> Flooded roads</label>
           <label><input type="checkbox" id="chk-towns" checked> Towns</label>
         </div>
-        <label class="vector-opacity">Water polygon opacity <input type="range" id="water-opacity" min="10" max="90" value="50" aria-label="Water polygon opacity"></label>
+        <label class="vector-opacity">Water polygon opacity <input type="range" id="water-opacity" min="10" max="100" value="50" aria-label="Water polygon opacity"></label>
         <p class="note" id="vector-status" role="status">Water polygons use the existing published masks.</p>
         <button type="button" class="btn" id="download-polygons" disabled>Download current polygons</button>
         <div class="legend" id="legend"></div>
@@ -525,11 +532,19 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   const dark = () => document.documentElement.dataset.theme === "dark" || (document.documentElement.dataset.theme !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
   // Keep standard OpenStreetMap colors legible beneath translucent polygons, including in dark UI mode.
   const tiles = () => ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
+  let basemap = 'street';
+  const waterOpacityByStyle = { standard: 50, satellite: 95 };
+  const waterOpacityStyle = () => basemap === 'satellite' ? 'satellite' : 'standard';
+  const satelliteSource = {
+    type: 'raster', tileSize: 256, maxzoom: 19,
+    tiles: ['https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+    attribution: 'Source: <a href="https://goto.arcgisonline.com/maps/World_Imagery" target="_blank" rel="noopener noreferrer">Esri</a>, Vantor, Earthstar Geographics, and the GIS User Community'
+  };
   const basePaint = () => ({ "raster-saturation": 0, "raster-brightness-min": 0, "raster-brightness-max": 1, "raster-contrast": 0 });
   if (!window.maplibregl) { showError("The map library did not load (no internet?). Charts and tables still work."); }
   const map = window.maplibregl ? new maplibregl.Map({
     container: "map", attributionControl: { compact: true },
-    style: { version: 8, glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" } }, layers: [{ id: "base", type: "raster", source: "base", paint: basePaint(dark()) }] },
+    style: { version: 8, glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", sources: { base: { type: "raster", tiles: tiles(), tileSize: 256, maxzoom: 19, attribution: "© OpenStreetMap contributors" }, satellite: satelliteSource }, layers: [{ id: "base", type: "raster", source: "base", paint: basePaint(dark()) }, { id: "satellite", type: "raster", source: "satellite", layout: { visibility: "none" }, paint: { "raster-fade-duration": 0 } }] },
     center: [-54.5, -33], zoom: 7, maxZoom: 16, cooperativeGestures: false,
   }) : null;
   if (map) { map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right"); map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left"); }
@@ -559,12 +574,18 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     map.on('mouseleave','water-fill',()=>map.getCanvas().style.cursor='');
     try {
       const [roads, towns] = await Promise.all([fetch("data/impacto/caminos.geojson").then(r => r.json()), fetch("data/impacto/localidades.geojson").then(r => r.json())]);
-      map.addSource("towns", { type: "geojson", data: towns });
+      map.addSource("towns", { type: "geojson", data: towns, attribution: "© OpenStreetMap contributors" });
       map.addLayer({ id: "towns", type: "line", source: "towns", paint: { "line-color": "#ffffff", "line-width": 1.2, "line-dasharray": [2, 1.5] } });
       map.addLayer({ id: "towns-l", type: "symbol", source: "towns", layout: { "text-field": ["get", "nombre"], "text-size": 11, "text-font": ["Open Sans Semibold"] }, paint: { "text-color": "#ffffff", "text-halo-color": "#000", "text-halo-width": 1 } });
-      map.addSource("roads", { type: "geojson", data: roads });
-      map.addLayer({ id: "roads", type: "line", source: "roads", paint: { "line-width": ["interpolate", ["linear"], ["zoom"], 8, 1.5, 13, 4],
-        "line-color": ["step", ["get", "dias_mid"], "#fdd6bf", 8, "#f7a67a", 15, "#e66e3c", 29, "#b44216", 43, "#6e2507"] } });
+      map.addSource("roads", { type: "geojson", data: roads, attribution: "© OpenStreetMap contributors" });
+      // A white outer halo and dark casing separate road exposure from every polygon palette.
+      map.addLayer({ id: 'roads-halo', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#ffffff', 'line-width': roadLineWidth(3) } });
+      map.addLayer({ id: 'roads-casing', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-color': '#171321', 'line-width': roadLineWidth(1.5) } });
+      map.addLayer({ id: 'roads', type: 'line', source: 'roads', layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { 'line-width': roadLineWidth(),
+          'line-color': ['step', ['get', 'dias_mid'], roadPalette()[0], 8, roadPalette()[1], 15, roadPalette()[2], 29, roadPalette()[3], 43, roadPalette()[4]] } });
       map.on("click", "roads", (e) => {
         if(comparisonEnabled)return;
         const p = e.features[0].properties;
@@ -698,17 +719,17 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   function ensureComparisonMap() {
     if(comparisonReady)return comparisonReady;
-    const current=map.getStyle(),sources={base:current.sources.base};
+    const current=map.getStyle(),sources={base:current.sources.base,satellite:current.sources.satellite};
     for(const id of ['roads','towns'])if(current.sources[id])sources[id]=current.sources[id];
     comparisonMap=new maplibregl.Map({container:'map-before',interactive:false,attributionControl:false,
       center:map.getCenter(),zoom:map.getZoom(),bearing:map.getBearing(),pitch:map.getPitch(),maxZoom:16,
-      style:{version:8,glyphs:current.glyphs,sources,layers:current.layers.filter(l=>['base','roads','towns','towns-l'].includes(l.id))}});
+      style:{version:8,glyphs:current.glyphs,sources,layers:current.layers.filter(l=>['base','satellite','roads-halo','roads-casing','roads','towns','towns-l'].includes(l.id))}});
     comparisonReady=new Promise(resolve=>comparisonMap.once('load',()=>{
       comparisonMap.addSource('water-before',{type:'geojson',data:emptyWater()});
-      const below=comparisonMap.getLayer('roads')?'roads':comparisonMap.getLayer('towns')?'towns':undefined;
+      const below=comparisonMap.getLayer('roads-halo')?'roads-halo':comparisonMap.getLayer('towns')?'towns':undefined;
       comparisonMap.addLayer({id:'water-fill',type:'fill',source:'water-before',paint:{'fill-color':['get','color'],'fill-opacity':+$('#water-opacity').value/100}},below);
       comparisonMap.addLayer({id:'water-outline',type:'line',source:'water-before',paint:{'line-color':['get','color'],'line-width':.65,'line-opacity':.65}},below);
-      syncComparisonCamera();resolve();
+      applyBasemap();syncComparisonCamera();resolve();
     }));
     syncComparisonCamera();return comparisonReady;
   }
@@ -722,7 +743,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
       }else comparisonMap.getSource('hh').updateImage({url:img(zid,`hh_${date}.webp`),coordinates:d.capas.serie.esquinas});
     }
     if(comparisonMap.getLayer('hh'))comparisonMap.setLayoutProperty('hh','visibility',radar?'visible':'none');
-    for(const [id,checked] of [['water-fill',$('#chk-polygons').checked],['water-outline',$('#chk-polygons').checked],['roads',$('#chk-roads').checked],['towns',$('#chk-towns').checked],['towns-l',$('#chk-towns').checked]]){
+    for(const [id,checked] of [['water-fill',$('#chk-polygons').checked],['water-outline',$('#chk-polygons').checked],['roads-halo',$('#chk-roads').checked],['roads-casing',$('#chk-roads').checked],['roads',$('#chk-roads').checked],['towns',$('#chk-towns').checked],['towns-l',$('#chk-towns').checked]]){
       if(comparisonMap.getLayer(id))comparisonMap.setLayoutProperty(id,'visibility',checked?'visible':'none');
     }
     comparisonMap.setPaintProperty('water-fill','fill-opacity',+$('#water-opacity').value/100);
@@ -918,18 +939,110 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   }
   $('#chk-polygons').addEventListener('change', updatePolygonVisibility);
   $('#map-loading-retry').addEventListener('click',()=>mapReady?render():location.reload());
-  $('#water-opacity').addEventListener('input',event=>{if(mapReady)map.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);if(comparisonMap?.getLayer('water-fill'))comparisonMap.setPaintProperty('water-fill','fill-opacity',+event.target.value/100);});
+  $('#water-opacity').addEventListener('input', event => {
+    waterOpacityByStyle[waterOpacityStyle()] = +event.target.value;
+    for (const target of [map, comparisonMap]) {
+      if (target?.getLayer('water-fill')) target.setPaintProperty('water-fill', 'fill-opacity', +event.target.value / 100);
+    }
+  });
   $('#download-polygons').addEventListener('click',()=>{
     if(!visibleWater)return;
     const data={...visibleWater,metadata:{...waterDisplayContext,source:'Existing app display mask',note:'Display geometry only. All published measurements and validation results are unchanged.'}};
     const url=URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/geo+json'}));
     const anchor=document.createElement('a');anchor.href=url;anchor.download=`${waterDisplayContext.zone}-${waterDisplayContext.view}-${waterDisplayContext.date}.geojson`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),5000);
   });
+  function roadPalette() { return ['#f1e7ff', '#dac2ff', '#b68aff', '#8e54ee', '#6430bd']; }
+  function roadLineWidth(extra = 0) {
+    return ['interpolate', ['linear'], ['zoom'], 8, 2 + extra, 13, 4.5 + extra];
+  }
+  function dateMapPalette() {
+    return basemap === 'satellite'
+      ? { newWater: '#ff9d24', baseline: '#00d9ff', preRain: '#edf2f7' }
+      : { newWater: css('--flood'), baseline: css('--still'), preRain: M.leyendas.previa };
+  }
+  function waterMapClasses(view) {
+    const classes = vectorClasses(view);
+    if (basemap !== 'satellite') return classes;
+    const dateColors = dateMapPalette();
+    // Ordered scales retain the published bins; the final magenta class means no dry observation.
+    const palettes = {
+      date: [dateColors.newWater, dateColors.baseline, dateColors.preRain],
+      extent: [dateColors.newWater, dateColors.preRain],
+      persist: ['#dbf6ff', '#93ddff', '#38bdf8', '#287ff0', '#5478ff', '#ff4fce'],
+      retreat: ['#fff0ba', '#ffcb63', '#ff9345', '#ff5b57', '#ff4fce'],
+      forest: ['#49ff9c']
+    };
+    return classes.map((entry, index) => ({ ...entry, color: palettes[view][index] }));
+  }
+  function applyWaterPalette() {
+    const enhanced = basemap === 'satellite';
+    const opacity = waterOpacityByStyle[waterOpacityStyle()];
+    $('#water-opacity').value = opacity;
+    // Recolor in the renderer without changing mask decoding, geometry or measured values.
+    const color = enhanced ? ['match', ['get', 'label'],
+      ...waterMapClasses(layer).flatMap(entry => [entry.label, entry.color]),
+      ['get', 'color']] : ['get', 'color'];
+    for (const target of [map, comparisonMap]) {
+      if (!target?.getLayer('water-fill')) continue;
+      target.setPaintProperty('water-fill', 'fill-color', color);
+      target.setPaintProperty('water-fill', 'fill-opacity', opacity / 100);
+      target.setPaintProperty('water-outline', 'line-color', color);
+      target.setPaintProperty('water-outline', 'line-width', enhanced ? 1 : .65);
+      target.setPaintProperty('water-outline', 'line-opacity', enhanced ? .95 : .65);
+    }
+  }
+  function applyBasemap() {
+    for (const target of [map, comparisonMap]) {
+      if (!target?.getLayer('satellite')) continue;
+      target.setLayoutProperty('base', 'visibility', basemap === 'street' ? 'visible' : 'none');
+      target.setLayoutProperty('satellite', 'visibility', basemap === 'satellite' ? 'visible' : 'none');
+    }
+    document.querySelectorAll('#basemap-seg button').forEach(button => button.setAttribute('aria-pressed', button.dataset.basemap === basemap));
+    $('#satellite-context').hidden = basemap !== 'satellite';
+    applyWaterPalette();
+    legend();
+  }
+  $('#basemap-seg').addEventListener('click', event => {
+    const button = event.target.closest('button[data-basemap]');
+    if (!button || !mapReady || button.dataset.basemap === basemap) return;
+    basemap = button.dataset.basemap;
+    // Swap only the background: keep polygons, dates, camera and the current tour step.
+    const wasLoading = mapIsLoading;
+    setMapLoading(true, `Loading the ${basemap === 'satellite' ? 'satellite imagery' : 'street map'} background.`);
+    applyBasemap();
+    if (!wasLoading) finishAfterMapRender(vectorRenderId, () => {});
+    map.triggerRepaint();
+  });
   $("#chk-roads").addEventListener("change", render);
   $("#chk-towns").addEventListener("change", render);
   function setLayer(l) { if(l!=='date'&&comparisonEnabled){comparisonEnabled=false;$('#chk-compare').checked=false;} layer = l; stop(); document.querySelectorAll("#layer-seg button").forEach(x => x.setAttribute("aria-pressed", x.dataset.layer === l)); render(); }
   function play() { if(comparisonEnabled)return; if (layer !== "date") setLayer("date"); $("#play").textContent = "Pause"; const n = Z[zid].capas.serie.fechas.length; if (di >= n - 1) di = 0; render(); timer = setInterval(() => { if(mapIsLoading)return; di = (di + 1) % n; render(); }, 1200); }
   function stop() { if (timer) clearInterval(timer); timer = null; $("#play").textContent = "Play"; }
+
+  // Keep the whole study footprint visible at the overview zoom, including on narrow screens.
+  // The navigation envelope adds only the context needed to fit the viewport's aspect ratio.
+  function constrainStudyArea(resetView = false) {
+    if (!map || !mapReady) return;
+    const corners = Object.values(Z[zid].capas).flatMap(c => c.esquinas || []);
+    const lons = corners.map(p => p[0]), lats = corners.map(p => p[1]);
+    const studyBounds = [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]];
+    const sw = maplibregl.MercatorCoordinate.fromLngLat(studyBounds[0]);
+    const ne = maplibregl.MercatorCoordinate.fromLngLat(studyBounds[1]);
+    const { width, height } = map.getContainer().getBoundingClientRect();
+    if (!width || !height) return;
+    const padding = Math.min(20, width / 4, height / 4);
+    const unitsPerPixel = Math.max((ne.x - sw.x) / (width - 2 * padding), (sw.y - ne.y) / (height - 2 * padding));
+    const cx = (sw.x + ne.x) / 2, cy = (sw.y + ne.y) / 2;
+    const halfWidth = unitsPerPixel * width / 2, halfHeight = unitsPerPixel * height / 2;
+    const navigationBounds = [
+      new maplibregl.MercatorCoordinate(cx - halfWidth, cy + halfHeight).toLngLat(),
+      new maplibregl.MercatorCoordinate(cx + halfWidth, cy - halfHeight).toLngLat()
+    ];
+    map.stop();
+    map.setMaxBounds(navigationBounds);
+    if (resetView) map.fitBounds(studyBounds, { padding, duration: 0, bearing: 0, pitch: 0 });
+    syncComparisonCamera();
+  }
 
   function setZone(z, renderView=true) {
     ++vectorRenderId;if(cancelMapReadyWait)cancelMapReadyWait();
@@ -945,10 +1058,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     $("#ticks").innerHTML = ""; fe.forEach((f, i) => { if (i === 0 || i === fe.length - 1 || i === pk) { const s = document.createElement("span"); s.textContent = fmtDate(f); $("#ticks").appendChild(s); } });
     // The vector view requests only the selected published mask; radar images are optional.
     stats(); zchart(); impact(); $("#probe").innerHTML = '<p class="probe-empty">Click the map.</p>'; if (probeMarker) { probeMarker.remove(); probeMarker = null; }
-    if (map && mapReady) {
-      const c = d.capas.serie.esquinas; const lons = c.map(p => p[0]), lats = c.map(p => p[1]);
-      map.fitBounds([[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]], { padding: 20, duration: 600 });
-    }
+    constrainStudyArea(true);
     if(renderView)render();
   }
 
@@ -972,10 +1082,11 @@ if (location.protocol === "file:") showError("This page needs to be served over 
         }else map.getSource('hh').updateImage({url:img(zid,`hh_${f}.webp`),coordinates:d.capas.serie.esquinas});
       }
       updatePolygonVisibility();
+      applyWaterPalette();
       if(map.getLayer('hh'))map.setLayoutProperty('hh','visibility',$('#chk-radar').checked?'visible':'none');
       const selected={date:[`agua_${f}.png`,d.capas.serie.esquinas],extent:['extension.png',d.capas.evento.esquinas],persist:['persistencia.png',d.capas.evento.esquinas],retreat:['retiro.png',d.capas.evento.esquinas],forest:['monte.png',d.capas.evento.esquinas]}[layer];
       renderWaterVectors(img(zid,selected[0]),selected[1],layer,zid,f);
-      for (const [id, chk] of [["roads", "#chk-roads"], ["towns", "#chk-towns"], ["towns-l", "#chk-towns"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
+      for (const [id, chk] of [["roads-halo", "#chk-roads"], ["roads-casing", "#chk-roads"], ["roads", "#chk-roads"], ["towns", "#chk-towns"], ["towns-l", "#chk-towns"]]) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", $(chk).checked ? "visible" : "none");
     }
     const svg = $("#zchart"); svg.querySelectorAll(".dot").forEach(c => c.setAttribute("r", c.dataset.f === f && layer === "date" ? 6 : 3.5));
     const cur = svg.querySelector(".cursor"); if (cur && svg._x) { const x = svg._x(f); cur.setAttribute("x1", x); cur.setAttribute("x2", x); cur.setAttribute("visibility", layer === "date" ? "visible" : "hidden"); }
@@ -988,12 +1099,14 @@ if (location.protocol === "file:") showError("This page needs to be served over 
     const L = $("#legend"), lg = M.leyendas;
     const sw = (c, t) => `<div><span class="sw" style="background:${c}"></span>${t}</div>`;
     let h = "";
-    if (layer === "date") h = sw(css("--flood"), "New water (not there in Jun–Jul)") + sw(css("--still"), "Water already there (lagoon, rivers, ponds)") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, "Already wet before the rain (10–14 Aug passes)") : "");
-    if (layer === "extent") h = sw(css("--flood"), Z[zid].resumen.fuente === "single track" ? "Flooded by the storm, detected on at least one observation (single track)" : "Flooded by the storm, detected on at least two observations") + (Z[zid].resumen.ha_previa ? sw(M.leyendas.previa, `Already wet before the rain (10–14 Aug passes): ${nf(Z[zid].resumen.ha_previa)} ha, not counted`) : "");
-    if (layer === "persist") h = lg.persistencia.map(p => sw(p.color, p.rango + " days")).join("") + sw(lg.sigue, "Still wet on 20 Oct");
-    if (layer === "retreat") h = lg.retiro.map(p => sw(p.color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(lg.sigue, "Still wet on 20 Oct");
-    if (layer === "forest") h = sw("rgb(27,175,122)", "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
-    if ($("#chk-roads").checked) h += `<div><span class="sw" style="background:linear-gradient(90deg,#fdd6bf,#f7a67a,#e66e3c,#b44216,#6e2507)"></span>Roads: days under water (light 1–7 · dark 43+)</div>`;
+    const dateColors = dateMapPalette();
+    const classes = waterMapClasses(layer);
+    if (layer === "date") h = sw(dateColors.newWater, "New water (not there in Jun–Jul)") + sw(dateColors.baseline, "Water already there (lagoon, rivers, ponds)") + (Z[zid].resumen.ha_previa ? sw(dateColors.preRain, "Already wet before the rain (10–14 Aug passes)") : "");
+    if (layer === "extent") h = sw(classes[0].color, Z[zid].resumen.fuente === "single track" ? "Flooded by the storm, detected on at least one observation (single track)" : "Flooded by the storm, detected on at least two observations") + (Z[zid].resumen.ha_previa ? sw(classes[1].color, `Already wet before the rain (10–14 Aug passes): ${nf(Z[zid].resumen.ha_previa)} ha, not counted`) : "");
+    if (layer === "persist") h = lg.persistencia.map((p, i) => sw(classes[i].color, p.rango + " days")).join("") + sw(classes.at(-1).color, "Still wet on 20 Oct");
+    if (layer === "retreat") h = lg.retiro.map((p, i) => sw(classes[i].color, `Dried ${fmtDate(p.desde)} – ${fmtDate(p.hasta)}`)).join("") + sw(classes.at(-1).color, "Still wet on 20 Oct");
+    if (layer === "forest") h = sw(classes[0].color, "Riverside forest with a flood signal (any track)") + `<div class="note">HH−HV rose over 2 dB more than upland forest on the same pass, and HH rose over 1 dB.</div>`;
+    if ($("#chk-roads").checked) h += `<div><span class="sw" style="width:30px;height:6px;background:linear-gradient(90deg,${roadPalette().join(',')});border:1px solid #171321;box-shadow:0 0 0 1px #fff"></span>Roads: days under water (light to dark: 1–7 · 8–14 · 15–28 · 29–42 · 43+)</div>`;
     L.innerHTML = h + `<p class="readout" id="zone-readout"></p>`;
   }
 
@@ -1149,7 +1262,7 @@ if (location.protocol === "file:") showError("This page needs to be served over 
   layout=window.mountMapLayout({
     getState:()=>({zoneName:Z[zid].nombre,layer,di,beforeDi,comparing:comparisonEnabled,dates:Z[zid].capas.serie.fechas,tourActive,tourStep,mapReady}),
     onStep:index=>showTourStep(index),onExit:()=>exitTour(),
-    onResize:()=>{if(map){map.resize();if(comparisonMap)comparisonMap.resize();syncComparisonCamera();}}
+    onResize:()=>{if(map){map.resize();if(comparisonMap)comparisonMap.resize();constrainStudyArea();}}
   });
   await initMap();
   if(mapReady)showTourStep(0);else setZone(zid);

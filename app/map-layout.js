@@ -43,6 +43,9 @@ window.mountMapLayout = function (actions) {
   freeTimeline.append(dateControls);
   const mapLegend = document.createElement('div'); mapLegend.id = 'map-legend';
   mapLegend.innerHTML = '<span class="ctrl-label">Map key</span>'; mapLegend.append(legend);
+  const satelliteContext = document.createElement('p'); satelliteContext.id = 'satellite-context'; satelliteContext.className = 'note'; satelliteContext.hidden = true;
+  satelliteContext.textContent = 'Satellite basemap · Image dates vary; not the selected NISAR date.';
+  mapLegend.append(satelliteContext);
   const scrim = document.createElement('button'); scrim.id = 'drawer-scrim'; scrim.hidden = true; scrim.type = 'button'; scrim.setAttribute('aria-label', 'Close exploration panel');
   workspace.append(map, tour, mapLegend, freeTimeline, scrim, drawer);
   explore.replaceChildren(workspace); explore.setAttribute('aria-label', 'Interactive NISAR flood explorer'); explore.removeAttribute('aria-labelledby');
@@ -61,7 +64,9 @@ window.mountMapLayout = function (actions) {
   };
   const setTour = active => {
     workspace.dataset.touring = String(active); document.body.dataset.touring = String(active);
-    freeTimeline.hidden = active;
+    const showTimeline = !active && actions.getState().layer === 'date';
+    freeTimeline.hidden = !showTimeline;
+    workspace.dataset.timelineVisible = String(showTimeline);
     if (active && !wasTour) setDrawer(false, false);
     if (!active && wasTour) setDrawer(variant === 'sidebar', false);
     wasTour = active; resize();

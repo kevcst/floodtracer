@@ -85,10 +85,17 @@ body[data-touring=true] #research-open {display:none}
 #tour-waypoints {justify-content:center;border-top:1px solid var(--line);padding-top:12px}
 .waypoint span {display:none}
 .waypoint b {font-size:0;width:10px;height:10px}
-#explorer-drawer {right:18px;top:18px;bottom:136px;width:360px}
+#explorer-drawer {right:18px;top:18px;bottom:18px;width:360px}
 #map-legend {left:22px;bottom:40px}
-#free-timeline {bottom:32px;right:22px;width:min(600px,calc(100% - 410px))}
+#free-timeline {bottom:32px;left:50%;right:auto;transform:translateX(-50%);width:min(600px,calc(100% - 44px))}
 #workspace[data-touring=true] #map-legend {bottom:38px;max-width:340px}
 #workspace[data-touring=true] #compare-overlay .compare-split {left:385px;right:70px;bottom:40px}
-@media(max-width:1000px){#guided-tour{width:310px;left:14px;top:52px}#free-timeline{left:14px;right:14px;width:auto;bottom:28px}#workspace[data-touring=false] #map-legend{bottom:145px;left:14px}#explorer-drawer{bottom:145px}#workspace[data-touring=true] #compare-overlay .compare-split{left:350px}}
+@media(max-width:1000px){#guided-tour{width:310px;left:14px;top:52px}#free-timeline{left:50%;right:auto;width:calc(100% - 28px);bottom:28px}#workspace[data-touring=false] #map-legend{bottom:145px;left:14px}#workspace[data-touring=true] #compare-overlay .compare-split{left:350px}}
 @media(max-width:600px){#guided-tour{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:48%;border-radius:12px}#workspace[data-touring=true] #map-legend{top:12px;bottom:auto;left:12px;right:60px;max-width:none}#workspace[data-touring=true] .stamp,#workspace[data-touring=true] .compare-label{top:84px}#workspace[data-touring=true] #compare-overlay .compare-split{display:none}#tour-waypoints{padding-top:7px}#tour-sources{grid-column:auto;text-align:left}#tour-next{grid-column:2}#tour-prev{grid-column:1}#workspace[data-touring=true][data-drawer=true] #guided-tour{visibility:hidden}#workspace[data-touring=true][data-drawer=true] #map-legend{visibility:hidden}}
+
+#satellite-context {margin-top:6px;font-size:10px;line-height:1.45}
+
+/* Keep the centered date controls clear of the map key. Event-wide layers need no timeline. */
+#workspace[data-timeline-visible=true] #map-legend {bottom:160px}
+#workspace[data-touring=false][data-timeline-visible=false] #map-legend {bottom:40px}
+@media(max-width:600px){#workspace[data-touring=false][data-timeline-visible=false] #map-legend{bottom:28px}}
