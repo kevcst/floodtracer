@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FloodTracer</title>
+<meta name="description" content="How long did northern Rocha stay under water after the August 2026 storm? A proof of concept with NASA-ISRO's NISAR radar.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="nav.css?v=20261116s">
+<link rel="stylesheet" href="story.css?v=20261116s">
+</head>
+<body class="slides on-hero">
+<!-- Story of the case study, one slide at a time: no page scroll; ◀ ▶, arrow keys or the
+     contents menu. All visible text lives in STRINGS (story.js); all numbers in data/manifest.json.
+     data-i18n="key" (text), data-i18n-html="key" (trusted markup from STRINGS). Deep links: index.html#scene-0 … #scene-7. -->
+<div id="err" role="alert"></div>
+
+<header class="bar">
+  <span class="brand"><span data-i18n="app_name"></span><small class="brand-tag" data-i18n="app_tag"></small></span>
+  <nav data-site-nav></nav>
+  <div class="progress" id="progress"></div>
+</header>
+
+<div id="stage">
+  <div id="map" role="img" data-i18n-aria="map_alt"></div>
+  <div class="map-top"><div class="stamp" id="stamp" aria-live="polite"></div><button type="button" class="reset-view" id="reset-view"></button></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<main id="story" aria-live="polite">
+  <!-- 0 · opening card: motivation, what we did, what comes next -->
+  <section class="step hero wide" id="scene-0" data-scene="hero" data-step="hero">
+    <div class="cols">
+      <div class="col">
+        <span class="eyebrow" data-i18n="hero_eyebrow"></span>
+        <h1 data-i18n="app_name"></h1>
+        <p class="tagline" data-i18n="app_tag"></p>
+        <p class="sub" id="hero-sub"></p>
+        <p data-i18n="hero_why"></p>
+        <p id="hero-what"></p>
+      </div>
+      <div class="col">
+        <h3 class="mini" data-i18n="hero_next"></h3>
+        <ol class="hero-toc" id="hero-toc"></ol>
+        <div class="cta"><button type="button" class="btn-primary" data-go="next" data-i18n="start"></button></div>
+        <p class="note" id="hero-cap"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · the week satellites went blind (one column: text, then photo vs radar) -->
+  <section class="step wide" id="scene-1" data-scene="blind" data-step="blind">
+    <span class="eyebrow" data-i18n="s1_eyebrow"></span>
+    <h2 data-i18n="s1_title"></h2>
+    <p data-i18n="s1_body"></p>
+    <p id="blind-anchor"></p>
+    <div id="swipe-host" class="swipe-mid"></div>
+    <p class="note" id="blind-note"></p>
+  </section>
+
+  <!-- 2 · what was reported, and what the radar adds (one column) -->
+  <section class="step mid" id="scene-2" data-scene="count" data-step="count">
+    <span class="eyebrow" data-i18n="s2_eyebrow"></span>
+    <h2 data-i18n="s2_title"></h2>
+    <p id="count-intro"></p>
+    <div id="counters"></div>
+    <p id="count-why"></p>
+    <div id="landuse"></div>
+    <p class="note" id="count-note"></p>
+  </section>
+
+  <!-- 3 · the water arrived… and stayed (one column: read, then step to the next pass) -->
+  <section class="step" id="scene-3" data-scene="stays" data-step="stays">
+    <span class="eyebrow" data-i18n="s3_eyebrow"></span>
+    <h2 data-i18n="s3_title"></h2>
+    <p id="s3-body"></p>
+    <div class="stays-head"><div id="stays-big"></div><div class="pass-nav"><button type="button" class="pass-btn" id="pass-prev"></button>
+      <output class="pdate" id="pass-date"></output><button type="button" class="pass-btn next" id="pass-next"></button></div></div>
+    <div id="stays-chart"></div>
+    <p class="note" id="pass-note"></p>
+    <p id="stays-anchor"></p>
+    <details class="how"><summary data-i18n="how"></summary><div data-i18n-html="s3_how"></div></details>
+  </section>
+
+  <!-- 4 · where the water stayed longest: drying map, how it is calculated, worked example -->
+  <section class="step wide" id="scene-4" data-scene="dry" data-step="dry">
+    <span class="eyebrow" data-i18n="s4_eyebrow"></span>
+    <h2 data-i18n="s4_title"></h2>
+    <div class="cols">
+      <div class="col">
+        <p id="dry-calc"></p>
+        <p id="dry-half"></p>
+        <p class="note" data-i18n="tap_hint"></p>
+      </div>
+      <div class="col">
+        <h3 class="mini" data-i18n="ex_title"></h3>
+        <div id="dry-example"></div>
+        <details class="how"><summary data-i18n="how"></summary><div id="dry-how"></div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · roads in flooded areas: the idea and its use, not a final count -->
+  <section class="step mid" id="scene-5" data-scene="roads" data-step="roads">
+    <span class="eyebrow" data-i18n="r_eyebrow"></span>
+    <h2 data-i18n="r_title"></h2>
+    <p data-i18n="r_what"></p>
+    <p data-i18n="r_use"></p>
+    <div id="roads-scale"></div>
+    <p class="note" id="roads-caveat"></p>
+  </section>
+
+  <!-- 6 · what only L-band can see: under grass and rice / under vegetation (tabs) -->
+  <section class="step wide" id="scene-6" data-scene="lband" data-step="lband">
+    <div class="cols">
+      <div class="col">
+        <span class="eyebrow" data-i18n="s5_eyebrow"></span>
+        <h2 data-i18n="s5_title"></h2>
+        <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="lb-grass" aria-selected="true" data-i18n="tab_grass"></button>
+          <button type="button" role="tab" data-tab="lb-veg" aria-selected="false" data-i18n="tab_veg"></button></div>
+        <div class="tab-panel" id="lb-grass-text"><p data-i18n="s5a_why"></p><p data-i18n="s5a_body"></p></div>
+        <div class="tab-panel" id="lb-veg-text" hidden><p data-i18n="s5b_why"></p><p data-i18n="s5b_body"></p></div>
+      </div>
+      <div class="col">
+        <div class="tab-panel" id="lb-grass"><div id="s1-host"></div></div>
+        <div class="tab-panel" id="lb-veg" hidden><div id="forest-host"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · balance (tabs): promising · not solved yet · what it could be used for -->
+  <section class="step wide xl" id="scene-7" data-scene="balance" data-step="balance">
+    <span class="eyebrow" data-i18n="bal_eyebrow"></span>
+    <h2 data-i18n="bal_title"></h2>
+    <p data-i18n="bal_lede"></p>
+    <div class="tabs" role="tablist"><button type="button" role="tab" data-tab="bal-t1" aria-selected="true" data-i18n="bal_ok_t"></button>
+      <button type="button" role="tab" data-tab="bal-t2" aria-selected="false" data-i18n="bal_todo_t"></button>
+      <button type="button" role="tab" data-tab="bal-t3" aria-selected="false" data-i18n="uses_title"></button></div>
+    <div class="tab-panel" id="bal-t1"><div class="checks two" id="bal-ok"></div></div>
+    <div class="tab-panel" id="bal-t2" hidden><div class="checks two" id="bal-todo"></div><p class="bal-summary" id="bal-summary"></p></div>
+    <div class="tab-panel" id="bal-t3" hidden><p data-i18n="s7_body"></p><div class="uses" id="uses-host"></div><div id="links-host"></div></div>
+    <div class="explore-cta"><p data-i18n="cta_explore"></p><a class="btn-primary" id="cta-explore" href="explorer.html" data-i18n="cta_explore_btn"></a></div>
+  </section>
+
+</main>
+
+<nav class="slide-nav" aria-label="Story navigation">
+  <button type="button" class="sn-btn" id="prev" data-go="prev"></button>
+  <div class="sn-menu">
+    <button type="button" class="sn-toc" id="toc-btn" aria-expanded="false" aria-controls="toc-list"></button>
+    <ol id="toc-list" hidden></ol>
+  </div>
+  <button type="button" class="sn-btn next" id="next" data-go="next"></button>
+</nav>
+<footer class="foot" id="foot"></footer>
+
+<noscript><p style="position:relative;z-index:5;padding:80px 16px">This story needs JavaScript. Esta historia necesita JavaScript.</p></noscript>
+<script id="maplibre-js" src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" async></script>
+<script src="nav.js?v=20261116s" data-active="story"></script>
+<script src="story.js?v=20261116s"></script>
+</body>
+</html>

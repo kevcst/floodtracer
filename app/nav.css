@@ -1,0 +1,20 @@
+/* Shared site menu (nav.js). Own variables (--sn-*) so it never overrides the page's tokens (the explorer has its own). */
+.site-nav {
+  --sn-fg: #0f1720; --sn-muted: #5f6b78; --sn-line: #dbe1e7; --sn-bg: #ffffff; --sn-active: #eb6834;
+  display: flex; align-items: center; gap: 10px; flex: none; font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 0.85rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site-nav { --sn-fg: #e8edf2; --sn-muted: #95a1ae; --sn-line: #27313b; --sn-bg: #151b21; }
+}
+:root[data-theme="dark"] .site-nav { --sn-fg: #e8edf2; --sn-muted: #95a1ae; --sn-line: #27313b; --sn-bg: #151b21; }
+.site-nav .sn-links { display: flex; gap: 2px; border: 1px solid var(--sn-line); border-radius: 999px; padding: 2px; background: var(--sn-bg); }
+.site-nav .sn-links a { color: var(--sn-muted); text-decoration: none; padding: 4px 11px; border-radius: 999px; white-space: nowrap; font-weight: 500; }
+.site-nav .sn-links a:hover { color: var(--sn-fg); }
+.site-nav .sn-links a[aria-current="page"] { background: var(--sn-active); color: #fff; }
+.site-nav .sn-lang { display: inline-flex; border: 1px solid var(--sn-line); border-radius: 999px; overflow: hidden; background: var(--sn-bg); }
+.site-nav .sn-lang button { border: 0; background: transparent; color: var(--sn-muted); padding: 4px 9px; cursor: pointer; font: inherit; }
+.site-nav .sn-lang button[aria-pressed="true"] { background: var(--sn-fg); color: var(--sn-bg); }
+.site-nav a:focus-visible, .site-nav button:focus-visible { outline: 3px solid #2a6fc4; outline-offset: 1px; }
+/* inside the explorer's top bar: keep it compact and to the right of the brand */
+nav.top .site-nav { margin-left: auto; margin-right: 12px; }
+@media (max-width: 900px) { .site-nav { gap: 6px; font-size: 0.78rem; } .site-nav .sn-links a { padding: 4px 8px; } }

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FloodTracer · Explore the map</title>
+<meta name="description" content="Explore NISAR radar maps of the August 2026 floods in eastern Uruguay: water by date, where the water stayed longest, roads and the radar image.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<link rel="stylesheet" href="nav.css?v=20261116s">
+<link rel="stylesheet" href="story.css?v=20261116s">
+<link rel="stylesheet" href="explorer.css?v=20261116s">
+</head>
+<body class="explorer-page">
+<!-- Free exploration of four areas. Same top bar, palette and legend labels as the Story (story.css, lg_* in explorer.js).
+     All visible text lives in STRINGS (explorer.js); all numbers come from data/manifest.json. -->
+<div id="err" role="alert"></div>
+
+<header class="bar">
+  <span class="brand"><span data-i18n="app_name"></span><small class="brand-tag" data-i18n="app_tag"></small></span>
+  <nav data-site-nav></nav>
+</header>
+
+<div id="stage">
+  <div id="map" role="img" data-i18n-aria="map_alt"></div>
+  <div id="map-left" aria-hidden="true" hidden></div>
+  <div id="divider" hidden>
+    <span class="cmp-label l" id="lab-l"></span><span class="cmp-label r" id="lab-r"></span>
+    <div class="div-line"><button type="button" class="div-handle" id="div-handle" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" data-i18n-aria="divider">↔</button></div>
+  </div>
+  <div class="stamp ex-stamp" id="stamp" aria-live="polite"></div>
+  <div class="legend ex-legend" id="legend"></div>
+</div>
+
+<aside class="info" id="info" aria-live="polite">
+  <span class="eyebrow" id="info-tag"></span>
+  <h2 id="info-title"></h2>
+  <div id="info-body"></div>
+</aside>
+
+<aside class="panel" id="panel" aria-labelledby="panel-title">
+  <header class="panel-head">
+    <h2 id="panel-title" data-i18n="panel_title"></h2>
+    <button type="button" class="panel-toggle" id="panel-toggle" aria-expanded="true" aria-controls="panel-body"></button>
+  </header>
+  <div class="panel-body" id="panel-body">
+    <section><h3 class="ctl"><label for="zone" data-i18n="c_place"></label></h3><select class="sel" id="zone"></select></section>
+    <section><h3 class="ctl" data-i18n="c_base"></h3>
+      <div class="seg" id="basemap" role="group">
+        <button type="button" data-v="sat" data-i18n="b_sat"></button><button type="button" data-v="osm" data-i18n="b_osm"></button>
+      </div>
+      <p class="note" data-i18n="b_note"></p>
+    </section>
+    <section><h3 class="ctl" data-i18n="c_layers"></h3>
+      <label class="ck"><input type="checkbox" id="chk-polys"> <span data-i18n="k_polys"></span></label>
+      <label class="ck"><input type="checkbox" id="chk-radar"> <span data-i18n="k_radar"></span></label>
+      <label class="ck"><input type="checkbox" id="chk-roads"> <span data-i18n="k_roads"></span></label>
+    </section>
+    <section><h3 class="ctl"><label for="layer" data-i18n="c_what"></label></h3>
+      <select class="sel" id="layer"><option value="date" data-i18n="l_date"></option><option value="heat" data-i18n="l_heat"></option></select>
+      <p class="note" id="layer-note" data-i18n="l_note"></p>
+    </section>
+    <section><h3 class="ctl"><label for="date" data-i18n="c_date"></label></h3><select class="sel" id="date"></select></section>
+    <section><h3 class="ctl" data-i18n="c_compare"></h3>
+      <label class="ck"><input type="checkbox" id="chk-dates"> <span data-i18n="k_dates"></span></label>
+      <div class="two-fields" id="dates-fields" hidden>
+        <label class="field"><span data-i18n="c_before"></span><select id="before"></select></label>
+        <label class="field"><span data-i18n="c_after"></span><select id="after"></select></label>
+      </div>
+      <label class="ck"><input type="checkbox" id="chk-radarcmp"> <span data-i18n="k_radarcmp"></span></label>
+      <p class="note" data-i18n="cmp_note"></p>
+    </section>
+  </div>
+</aside>
+
+<noscript><p style="position:relative;z-index:5;padding:80px 16px">This page needs JavaScript. Esta página necesita JavaScript.</p></noscript>
+<script id="maplibre-js" src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" async></script>
+<script src="nav.js?v=20261116s" data-active="explore"></script>
+<script src="explorer.js?v=20261116s"></script>
+</body>
+</html>

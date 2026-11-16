@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FloodTracer · How we did it</title>
+<meta name="description" content="Step by step: how NISAR radar images of northern Rocha became a map of how long the water stayed.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="nav.css?v=20261116s">
+<link rel="stylesheet" href="method.css?v=20261116s">
+</head>
+<body>
+<!-- All text lives in STRINGS (method.js); all numbers come from data/manifest.json ("metodo" from scripts/exportar_metodo.py). -->
+<div id="err" role="alert"></div>
+<header class="bar">
+  <span class="brand"><span data-i18n="app_name"></span><small class="brand-tag" data-i18n="app_tag"></small></span>
+  <nav data-site-nav></nav>
+</header>
+<main>
+  <section class="intro">
+    <span class="eyebrow"></span>
+    <h1 data-i18n="title"></h1>
+    <p class="lede" data-i18n="lede"></p>
+    <ol class="toc" id="toc"></ol>
+  </section>
+  <div id="steps"></div>
+  <section class="team" id="team" aria-labelledby="team-title"></section>
+</main>
+<footer class="foot" id="foot"></footer>
+<noscript><p style="padding:80px 16px">This page needs JavaScript. Esta página necesita JavaScript.</p></noscript>
+<script src="nav.js?v=20261116s" data-active="method"></script>
+<script src="method.js?v=20261116s"></script>
+</body>
+</html>

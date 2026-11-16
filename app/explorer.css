@@ -1,0 +1,60 @@
+/* Explorer: free exploration over a full-screen map. Tokens, top bar, legend rows and scales come from story.css. */
+#map-left { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+#map { z-index: 0; }
+
+/* ---------- comparison divider (dates, or map vs radar) ---------- */
+#divider { position: absolute; inset: 0; z-index: 2; pointer-events: none; --x: 50%; }
+.div-line { position: absolute; top: 0; bottom: 0; left: var(--x); width: 3px; margin-left: -1.5px; background: #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, .35); }
+.div-handle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid #fff; background: var(--flood-map); color: #fff; font-size: 1.1rem; cursor: ew-resize; pointer-events: auto; touch-action: none; box-shadow: var(--shadow); }
+.cmp-label { position: absolute; bottom: 30px; background: rgba(15, 23, 32, .8); color: #fff; font: 0.76rem var(--f-mono); padding: 4px 8px; border-radius: 6px; white-space: nowrap; }
+.cmp-label.l { right: calc(100% - var(--x) + 10px); }
+.cmp-label.r { left: calc(var(--x) + 10px); }
+
+/* ---------- info box (top left) ---------- */
+.info { position: fixed; z-index: 5; left: 16px; top: calc(var(--bar-h) + 12px); width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--bar-h) - 200px); overflow: auto; background: var(--surface-a); border: 1px solid var(--line);
+  border-radius: 10px; box-shadow: var(--shadow); padding: 14px 16px; display: grid; gap: 6px; border-left: 4px solid var(--flood-map); }
+.info.neg { border-left-color: #c0392b; } .info.fix { border-left-color: #d9a21b; } .info.ok { border-left-color: #1a8f66; }
+.info h2 { font-size: 1.3rem; }
+.info .eyebrow { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.info p { font-size: 0.88rem; color: var(--fg2); line-height: 1.5; }
+.info p + p { margin-top: 6px; }
+.info a { font-size: 0.86rem; }
+
+/* ---------- control panel (right) ---------- */
+.panel { position: fixed; z-index: 5; right: 16px; top: calc(var(--bar-h) + 12px); width: 300px; max-height: calc(100vh - var(--bar-h) - 130px);
+  overflow: auto; background: var(--surface-a); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+.panel-head { position: sticky; top: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px;
+  background: var(--surface); border-bottom: 1px solid var(--line); }
+.panel-head h2 { font-size: 1.1rem; }
+.panel-toggle { border: 1px solid var(--line); background: var(--chip); border-radius: 999px; padding: 3px 10px; font-size: 0.78rem; cursor: pointer; }
+.panel.closed .panel-body { display: none; }
+.panel.closed .panel-head { border-bottom: 0; }
+.panel-body { padding: 12px 14px 14px; display: grid; gap: 14px; }
+.panel-body section { display: grid; gap: 7px; }
+.ctl { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.seg { display: flex; flex-wrap: wrap; gap: 5px; }
+.seg button { border: 1px solid var(--line); background: var(--chip); color: var(--fg2); border-radius: 8px; padding: 5px 9px; font-size: 0.82rem; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--flood-map); border-color: var(--flood-map); color: #fff; }
+.field { display: grid; gap: 4px; font-size: 0.8rem; color: var(--fg2); }
+.field select { width: 100%; min-width: 0; background: var(--chip); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 0.84rem; }
+.field[hidden] { display: none; }
+.two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.two-fields[hidden] { display: none; }
+.ck { display: flex; align-items: center; gap: 7px; font-size: 0.86rem; color: var(--fg); cursor: pointer; }
+.ck input { accent-color: var(--flood-map); }
+.ck input:disabled + span { color: var(--muted); }
+.note { font-size: 0.76rem; color: var(--muted); line-height: 1.4; }
+
+/* ---------- stamp (top centre) and legend (bottom left) ---------- */
+.ex-stamp { position: absolute; z-index: 3; top: calc(var(--bar-h) + 12px); left: 50%; transform: translateX(-50%); max-width: 360px; }
+.ex-legend { left: 16px; right: auto; bottom: 30px; max-width: 280px; z-index: 3; }
+.legend .ttl { font-weight: 600; }
+.maplibregl-ctrl-bottom-right { z-index: 3; }
+.sel { width: 100%; min-width: 0; background: var(--chip); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font: inherit; font-size: 0.86rem; }
+.sel:disabled { color: var(--muted); opacity: 0.7; cursor: not-allowed; }
+.panel-body section { padding-top: 12px; border-top: 1px solid var(--line); }
+.panel-body section:first-child { padding-top: 0; border-top: 0; }
+.panel-body { gap: 12px; }
+#layer-note[hidden] { display: none; }
